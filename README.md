@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/pylhc/pylhc.github.io/master/docs/assets/logos/OMC_logo.svg" height="28"> 3
+# <img src="https://raw.githubusercontent.com/pylhc/pylhc.github.io/master/docs/assets/logos/OMC_logo.svg" height="28"> 3 - GUI
 
 [![Tests](https://github.com/pylhc/omc3_gui/actions/workflows/coverage.yml/badge.svg?branch=master)](https://github.com/pylhc/omc3_gui/actions/workflows/coverage.yml)
 [![Code Climate coverage](https://img.shields.io/codeclimate/coverage/pylhc/omc3_gui.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3_gui)
@@ -7,7 +7,7 @@
 [![GitHub release](https://img.shields.io/github/release/pylhc/omc3_gui.svg?style=popout)](https://github.com/pylhc/omc3_gui/)
 <!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5705625.svg)](https://doi.org/10.5281/zenodo.5705625) -->
 
-This is the python-tool package of the Optics Measurements and Corrections team (OMC) at CERN.
+This is the graphical user interface wrapper for ``omc3`, our python-tool package of the Optics Measurements and Corrections team (OMC) at CERN.
 
 Most of the codes are generic and not limited to CERN accelerators, and the package can easily be used for your favorite circular accelerator.
 To see how to adapt this for your machine, see our [documentation](https://pylhc.github.io/omc3_gui/), `Model` section. 
