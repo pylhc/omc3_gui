@@ -5,7 +5,7 @@
 [![Code Climate maintainability (percentage)](https://img.shields.io/codeclimate/maintainability-percentage/pylhc/omc3_gui.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3_gui)
 [![GitHub last commit](https://img.shields.io/github/last-commit/pylhc/omc3_gui.svg?style=popout)](https://github.com/pylhc/omc3_gui/)
 [![GitHub release](https://img.shields.io/github/release/pylhc/omc3_gui.svg?style=popout)](https://github.com/pylhc/omc3_gui/)
-<!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5705625.svg)](https://doi.org/10.5281/zenodo.5705625) -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8060665.svg)](https://doi.org/10.5281/zenodo.8060665)
 
 This is the graphical user interface wrapper for ``omc3`, our python-tool package of the Optics Measurements and Corrections team (OMC) at CERN.
 
