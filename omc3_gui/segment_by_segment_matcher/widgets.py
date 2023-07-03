@@ -81,14 +81,15 @@ class InitialConfigPopup(QtWidgets.QDialog):
         main_layout = QtWidgets.QVBoxLayout(self)
 
         self._lhc_mode_combo = QtWidgets.QComboBox()
-        self._lhc_mode_combo.addItems(constants.LHC_MODES)
+        self._lhc_mode_combo.addItems(constants.LHC_YEARS)
         if lhc_mode is not None:
-            if lhc_mode not in constants.LHC_MODES:
-                raise ValueError("Invalid lhc mode, must be one of " +
-                                 str(constants.LHC_MODES))
+            if lhc_mode not in constants.LHC_YEARS:
+                raise ValueError(
+                    f"Invalid lhc mode, must be one of {constants.LHC_YEARS!s}"
+                    )
             else:
                 self._lhc_mode_combo.setCurrentIndex(
-                    constants.LHC_MODES.index(lhc_mode)
+                    constants.LHC_YEARS.index(lhc_mode)
                 )
         main_layout.addWidget(self._lhc_mode_combo)
 

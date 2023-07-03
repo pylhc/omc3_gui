@@ -18,14 +18,14 @@ with README.open("r") as docs:
 # Dependencies for the package itself
 DEPENDENCIES = [
     f"omc3[optional]>={ABOUT_OMC3_GUI['__omc3_version__']}",
-    "PyQt5>=5.15.7",  # Keep PyQT5 for now, until acc-py updates 
+    "qtpy>=2.3.1",  # runs with either PySide2/6 or PyQt5/6
 ]
 
 # Extra dependencies
 EXTRA_DEPENDENCIES = {
     "cern": [
         f"omc3[cern]>={ABOUT_OMC3_GUI['__omc3_version__']}",
-        # "accwidgets[app_frame,rbac,log_console,screenshot,graph]",
+        "accwidgets[app_frame,log_console]",  # app_frame,rbac,log_console,screenshot,graph
     ],
     "test": [
         "pytest>=5.2",

@@ -1,5 +1,5 @@
-from PyQt5 import QtWidgets
-from PyQt5 import QtCore
+from qtpy import QtWidgets
+from qtpy import QtCore
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar,

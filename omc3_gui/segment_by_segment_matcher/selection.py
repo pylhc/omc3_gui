@@ -1,6 +1,6 @@
 import os
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from qtpy import QtWidgets
+from qtpy.QtCore import Qt
 from omc3_gui.segment_by_segment_matcher.models.coupling import MatcherModelCoupling
 from omc3_gui.segment_by_segment_matcher.models.phase import MatcherModelPhase
 from omc3_gui.segment_by_segment_matcher.models.amplitude import MatcherModelAmp

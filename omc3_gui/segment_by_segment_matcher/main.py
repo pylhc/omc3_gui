@@ -9,7 +9,11 @@ from qtpy.QtCore import QThread, Qt, QFileSystemWatcher, Signal
 from omc3_gui.segment_by_segment_matcher.selection import SbSGuiMatcherTypeSelection
 from omc3_gui.segment_by_segment_matcher.widgets import InitialConfigPopup, LogDialog
 from omc3_gui.segment_by_segment_matcher.result_view import SbSGuiMatchResultView
-from accwidgets.app_frame import ApplicationFrame
+
+try:
+    from accwidgets.app_frame import ApplicationFrame
+except ImportError:
+    from qtpy.QtWidgets import QMainWindow as ApplicationFrame
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +23,12 @@ class SbSGuiMain(ApplicationFrame):
     WINDOW_TITLE = "Segment-by-Segment matcher GUI"
 
     def __init__(self, controller, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        kwargs["use_log_console"] = kwargs.get("use_log_console", True)
+        try:
+            super().__init__(*args, **kwargs)  # CERN Application Frame
+        except TypeError:
+            del kwargs["use_log_console"]
+            super().__init__(*args, **kwargs)   # QT Main window
 
         self._controller = controller
         self._active_background_dialog = None
@@ -47,7 +56,7 @@ class SbSGuiMain(ApplicationFrame):
         view_menu = main_menu.addMenu("View")
         view_menu.addAction(self._get_tile_windows_action())
         view_menu.addAction(self._get_cascade_windows_action())
-        if self.log_console:
+        if getattr(self, "log_console"):
             self.log_console.console.expanded = False
             self.log_console.setFeatures(
                 self.log_console.DockWidgetClosable | self.log_console.DockWidgetMovable
@@ -206,7 +215,7 @@ class SbSGuiMain(ApplicationFrame):
 class SbSGuiMainController(object):
 
     def __init__(self):
-        self._view = SbSGuiMain(self, use_log_console=True)
+        self._view = SbSGuiMain(self)
         self._match_path = None
         self._possible_measurements = {1: [], 2: []}
         self._input_dir = None
@@ -403,7 +412,7 @@ class SbSGuiMainController(object):
         self._watch_dir(self._match_path)
 
     def _watch_dir(self, directory):
-        self._active_watcher = QFileSystemWatcher([directory])
+        self._active_watcher = QFileSystemWatcher([str(directory)])
         self._active_watcher.directoryChanged.connect(self._match_dir_changed)
 
     def _launch_text_editor(self, file_path):
