@@ -31,3 +31,12 @@ def _get_formatter():
     )
     formatter.datefmt = '%d/%m/%Y %H:%M:%S'
     return formatter
+
+
+def init_logging(level=logging.INFO):
+    """ Set up a basic logger. """
+    logging.basicConfig(
+        stream=sys.stdout,
+        level=level,
+        format="%(levelname)7s | %(message)s | %(name)s"
+    )

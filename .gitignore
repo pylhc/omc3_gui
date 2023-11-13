@@ -248,3 +248,6 @@ pyproject.toml*~
 .cache
 /doc/_build/*
 *pycache*
+
+# testers
+tst_*
