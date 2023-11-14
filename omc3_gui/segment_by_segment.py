@@ -3,5 +3,5 @@ from omc3_gui.utils.log_handler import init_logging
 import logging
 
 if __name__ == "__main__":
-    init_logging(level=logging.DEBUG)
+    init_logging()
     SbSController.run_application()
