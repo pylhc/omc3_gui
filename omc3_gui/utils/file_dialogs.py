@@ -8,7 +8,9 @@ from qtpy.QtWidgets import QApplication, QFileDialog, QStyle
 LOGGER = logging.getLogger(__name__)
 
 
+# Open Dialog Windows ----------------------------------------------------------
 class OpenAnyFileDialog(QFileDialog):
+    
     def __init__(self, **kwargs) -> None:
         """ Quick dialog to open any kind of file. 
         Modifies QFileDialog, and allows only kwargs to be passed. 
@@ -51,3 +53,10 @@ class OpenDirectoryDialog(OpenDirectoriesDialog):
     def run_selection_dialog(self) -> Path:
         return super().run_selection_dialog()[0]
 
+
+class OpenFilesDialog(OpenAnyFileDialog):
+    def __init__(self, caption = "Select Files", **kwargs) -> None:
+        super().__init__(caption=caption, **kwargs)  # parent, directory, filter, options
+        self.setFileMode(QFileDialog.ExistingFiles)
+        icon = QApplication.style().standardIcon(QStyle.SP_FileIcon)
+        self.setWindowIcon(icon)

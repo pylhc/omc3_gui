@@ -1,30 +1,16 @@
-from dataclasses import dataclass
-from pathlib import Path
+import enum
 import types
-from typing import Any, Dict, List, Sequence, Union
-from accwidgets.graph import StaticPlotWidget
+from dataclasses import dataclass, fields
+from pathlib import Path
+from typing import Any, ClassVar, Dict, List, Optional, Sequence, Union
+
 import pyqtgraph as pg
+from accwidgets.graph import StaticPlotWidget
 from omc3.segment_by_segment.segments import Segment
+from qtpy import QtCore, QtWidgets
+from qtpy.QtCore import QModelIndex, Qt
 
-from typing import List
-from qtpy import QtCore
-from qtpy.QtCore import Qt
-
-
-@dataclass
-class Measurement:
-    measurement_dir: Path
-    output_dir: Path = None
-    elements: Dict[str, Segment] = None
-    segments: Dict[str, Segment] = None
-    model_dir: Path = None
-    accel: str = None
-    year: str = None
-    ring: int = None
-
-    def __str__(self):
-        return str(self.measurement_dir)
-    
+from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 
 
 @dataclass
@@ -32,8 +18,8 @@ class Settings:
     pass
 
 
-
 class ItemDictModel:
+    """ Mixin-Class for a class that has a dictionary of items. """
 
     def __init__(self):
         self.items = {}
@@ -42,8 +28,9 @@ class ItemDictModel:
         if not emit:
             return
 
-        if hasattr(self, "layoutChanged"):
-            self.layoutChanged.emit()
+        if hasattr(self, "dataChanged"):
+            # TODO: return which data has actually changed?
+            self.dataChanged.emit(self.index(0), self.index(len(self.items)-1), [Qt.EditRole])
     
     def update_item(self, item):
         self.items[str(item)] = item
@@ -84,24 +71,49 @@ class ItemDictModel:
         return list(self.items.values())[index]
 
 
-
 class MeasurementListModel(QtCore.QAbstractListModel, ItemDictModel):
 
-    items: Dict[str, Measurement]  # for the IDE
+    items: Dict[str, OpticsMeasurement]  # for the IDE
+    
+    class ColorRoles(enum.IntEnum):
+        NONE = 0
+        BEAM1 = enum.auto()
+        BEAM2 = enum.auto()
+        RING1 = enum.auto()
+        RING2 = enum.auto()
+        RING3 = enum.auto()
+        RING4 = enum.auto()
+
+        @classmethod
+        def get_color(cls, meas: OpticsMeasurement) -> int:
+            if meas.accel == "lhc":
+                return getattr(cls, f"BEAM{meas.beam}")
+            
+            if meas.accel == "psb":
+                return getattr(cls, f"RING{meas.ring}")
+            
+            return cls.NONE
 
     def __init__(self, *args, **kwargs):
         super(QtCore.QAbstractListModel, self).__init__(*args, **kwargs)
         super(ItemDictModel, self).__init__()
 
     def data(self, index: QtCore.QModelIndex, role: int = Qt.DisplayRole):
-        meas: Measurement = self.get_item_at(index.row())
+
+        meas: OpticsMeasurement = self.get_item_at(index.row())
         if role == Qt.DisplayRole:  # https://doc.qt.io/qt-5/qt.html#ItemDataRole-enum
-            return str(meas)
-        
+            return meas.display()
+
+        if role == Qt.ToolTipRole:
+            return meas.tooltip()
+
+        if role == Qt.TextColorRole:
+            return self.ColorRoles.get_color(meas)
+
         if role == Qt.EditRole:
             return meas
 
-    def rowCount(self, index):
+    def rowCount(self, index: QtCore.QModelIndex = None):
         return len(self.items)
 
 
@@ -128,7 +140,7 @@ class SegmentTableModel(QtCore.QAbstractTableModel, ItemDictModel):
     def columnCount(self, parent=QtCore.QModelIndex()):
         return len(self._COLUMNS) 
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index: QtCore.QModelIndex, role=QtCore.Qt.DisplayRole):
         i = index.row()
         j = index.column()
         segment: Segment = self.get_item_at(i)

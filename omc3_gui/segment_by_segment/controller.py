@@ -1,10 +1,12 @@
 from pathlib import Path
+from typing import List
 from omc3_gui.utils.base_classes import Controller
-from omc3_gui.utils.dialogs import OpenDirectoriesDialog, OpenDirectoryDialog
+from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog, OpenDirectoryDialog
 from omc3_gui.segment_by_segment.view import SbSWindow
-from omc3_gui.segment_by_segment.model import Measurement, Settings
+from omc3_gui.segment_by_segment.model import Settings
 from qtpy.QtCore import Qt, Signal, Slot
 from qtpy.QtWidgets import QFileDialog
+from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -21,7 +23,7 @@ class SbSController(Controller):
         self._last_selected_optics_path = None
 
 
-    def add_measurement(self, measurement: Measurement):
+    def add_measurement(self, measurement: OpticsMeasurement):
         self._view.get_measurement_list().add_item(measurement) 
 
     
@@ -44,7 +46,10 @@ class SbSController(Controller):
         for filename in filenames:
             self._last_selected_optics_path = filename.parent
             LOG.debug(f"User selected: {filename}")
-            loaded_measurements.add_item(Measurement(filename))
+            optics_measurement = OpticsMeasurement.from_path(filename)
+            try:
+                loaded_measurements.add_item(optics_measurement)
+            except ValueError as e:
+                LOG.error(str(e))
         
-
 

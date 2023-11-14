@@ -7,11 +7,12 @@ from typing import Dict, List, Tuple
 import pyqtgraph as pg
 from accwidgets.graph import StaticPlotWidget
 from accwidgets.graph.widgets.plotitem import ExViewBox
-from qtpy import QtWidgets, uic
+from qtpy import QtWidgets, uic, QtGui
 from qtpy.QtCore import Qt, Signal, Slot, QModelIndex
 
 from omc3_gui.plotting.classes import DualPlot
-from omc3_gui.segment_by_segment.model import Measurement, MeasurementListModel, SegmentTableModel
+from omc3_gui.segment_by_segment.model import MeasurementListModel, SegmentTableModel
+from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.utils.base_classes import View
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
 from omc3_gui.utils.widgets import EditButton, OpenButton, RemoveButton, RunButton
@@ -25,37 +26,41 @@ class Tab:
 class SbSWindow(View):
     WINDOW_TITLE = "OMC Segment-by-Segment"
 
+    # QtSignals need to be defined as class-attributes
     sig_load_button_clicked = Signal()
     sig_remove_button_clicked = Signal()
     sig_matcher_button_clicked = Signal()
-    sig_edit_measurement_button_clicked = Signal(Measurement)
-    sig_list_optics_double_clicked = Signal(Measurement)
-
-    _tabs: Dict[str, DualPlot]
-    _tabs_widget: QtWidgets.QTabWidget
-    _list_view_measurements: QtWidgets.QListView
-    _table_segments: QtWidgets.QTableView
-
-    # Buttons ---
-    button_load: QtWidgets.QPushButton
-    button_remove: QtWidgets.QPushButton
-    button_edit: QtWidgets.QPushButton
-    button_matcher: QtWidgets.QPushButton
-
-    button_run_segment: QtWidgets.QPushButton
-    button_remove_segment: QtWidgets.QPushButton
-    button_copy_segment: QtWidgets.QPushButton
-    button_new_segment: QtWidgets.QPushButton
-
+    sig_edit_measurement_button_clicked = Signal(OpticsMeasurement)
+    sig_list_optics_double_clicked = Signal(OpticsMeasurement)
+    
     def __init__(self, parent=None):
         super().__init__(parent)
+        
+        # List of UI elements accessible as instance-attributes:
+        # Widgets ---
+        self._tabs_widget: QtWidgets.QTabWidget = None
+        self._tabs: Dict[str, DualPlot] = None
+        self._list_view_measurements: QtWidgets.QListView = None
+        self._table_segments: QtWidgets.QTableView = None
+
+        # Buttons ---
+        self._button_load: QtWidgets.QPushButton = None
+        self._button_remove: QtWidgets.QPushButton = None
+        self._button_edit: QtWidgets.QPushButton = None
+        self._button_matcher: QtWidgets.QPushButton = None
+
+        self._button_run_segment: QtWidgets.QPushButton = None
+        self._button_remove_segment: QtWidgets.QPushButton = None
+        self._button_copy_segment: QtWidgets.QPushButton = None
+        self._button_new_segment: QtWidgets.QPushButton = None
+        
         self._build_gui()
-        self.connect_signals()
+        self._connect_signals()
 
         self.plot()
 
-    def connect_signals(self):
-        self.button_load.clicked.connect(self._handle_load_files_button_clicked)
+    def _connect_signals(self):
+        self._button_load.clicked.connect(self._handle_load_files_button_clicked)
         self._list_view_measurements.doubleClicked.connect(self._handle_list_measurements_double_clicked)
 
     @Slot()
@@ -82,9 +87,7 @@ class SbSWindow(View):
                 nav_top.setLayout(layout)
                 layout.addWidget(QtWidgets.QLabel("Loaded Optics:"))
 
-                self._list_view_measurements = QtWidgets.QListView()
-                self._list_view_measurements.setModel(MeasurementListModel())
-                self._list_view_measurements.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+                self._list_view_measurements = MeasurementListView()
                 layout.addWidget(self._list_view_measurements)
 
                 def build_measurement_buttons():
@@ -93,19 +96,19 @@ class SbSWindow(View):
 
                     load = OpenButton("Load")
                     grid_buttons_filler.add(load)
-                    self.button_load = load
+                    self._button_load = load
 
                     remove = RemoveButton()
                     grid_buttons_filler.add(remove)
-                    self.button_remove = remove
+                    self._button_remove = remove
 
                     edit = EditButton()
                     grid_buttons_filler.add(edit, col_span=2)
-                    self.button_edit = edit
+                    self._button_edit = edit
 
                     matcher = RunButton("Run Matcher")
                     grid_buttons_filler.add(matcher, col_span=2)
-                    self.button_matcher = matcher
+                    self._button_matcher = matcher
                 
                     return grid_buttons
 
@@ -138,19 +141,19 @@ class SbSWindow(View):
 
                     run = RunButton("Run Segment(s)")
                     grid_buttons_filler.add(run, col_span=3)
-                    self.button_run_segment = run
+                    self._button_run_segment = run
 
                     new = OpenButton("New")
                     grid_buttons_filler.add(new)
-                    self.button_new_segment = new
+                    self._button_new_segment = new
                     
                     copy = EditButton("Copy")
                     grid_buttons_filler.add(copy)
-                    self.button_copy_segment = copy
+                    self._button_copy_segment = copy
                     
                     remove = RemoveButton("Remove")
                     grid_buttons_filler.add(remove)
-                    self.button_remove_segment = remove
+                    self._button_remove_segment = remove
                 
                     return grid_buttons
                 layout.addLayout(build_segment_buttons())
@@ -207,3 +210,39 @@ class SbSWindow(View):
         print('clicked')
 
 
+class MeasurementListView(QtWidgets.QListView):
+    
+    def __init__(self):
+        super().__init__()
+        self.setModel(MeasurementListModel())
+        self.setItemDelegate(ColoredItemDelegate())
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        tooltip_style = """
+            QToolTip {
+                background-color: #F0F0F0; /* Light gray background */
+                color: #333333; /* Dark gray text */
+                border: 1px solid #808080; /* Gray border */
+                font-family: "Courier New", monospace; /* Monospaced font */
+            }
+        """
+        self.setStyleSheet(tooltip_style)
+
+
+class ColoredItemDelegate(QtWidgets.QStyledItemDelegate):
+
+    COLOR_MAP = {
+        MeasurementListModel.ColorRoles.NONE: "#000000",
+        MeasurementListModel.ColorRoles.BEAM1: "#0000ff",
+        MeasurementListModel.ColorRoles.BEAM2: "#ff0000",
+        # todo: what are the PSB ring colors?
+        MeasurementListModel.ColorRoles.RING1: "#4CAF50",
+        MeasurementListModel.ColorRoles.RING2: "#FF9800",
+        MeasurementListModel.ColorRoles.RING3: "#673AB7",
+        MeasurementListModel.ColorRoles.RING4: "#E91E63",
+    }
+    def paint(self, painter, option, index):
+        # Customize the text color
+        color = self.COLOR_MAP[index.data(Qt.TextColorRole)]
+        option.palette.setColor(QtGui.QPalette.Text, QtGui.QColor(color))
+
+        super().paint(painter, option, index)
