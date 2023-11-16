@@ -6,7 +6,7 @@ Pre-Defined Widgets go here.
 """
 
 from qtpy import QtWidgets
-
+from qtpy import QtCore
 
 # Buttons ----------------------------------------------------------------------
 
@@ -48,3 +48,22 @@ class EditButton(QtWidgets.QPushButton):
             self.setText("Edit")
 
         self.setStyleSheet("background-color: #2196F3; color: #fff;")
+
+
+# Filler -----------------------------------------------------------------------
+
+class HorizontalSeparator(QtWidgets.QFrame):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setFrameShape(QtWidgets.QFrame.HLine)
+        self.setFrameShadow(QtWidgets.QFrame.Sunken) 
+
+
+class VerticalSeparator(QtWidgets.QFrame):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setFrameShape(QtWidgets.QFrame.VLine)
+        self.setFrameShadow(QtWidgets.QFrame.Sunken)
+

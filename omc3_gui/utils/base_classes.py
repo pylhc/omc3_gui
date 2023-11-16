@@ -33,13 +33,12 @@ class Controller(QObject):
         self._view.show()
 
     @classmethod
-    def run_application(cls, *args, **kwargs):
+    def run_application(cls, *args, **kwargs) -> int:
         app = QApplication(sys.argv)
         controller = cls(*args, **kwargs)
         controller.show()
-        sys.exit(exec_app_interruptable(app))
+        return exec_app_interruptable(app)
     
-
 
 class View(ApplicationFrame):
 

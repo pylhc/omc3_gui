@@ -30,14 +30,16 @@ class SbSWindow(View):
     sig_load_button_clicked = Signal()
     sig_remove_button_clicked = Signal()
     sig_matcher_button_clicked = Signal()
-    sig_edit_measurement_button_clicked = Signal(OpticsMeasurement)
+    sig_edit_optics_button_clicked = Signal(OpticsMeasurement)
     sig_list_optics_double_clicked = Signal(OpticsMeasurement)
     
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setWindowTitle(self.WINDOW_TITLE)
         
         # List of UI elements accessible as instance-attributes:
         # Widgets ---
+        self._cental: QtWidgets.QSplitter = None
         self._tabs_widget: QtWidgets.QTabWidget = None
         self._tabs: Dict[str, DualPlot] = None
         self._list_view_measurements: QtWidgets.QListView = None
@@ -61,6 +63,7 @@ class SbSWindow(View):
 
     def _connect_signals(self):
         self._button_load.clicked.connect(self._handle_load_files_button_clicked)
+        self._button_edit.clicked.connect(self._handle_edit_measurement_button_clicked)
         self._list_view_measurements.doubleClicked.connect(self._handle_list_measurements_double_clicked)
 
     @Slot()
@@ -68,13 +71,28 @@ class SbSWindow(View):
         LOGGER.debug("Loading Optics files button clicked.")
         self.sig_load_button_clicked.emit()
 
+    @Slot()
+    def _handle_edit_measurement_button_clicked(self):
+        LOGGER.debug("Edit Measurement button clicked.")
+        selected = self._list_view_measurements.selectedIndexes()
+        if len(selected) == 0:
+            LOGGER.error("No measurement selected!")
+            return
+        
+        if len(selected) > 1:
+            LOGGER.error("More than one measurement selected!")
+            return
+
+        measurement = selected[0].data(role=Qt.EditRole)
+        self.sig_edit_optics_button_clicked.emit(measurement)
+
     @Slot(QModelIndex)
     def _handle_list_measurements_double_clicked(self, idx):
         LOGGER.debug(f"Entry in Optics List double-clicked: {idx.data(role=Qt.DisplayRole)}")
+        self.sig_list_optics_double_clicked.emit(idx.data(role=Qt.EditRole))
 
 
     def _build_gui(self):
-        self.setWindowTitle(self.WINDOW_TITLE)
         self._central = QtWidgets.QSplitter(Qt.Horizontal)
 
         def build_navigation_widget():  # --- Left Hand Side 
@@ -231,18 +249,22 @@ class MeasurementListView(QtWidgets.QListView):
 class ColoredItemDelegate(QtWidgets.QStyledItemDelegate):
 
     COLOR_MAP = {
-        MeasurementListModel.ColorRoles.NONE: "#000000",
-        MeasurementListModel.ColorRoles.BEAM1: "#0000ff",
-        MeasurementListModel.ColorRoles.BEAM2: "#ff0000",
+        MeasurementListModel.ColorIDs.NONE: "#000000",
+        MeasurementListModel.ColorIDs.BEAM1: "#0000ff",
+        MeasurementListModel.ColorIDs.BEAM2: "#ff0000",
         # todo: what are the PSB ring colors?
-        MeasurementListModel.ColorRoles.RING1: "#4CAF50",
-        MeasurementListModel.ColorRoles.RING2: "#FF9800",
-        MeasurementListModel.ColorRoles.RING3: "#673AB7",
-        MeasurementListModel.ColorRoles.RING4: "#E91E63",
+        MeasurementListModel.ColorIDs.RING1: "#4CAF50",
+        MeasurementListModel.ColorIDs.RING2: "#FF9800",
+        MeasurementListModel.ColorIDs.RING3: "#673AB7",
+        MeasurementListModel.ColorIDs.RING4: "#E91E63",
     }
     def paint(self, painter, option, index):
         # Customize the text color
-        color = self.COLOR_MAP[index.data(Qt.TextColorRole)]
+        color_id = index.data(Qt.TextColorRole)
+        try:
+            color = self.COLOR_MAP[color_id]
+        except KeyError:
+            color = self.COLOR_MAP[MeasurementListModel.ColorIDs.NONE]
         option.palette.setColor(QtGui.QPalette.Text, QtGui.QColor(color))
-
+        
         super().paint(painter, option, index)

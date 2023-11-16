@@ -75,7 +75,7 @@ class MeasurementListModel(QtCore.QAbstractListModel, ItemDictModel):
 
     items: Dict[str, OpticsMeasurement]  # for the IDE
     
-    class ColorRoles(enum.IntEnum):
+    class ColorIDs(enum.IntEnum):
         NONE = 0
         BEAM1 = enum.auto()
         BEAM2 = enum.auto()
@@ -108,7 +108,7 @@ class MeasurementListModel(QtCore.QAbstractListModel, ItemDictModel):
             return meas.tooltip()
 
         if role == Qt.TextColorRole:
-            return self.ColorRoles.get_color(meas)
+            return self.ColorIDs.get_color(meas)
 
         if role == Qt.EditRole:
             return meas

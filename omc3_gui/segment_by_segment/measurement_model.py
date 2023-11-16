@@ -1,16 +1,15 @@
 
-from dataclasses import dataclass, fields
-from pathlib import Path
-import types
-from typing import Any, Dict, List, Sequence, Union, Optional, ClassVar
-from accwidgets.graph import StaticPlotWidget
-import pyqtgraph as pg
-from omc3.segment_by_segment.segments import Segment
-from omc3.definitions.optics import OpticsMeasurement as OpticsMeasurementCollection
-from omc3.optics_measurements.constants import MODEL_DIRECTORY, KICK_NAME, PHASE_NAME, BETA_NAME, EXT
-from omc3.model.constants import TWISS_DAT
-from tfs.reader import read_headers
 import logging
+from dataclasses import MISSING, Field, dataclass, field, fields
+from pathlib import Path
+from typing import Any, ClassVar, Dict, Union
+
+from omc3.model.constants import TWISS_DAT
+from omc3.optics_measurements.constants import (BETA_NAME, EXT, KICK_NAME, MODEL_DIRECTORY,
+                                                PHASE_NAME)
+from omc3.segment_by_segment.segments import Segment
+from tfs.reader import read_headers
+from omc3_gui.utils.dataclass_ui import metafield
 
 
 SEQUENCE = "SEQUENCE"
@@ -20,18 +19,17 @@ LHC_MODEL_YEARS = (2012, 2015, 2016, 2017, 2018, 2022, 2023)  # TODO: get from o
 FILES_TO_LOOK_FOR = (f"{name}{plane}" for name in (KICK_NAME, PHASE_NAME, BETA_NAME) for plane in ("x", "y"))
 
 LOGGER = logging.getLogger(__name__)
-
 @dataclass
 class OpticsMeasurement:
-    measurement_dir: Path  # Path to the optics-measurement folder
-    model_dir: Path = None  # Path to the model folder
-    accel: str = None  # Name of the accelerator
-    output_dir: Optional[Path] = None  # Path to the sbs-output folder
-    elements: Optional[Dict[str, Segment]] = None  # List of elements
-    segments: Optional[Dict[str, Segment]] = None  # List of segments
-    year: Optional[str] = None  # Year of the measurement (accelerator)
-    ring: Optional[int] = None  # Ring of the accelerator
-    beam: Optional[int] = None  # LHC-Beam (not part of SbS input!)
+    measurement_dir: Path = metafield("Optics Measurement", "Path to the optics-measurement folder")
+    model_dir: Path =       metafield("Model",              "Path to the model folder",        default=None)
+    accel: str =            metafield("Accelerator",        "Name of the accelerator",         default=None)
+    output_dir: Path =      metafield("Output",             "Path to the sbs-output folder",   default=None) 
+    year: str =             metafield("Year",               "Year of the measurement (model)", default=None)
+    ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None)
+    beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None) 
+    elements: Dict[str, Segment] = None  # List of elements
+    segments: Dict[str, Segment] = None  # List of segments
 
     DEFAULT_OUTPUT_DIR: ClassVar[str] = "sbs"
 
@@ -42,15 +40,27 @@ class OpticsMeasurement:
     def display(self) -> str:
         return str(self.measurement_dir.name)
 
+    @classmethod
+    def get_label(cls, name: str) -> str:
+        try:
+            return cls.__dataclass_fields__[name].metadata["display"]
+        except KeyError:
+            return name
+
+    @classmethod
+    def get_comment(cls, name: str) -> str:
+        try:
+            return cls.__dataclass_fields__[name].metadata["comment"]
+        except KeyError:
+            return ""
+
     def tooltip(self) -> str:
-        parts = (
-            ("Optics Measurement", self.measurement_dir),
-            ("Model", self.model_dir),
-            ("Accelerator", self.accel),
-            ("Beam", self.beam),
-            ("Year", self.year),
-            ("Ring", self.ring),
-        )
+        """ Returns a string with information about the measurement, 
+        as to be used in a tool-tip.  """
+        parts = [
+            (self.get_label(f.name), getattr(self, f.name)) for f in fields(self) 
+            if f.name  not in ("elements", "segments")
+        ]
         l = max(len(name) for name, _ in parts)
         return "\n".join(f"{name:{l}s}: {value}" for name, value in parts if value is not None)
 
