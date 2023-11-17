@@ -3,7 +3,7 @@ from pathlib import Path
 from qtpy import QtWidgets
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
-from omc3_gui.utils.dataclass_ui import DataClassUI, FieldUIDef, dataclass_ui_builder
+from omc3_gui.utils.dataclass_ui import DataClassUI, FieldUIDef
 
 TO_BE_DEFINED = Path("to_be_defined")
 
@@ -33,19 +33,19 @@ class OpticsMeasurementDialog(QtWidgets.QDialog):
     def _set_size(self, width: int = -1, height: int = -1):
         # Set position to the center of the parent
         parent = self.parent()
-        if parent is not None:
-            parent_geo = parent.geometry()
-            parent_pos = parent.mapToGlobal(parent.pos())  # multiscreen support
-            if width >= 0:
-                x = parent_pos.x() + parent_geo.width() / 2
-            else:
-                x = parent_pos.x() + (parent_geo.width() - width) / 2
+        # if parent is not None:
+        #     parent_geo = parent.geometry()
+        #     parent_pos = parent.mapToGlobal(parent.pos())  # multiscreen support
+        #     if width >= 0:
+        #         x = parent_pos.x() + parent_geo.width() / 2
+        #     else:
+        #         x = parent_pos.x() + (parent_geo.width() - width) / 2
 
-            if height >=0 :
-                y = parent_pos.y() + parent_geo.height() / 2
-            else:
-                y = parent_pos.y() + (parent_geo.height() - height) / 2
-            self.move(x, y)
+        #     if height >=0 :
+        #         y = parent_pos.y() + parent_geo.height() / 2
+        #     else:
+        #         y = parent_pos.y() + (parent_geo.height() - height) / 2
+        #     self.move(x, y)
         
         # Set size
         self.resize(width, height)
@@ -58,7 +58,7 @@ class OpticsMeasurementDialog(QtWidgets.QDialog):
         # A little bit of coupling to the model here, 
         # so if field-names change or are added this needs to be adjusted.
         # But it makes more sense to have this list here than in the model.
-        self._dataclass_ui = dataclass_ui_builder(
+        self._dataclass_ui = DataClassUI.build_dataclass_ui(
             field_def=[
                 FieldUIDef(name="measurement_dir", editable=False), 
                 *(FieldUIDef(name) for name in ("output_dir", "accel", "beam", "year", "ring"))

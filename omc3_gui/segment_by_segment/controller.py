@@ -36,7 +36,7 @@ class SbSController(Controller):
     
     @Slot()
     def open_measurements(self):
-        LOGGER.debug("OpenButton Clicked. Asking for folder paths.")
+        LOGGER.debug("Opening new optics measurement. Asking for folder paths.")
         filenames = OpenDirectoriesDialog(
             parent=self._view,
             caption="Select Optics Folders", 
@@ -48,7 +48,7 @@ class SbSController(Controller):
         LOGGER.debug(f"User selected {len(filenames)} files.")
         for filename in filenames:
             self._last_selected_optics_path = filename.parent
-            LOGGER.debug(f"User selected: {filename}")
+            LOGGER.debug(f"adding: {filename}")
             optics_measurement = OpticsMeasurement.from_path(filename)
             try:
                 loaded_measurements.add_item(optics_measurement)
@@ -57,7 +57,7 @@ class SbSController(Controller):
     
     @Slot(OpticsMeasurement)
     def edit_measurement(self, measurement: OpticsMeasurement):
-        LOGGER.debug("EditButton Clicked. Opening edit dialog.")
+        LOGGER.debug(f"Opening edit dialog for {measurement.display()}.")
         dialog = OpticsMeasurementDialog(
             parent=self._view,
             optics_measurement=measurement,

@@ -43,7 +43,7 @@ class OpticsMeasurement:
     @classmethod
     def get_label(cls, name: str) -> str:
         try:
-            return cls.__dataclass_fields__[name].metadata["display"]
+            return cls.__dataclass_fields__[name].metadata["label"]
         except KeyError:
             return name
 
