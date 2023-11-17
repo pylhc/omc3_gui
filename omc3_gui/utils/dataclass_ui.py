@@ -1,13 +1,15 @@
+from functools import partial
 import inspect
 import re
 from dataclasses import MISSING, Field, dataclass, field, fields
 from pathlib import Path
 from typing import Callable, Dict, Optional, Sequence, Tuple, Union
-from PyQt5.QtWidgets import QWidget
+from omc3_gui.utils import file_dialogs
 
 from qtpy import QtWidgets
 
 from omc3_gui.utils.widgets import HorizontalSeparator
+from omc3_gui.utils import colors
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -71,7 +73,7 @@ class FieldUI:
     label: QtWidgets.QLabel    # label-widget of the field
     get_value: Callable        # getter for the widget value, returns the value as appropriate type for the dataclass
     set_value: Callable        # setter for the widget value
-    text_color: Optional[str] = "black"  # default text-color for both widget and label
+    text_color: Optional[str] = colors.TEXT_DARK  # default text-color for both widget and label
     modified: bool = False     # flag indicating if the widget-content has been modified by the user
 
     def __post_init__(self):
@@ -85,7 +87,7 @@ class FieldUI:
 
     def has_changed(self):
         """ Triggered when the widget has been modified.
-        Sets then the label font to italic.
+        Sets then the modified flag and changes label font.
          """
         self.modified = True
         font = self.label.font()
@@ -201,7 +203,6 @@ class DataClassUI:
             except AttributeError:
                 widget.setEnabled(field.editable)
 
-            layout.addWidget(widget, idx_row, 1)
 
             get_value, set_value = build_getter_setter(widget, field_type)
             dataclass_ui.fields[field.name] = FieldUI(
@@ -209,10 +210,33 @@ class DataClassUI:
                 label=qlabel,
                 set_value=set_value,
                 get_value=get_value,
-                text_color="#000000" if field.editable else "#bbbbbb"
+                text_color=colors.TEXT_DARK if field.editable else colors.GREYED_OUT_TEXT_DARK
             )
+            
+            if not issubclass(field_type, Path) or not field.editable:
+                layout.addWidget(widget, idx_row, 1, 1, 2)
+            else:
+                layout.addWidget(widget, idx_row, 1)
+                # Add Path selection button ---
+                button = QtWidgets.QPushButton("...")
+                button.setFixedWidth(30)
+                
+                if field_type is FilePath:
+                    dialog = file_dialogs.OpenFileDialog
 
-            # TODO: add path button
+                elif field_type is DirectoryPath:
+                    dialog = file_dialogs.OpenDirectoryDialog 
+
+                else:
+                    dialog = file_dialogs.OpenAnySingleDialog
+
+                button.clicked.connect(partial(
+                    run_dialog, 
+                    dialog=dialog,
+                    get_value=get_value,
+                    set_value=set_value))
+                layout.addWidget(button, idx_row, 2)
+
         return dataclass_ui
 
 
@@ -263,6 +287,12 @@ def build_getter_setter(widget: QtWidgets.QWidget, field_type: type) -> Tuple[Ca
             widget.setText(str(value))
     return get_value, set_value        
 
+
+def run_dialog(dialog: file_dialogs.OpenFilesDialog, get_value: Callable, set_value: Callable):
+    """ Asks the user to select a directory/file. """
+    path = dialog(directory=get_value().parent).run_selection_dialog()
+    if path is not None:
+        set_value(path)
 
 
 # Other ------------------------------------------------------------------------

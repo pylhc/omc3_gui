@@ -16,6 +16,7 @@ from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.utils.base_classes import View
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
 from omc3_gui.utils.widgets import EditButton, OpenButton, RemoveButton, RunButton
+from omc3_gui.utils import colors
 
 LOGGER = logging.getLogger(__name__)
 
@@ -235,13 +236,13 @@ class MeasurementListView(QtWidgets.QListView):
         self.setModel(MeasurementListModel())
         self.setItemDelegate(ColoredItemDelegate())
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        tooltip_style = """
-            QToolTip {
-                background-color: #F0F0F0; /* Light gray background */
-                color: #333333; /* Dark gray text */
-                border: 1px solid #808080; /* Gray border */
+        tooltip_style = f"""
+            QToolTip {{
+                background-color: {colors.TOOLTIP_BACKGROUND}; /* Light gray background */
+                color: {colors.TOOLTIP_TEXT}; /* Dark gray text */
+                border: 1px solid {colors.TOOLTIP_BORDER}; /* Gray border */
                 font-family: "Courier New", monospace; /* Monospaced font */
-            }
+            }}
         """
         self.setStyleSheet(tooltip_style)
 
@@ -249,14 +250,13 @@ class MeasurementListView(QtWidgets.QListView):
 class ColoredItemDelegate(QtWidgets.QStyledItemDelegate):
 
     COLOR_MAP = {
-        MeasurementListModel.ColorIDs.NONE: "#000000",
-        MeasurementListModel.ColorIDs.BEAM1: "#0000ff",
-        MeasurementListModel.ColorIDs.BEAM2: "#ff0000",
-        # todo: what are the PSB ring colors?
-        MeasurementListModel.ColorIDs.RING1: "#4CAF50",
-        MeasurementListModel.ColorIDs.RING2: "#FF9800",
-        MeasurementListModel.ColorIDs.RING3: "#673AB7",
-        MeasurementListModel.ColorIDs.RING4: "#E91E63",
+        MeasurementListModel.ColorIDs.NONE: colors.TEXT_DARK,
+        MeasurementListModel.ColorIDs.BEAM1: colors.BEAM1,
+        MeasurementListModel.ColorIDs.BEAM2: colors.BEAM2,
+        MeasurementListModel.ColorIDs.RING1: colors.RING1,
+        MeasurementListModel.ColorIDs.RING2: colors.RING2,
+        MeasurementListModel.ColorIDs.RING3: colors.RING3,
+        MeasurementListModel.ColorIDs.RING4: colors.RING4,
     }
     def paint(self, painter, option, index):
         # Customize the text color

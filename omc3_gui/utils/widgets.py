@@ -6,7 +6,7 @@ Pre-Defined Widgets go here.
 """
 
 from qtpy import QtWidgets
-from qtpy import QtCore
+from omc3_gui.utils import colors
 
 # Buttons ----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ class RunButton(QtWidgets.QPushButton):
         if not args and not "text" in kwargs:
             self.setText("Run")
 
-        self.setStyleSheet("background-color: #28642A; color: #fff;")
+        self.setStyleSheet(f"background-color: {colors.GREEN_DARK}; color: {colors.TEXT_LIGHT};")
 
 
 class OpenButton(QtWidgets.QPushButton):
@@ -27,7 +27,7 @@ class OpenButton(QtWidgets.QPushButton):
         if not args and not "text" in kwargs:
             self.setText("Open")
 
-        self.setStyleSheet("background-color: #4CAF50; color: #000000;")
+        self.setStyleSheet(f"background-color: {colors.GREEN_LIGHT}; color: {colors.TEXT_DARK};")
 
 
 class RemoveButton(QtWidgets.QPushButton):
@@ -36,8 +36,9 @@ class RemoveButton(QtWidgets.QPushButton):
         super().__init__(*args, **kwargs)
         if not args and not "text" in kwargs:
             self.setText("Remove")
+        
+        self.setStyleSheet(f"background-color: {colors.RED_LIGHT}; color: {colors.TEXT_DARK};")
 
-        self.setStyleSheet("background-color: #f44336; color: #000000;")
 
 
 class EditButton(QtWidgets.QPushButton):
@@ -47,7 +48,7 @@ class EditButton(QtWidgets.QPushButton):
         if not args and not "text" in kwargs:
             self.setText("Edit")
 
-        self.setStyleSheet("background-color: #2196F3; color: #fff;")
+        self.setStyleSheet(f"background-color: {colors.BLUE_DARK}; color: {colors.TEXT_LIGHT};")
 
 
 # Filler -----------------------------------------------------------------------
