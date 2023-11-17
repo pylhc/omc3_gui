@@ -25,9 +25,9 @@ class OpticsMeasurement:
     model_dir: Path =       metafield("Model",              "Path to the model folder",        default=None)
     accel: str =            metafield("Accelerator",        "Name of the accelerator",         default=None)
     output_dir: Path =      metafield("Output",             "Path to the sbs-output folder",   default=None) 
-    year: str =             metafield("Year",               "Year of the measurement (model)", default=None)
-    ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None)
-    beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None) 
+    year: str =             metafield("Year",               "Year of the measurement (model)", default=None, choices=LHC_MODEL_YEARS)
+    ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None, choices=(1, 2, 3, 4))
+    beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, choices=(1, 2)) 
     elements: Dict[str, Segment] = None  # List of elements
     segments: Dict[str, Segment] = None  # List of segments
 

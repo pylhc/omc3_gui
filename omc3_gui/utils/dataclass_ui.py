@@ -1,9 +1,16 @@
+""" 
+DataClass UI
+------------
+
+This module allows to generate a simple UI's for dataclasses,
+which allows to edit the values of a dataclass.
+"""
 from functools import partial
 import inspect
 import re
 from dataclasses import MISSING, Field, dataclass, field, fields
 from pathlib import Path
-from typing import Callable, Dict, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 from omc3_gui.utils import file_dialogs
 
 from qtpy import QtWidgets
@@ -151,6 +158,25 @@ class DataClassUI:
         for name in self.fields.keys():
             self.update_model_from_widget(name)
 
+    def check_choices(self, only_modified: bool = False):
+        """ Checks all edit-widgets for valid choices. """
+        fields_choices = []
+        for name in self.fields.keys():
+            field = self.model.__dataclass_fields__[name]
+            field_ui = self.fields[field.name]
+            if only_modified and not field_ui.modified:
+                continue
+            
+            choices = field.metadata.get("choices")
+            if choices is not None:
+                value = self.fields[field.name].get_value()
+                if value not in choices:
+                    fields_choices.append(f"{field_ui.label.text()}: {value} not in {choices}")
+
+        if fields_choices:
+            full_str = "\n".join(fields_choices)
+            raise ValueError(f'The following fields contain wrong values:\n{full_str}')
+
     @classmethod
     def build_dataclass_ui(cls, 
         field_def: Sequence[Union[FieldUIDef, str]], dclass: Union[type, object] = None) -> 'DataClassUI':
@@ -243,10 +269,11 @@ class DataClassUI:
 # Type-to-Widget Helpers ----------------------------------------------------------------
 
 class QFullIntSpinBox(QtWidgets.QSpinBox):
+    """ Like a QSpinBox, but overwriting default range(0,100) with maximum integer range. """
 
     def __init__(self, parent: Optional[QtWidgets.QWidget] = None) -> None:
         super().__init__(parent)
-        self.setRange(-2**31, 2**31 - 1)
+        self.setRange(-2**31, 2**31 - 1)  # range of signed 32-bit integers 
 
 
 TYPE_TO_WIDGET_MAP = {

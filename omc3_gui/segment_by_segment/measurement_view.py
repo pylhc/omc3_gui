@@ -31,8 +31,8 @@ class OpticsMeasurementDialog(QtWidgets.QDialog):
         self._update_ui()
 
     def _set_size(self, width: int = -1, height: int = -1):
-        # Set position to the center of the parent
-        parent = self.parent()
+        # Set position to the center of the parent (does not work in WSL for me, jdilly 2023)
+        # parent = self.parent()
         # if parent is not None:
         #     parent_geo = parent.geometry()
         #     parent_pos = parent.mapToGlobal(parent.pos())  # multiscreen support
@@ -61,7 +61,7 @@ class OpticsMeasurementDialog(QtWidgets.QDialog):
         self._dataclass_ui = DataClassUI.build_dataclass_ui(
             field_def=[
                 FieldUIDef(name="measurement_dir", editable=False), 
-                *(FieldUIDef(name) for name in ("output_dir", "accel", "beam", "year", "ring"))
+                *(FieldUIDef(name) for name in ("model_dir", "output_dir", "accel", "beam", "year", "ring"))
             ],
             dclass=OpticsMeasurement,
         )
@@ -79,6 +79,12 @@ class OpticsMeasurementDialog(QtWidgets.QDialog):
         self._dataclass_ui.reset_labels()
 
     def accept(self):
+        try:
+            self._dataclass_ui.check_choices(only_modified=True)
+        except ValueError as e:
+            QtWidgets.QMessageBox.critical(self, "Error", str(e))
+            return
+
         self._dataclass_ui.update_model()
         super().accept() 
 
