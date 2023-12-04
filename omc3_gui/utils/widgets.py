@@ -50,6 +50,10 @@ class EditButton(QtWidgets.QPushButton):
 
         self.setStyleSheet(f"background-color: {colors.BLUE_DARK}; color: {colors.TEXT_LIGHT};")
 
+class DefaultButton(QtWidgets.QPushButton):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 # Filler -----------------------------------------------------------------------
 

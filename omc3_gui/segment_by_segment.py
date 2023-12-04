@@ -1,5 +1,5 @@
 import sys
-from omc3_gui.segment_by_segment.controller import SbSController
+from omc3_gui.segment_by_segment.main_controller import SbSController
 from omc3_gui.utils.log_handler import init_logging
 import logging
 

@@ -1,16 +1,16 @@
 
 import logging
-from dataclasses import MISSING, Field, dataclass, field, fields
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, ClassVar, Dict, Union
 
 from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import (BETA_NAME, EXT, KICK_NAME, MODEL_DIRECTORY,
                                                 PHASE_NAME)
-from omc3.segment_by_segment.segments import Segment
 from tfs.reader import read_headers
-from omc3_gui.utils.dataclass_ui import metafield
 
+from omc3_gui.segment_by_segment.segment_model import SegmentModel
+from omc3_gui.utils.dataclass_ui import metafield
 
 SEQUENCE = "SEQUENCE"
 DATE = "DATE"
@@ -19,6 +19,8 @@ LHC_MODEL_YEARS = (2012, 2015, 2016, 2017, 2018, 2022, 2023)  # TODO: get from o
 FILES_TO_LOOK_FOR = (f"{name}{plane}" for name in (KICK_NAME, PHASE_NAME, BETA_NAME) for plane in ("x", "y"))
 
 LOGGER = logging.getLogger(__name__)
+
+
 @dataclass
 class OpticsMeasurement:
     measurement_dir: Path = metafield("Optics Measurement", "Path to the optics-measurement folder")
@@ -28,8 +30,7 @@ class OpticsMeasurement:
     year: str =             metafield("Year",               "Year of the measurement (model)", default=None, choices=LHC_MODEL_YEARS)
     ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None, choices=(1, 2, 3, 4))
     beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, choices=(1, 2)) 
-    elements: Dict[str, Segment] = None  # List of elements
-    segments: Dict[str, Segment] = None  # List of segments
+    segments: Dict[str, SegmentModel] = field(default_factory=dict) # List of segments
 
     DEFAULT_OUTPUT_DIR: ClassVar[str] = "sbs"
 
@@ -169,6 +170,7 @@ def _get_lhc_model_year(date: Union[str, None]) -> Union[str, None]:
 
     for year in sorted(LHC_MODEL_YEARS, reverse=True):
         if year <= found_year:
+            LOGGER.debug(f"Assume model year {year!s} from '{date}'!")
             return str(year)
     
     LOGGER.debug(f"Could not parse year from '{date}'!")

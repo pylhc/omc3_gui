@@ -1,16 +1,16 @@
 import enum
-import types
-from dataclasses import dataclass, fields
-from pathlib import Path
-from typing import Any, ClassVar, Dict, List, Optional, Sequence, Union
+from dataclasses import dataclass
+import logging
+from typing import Any, Dict, Sequence
 
-import pyqtgraph as pg
-from accwidgets.graph import StaticPlotWidget
-from omc3.segment_by_segment.segments import Segment
-from qtpy import QtCore, QtWidgets
-from qtpy.QtCore import QModelIndex, Qt
+from qtpy import QtCore
+from qtpy.QtCore import Qt
+
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
+from omc3_gui.segment_by_segment.segment_model import SegmentModel
+
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -30,9 +30,18 @@ class ItemDictModel:
 
         if hasattr(self, "dataChanged"):
             # TODO: return which data has actually changed?
-            self.dataChanged.emit(self.index(0), self.index(len(self.items)-1), [Qt.EditRole])
+            try:
+                idx_start = self.index(0)  # list
+                idx_end = self.index(len(self.items)-1)
+            except TypeError:
+                idx_start = self.index(0, 0)  # table
+                idx_end = self.index(self.rowCount()-1, self.columnCount()-1)
+                self.headerDataChanged.emit(Qt.Horizontal, 0, self.columnCount()-1)
+            self.dataChanged.emit(idx_start, idx_end)
     
-    def update_item(self, item):
+    def update_item(self, item, old_name: str = None):
+        if old_name is not None:
+            self.items.pop(old_name)
         self.items[str(item)] = item
         self.try_emit()
     
@@ -70,6 +79,13 @@ class ItemDictModel:
     def get_item_at(self, index: int) -> Any:
         return list(self.items.values())[index]
 
+    def get_index(self, item: Any) -> QtCore.QModelIndex:
+        idx_item = list(self.items.keys()).index(str(item))
+        try:
+            return self.index(idx_item)
+        except TypeError:
+            return self.index(idx_item, 0)
+
 
 class MeasurementListModel(QtCore.QAbstractListModel, ItemDictModel):
 
@@ -101,7 +117,8 @@ class MeasurementListModel(QtCore.QAbstractListModel, ItemDictModel):
     def data(self, index: QtCore.QModelIndex, role: int = Qt.DisplayRole):
 
         meas: OpticsMeasurement = self.get_item_at(index.row())
-        if role == Qt.DisplayRole:  # https://doc.qt.io/qt-5/qt.html#ItemDataRole-enum
+        # https://doc.qt.io/qt-5/qt.html#ItemDataRole-enum
+        if role == Qt.DisplayRole:  
             return meas.display()
 
         if role == Qt.ToolTipRole:
@@ -122,10 +139,9 @@ class SegmentTableModel(QtCore.QAbstractTableModel, ItemDictModel):
     _COLUMNS = {0: "Segment", 1: "Start", 2: "End"}
     _COLUMNS_MAP = {0: "name", 1: "start", 2: "end"}
     
-    items: Dict[str, Segment]
+    items: Dict[str, SegmentModel]
     
     def __init__(self, *args, **kwargs): 
-        super().__init__(*args, **kwargs)
         super(QtCore.QAbstractTableModel, self).__init__(*args, **kwargs)
         super(ItemDictModel, self).__init__()
 
@@ -143,13 +159,43 @@ class SegmentTableModel(QtCore.QAbstractTableModel, ItemDictModel):
     def data(self, index: QtCore.QModelIndex, role=QtCore.Qt.DisplayRole):
         i = index.row()
         j = index.column()
-        segment: Segment = self.get_item_at(i)
+        segment: SegmentModel = self.get_item_at(i)
         
         if role == QtCore.Qt.DisplayRole:
             return str(getattr(segment, self._COLUMNS_MAP[j]))
         
         if role == Qt.EditRole:
-            return segment 
+            return segment
+
+    def setData(self, index, value, role):
+        i = index.row()
+        j = index.column()
+        segment: SegmentModel = self.get_item_at(i)
+        old_name = segment.name 
+
+        if role == Qt.EditRole:
+            if value is None or value == "":
+                return False
+
+            setattr(segment, self._COLUMNS_MAP[j], value)
+            if segment.name != old_name:
+                self.update_item(segment, old_name=old_name)
+            else:
+                self.dataChanged.emit(index, index)
+            return True
+    
+    def toggle_row(self, index):
+        i = index.row()
+        segment: SegmentModel = self.get_item_at(i)
+        segment.enabled = not segment.enabled
+        self.headerDataChanged.emit(Qt.Horizontal, 0, self.rowCount() - 1)
+        self.dataChanged.emit(self.index(i, 0), self.index(i, self.rowCount() - 1))
         
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled
+        i = index.row()
+        j = index.column()
+        segment: SegmentModel = self.get_item_at(i)
+        if segment.enabled:
+            return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
+
+        return Qt.ItemIsEditable | Qt.ItemIsSelectable
