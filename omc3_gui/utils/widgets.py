@@ -17,7 +17,10 @@ class RunButton(QtWidgets.QPushButton):
         if not args and not "text" in kwargs:
             self.setText("Run")
 
-        self.setStyleSheet(f"background-color: {colors.GREEN_DARK}; color: {colors.TEXT_LIGHT};")
+        self.setStyleSheet(
+            f":enabled {{ background-color: {colors.GREEN_DARK}; color: {colors.TEXT_LIGHT}; }}"
+            f":disabled {{ background-color: {colors.GREEN_DARK_GREY}; color: {colors.GREYED_OUT_TEXT_DARK}; }}"
+        )
 
 
 class OpenButton(QtWidgets.QPushButton):
@@ -27,7 +30,10 @@ class OpenButton(QtWidgets.QPushButton):
         if not args and not "text" in kwargs:
             self.setText("Open")
 
-        self.setStyleSheet(f"background-color: {colors.GREEN_LIGHT}; color: {colors.TEXT_DARK};")
+        self.setStyleSheet(
+            f":enabled {{ background-color: {colors.GREEN_LIGHT}; color: {colors.TEXT_DARK}; }}"
+            f":disabled {{ background-color: {colors.GREEN_LIGHT_GREY}; color: {colors.GREYED_OUT_TEXT_DARK}; }}"
+            )
 
 
 class RemoveButton(QtWidgets.QPushButton):
@@ -36,10 +42,11 @@ class RemoveButton(QtWidgets.QPushButton):
         super().__init__(*args, **kwargs)
         if not args and not "text" in kwargs:
             self.setText("Remove")
-        
-        self.setStyleSheet(f"background-color: {colors.RED_LIGHT}; color: {colors.TEXT_DARK};")
 
-
+        self.setStyleSheet(
+            f":enabled {{ background-color: {colors.RED_DARK}; color: {colors.TEXT_LIGHT}; }}"
+            f":disabled {{ background-color: {colors.RED_GREY}; color: {colors.GREYED_OUT_TEXT_DARK}; }}"
+            )
 
 class EditButton(QtWidgets.QPushButton):
 
@@ -48,7 +55,10 @@ class EditButton(QtWidgets.QPushButton):
         if not args and not "text" in kwargs:
             self.setText("Edit")
 
-        self.setStyleSheet(f"background-color: {colors.BLUE_DARK}; color: {colors.TEXT_LIGHT};")
+        self.setStyleSheet(
+            f":enabled {{ background-color: {colors.BLUE_DARK}; color: {colors.TEXT_LIGHT}; }}"
+            f":disabled {{ background-color: {colors.BLUE_GREY}; color: {colors.GREYED_OUT_TEXT_DARK}; }}"
+            )
 
 class DefaultButton(QtWidgets.QPushButton):
     

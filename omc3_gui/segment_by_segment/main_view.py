@@ -2,20 +2,19 @@
 # from omc3_gui.segment_by_segment.segment_by_segment_ui import Ui_main_window
 import logging
 from typing import Dict, List, Sequence, Tuple
+
 from PyQt5 import QtGui
-
-from qtpy import QtWidgets, QtGui
-from qtpy.QtCore import Qt, Signal, Slot, QModelIndex, QItemSelection, QItemSelectionModel
-
+from qtpy import QtGui, QtWidgets
+from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
 from omc3_gui.plotting.classes import DualPlot
 from omc3_gui.segment_by_segment.main_model import MeasurementListModel, SegmentTableModel
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.segment_model import SegmentModel
+from omc3_gui.utils import colors
 from omc3_gui.utils.base_classes import View
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
 from omc3_gui.utils.widgets import DefaultButton, EditButton, OpenButton, RemoveButton, RunButton
-from omc3_gui.utils import colors
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,7 +67,7 @@ class SbSWindow(View):
         self._list_view_measurements.selectionModel().selectionChanged.connect(self._handle_list_measurements_selected)
 
         # Segments ---
-        self._table_segments.selectionModel().selectionChanged.connect(self._handle_table_segments_selected)
+        # Set in set_segments, as this needs to be reset after each model setting.
 
     # Slots --------------------------------------------------------------------
     @Slot(QModelIndex)
@@ -80,17 +79,13 @@ class SbSWindow(View):
     def _handle_list_measurements_selected(self):        
         LOGGER.debug("Optics List selection changed.")
         selected_measurements = self.get_selected_measurements()
-        if len(selected_measurements) == 0:
-            return
         self.sig_list_optics_selected.emit(selected_measurements)
 
     @Slot()
     def _handle_table_segments_selected(self):
         LOGGER.debug("Segment Table selection changed.")
         selected_segments = self.get_selected_segments()
-        if len(selected_segments) == 0:
-            return
-        self.sig_table_segment_selected.emit(selected_segments)
+        self.sig_table_segments_selected.emit(selected_segments)
 
     # GUI-Elements -------------------------------------------------------------
     def _build_gui(self):
@@ -228,6 +223,8 @@ class SbSWindow(View):
 
     def set_segments(self, segment_model: SegmentTableModel):
         self._table_segments.setModel(segment_model)
+        self._table_segments.selectionModel().selectionChanged.connect(self._handle_table_segments_selected)
+
 
     def get_segments(self) -> SegmentTableModel:
         return self._table_segments.model()

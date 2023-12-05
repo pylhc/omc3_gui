@@ -1,16 +1,16 @@
-from pathlib import Path
-from typing import List, Sequence, Tuple, Union
+import logging
+from typing import Sequence
+
+from qtpy.QtCore import Slot
+
+from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
+from omc3_gui.segment_by_segment.main_model import SegmentTableModel, Settings
+from omc3_gui.segment_by_segment.main_view import SbSWindow
+from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
+from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
 from omc3_gui.segment_by_segment.segment_model import SegmentModel
 from omc3_gui.utils.base_classes import Controller
-from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog, OpenDirectoryDialog
-from omc3_gui.segment_by_segment.main_view import SbSWindow
-from omc3_gui.segment_by_segment.main_model import SegmentTableModel, Settings
-from qtpy.QtCore import Qt, Signal, Slot
-from qtpy.QtWidgets import QFileDialog
-from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
-import logging
-from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
-from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
+from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,15 +25,15 @@ class SbSController(Controller):
         self.settings = Settings()
         self._last_selected_optics_path = None
 
+        self.set_measurement_interaction_buttons_enabled(False)
+        self.set_all_segment_buttons_enabled(False)
 
-    def add_measurement(self, measurement: OpticsMeasurement):
-        self._view.get_measurement_list().add_item(measurement) 
 
-    
     def connect_signals(self):
         self._view.button_load.clicked.connect(self.open_measurements)
         self._view.button_edit.clicked.connect(self.edit_measurement)
         self._view.button_remove.clicked.connect(self.remove_measurement)
+        self._view.button_run_segment.clicked.connect(self.run_segments)
 
         self._view.sig_list_optics_double_clicked.connect(self.edit_measurement)
         self._view.sig_list_optics_selected.connect(self.measurement_selection_changed)
@@ -43,9 +43,22 @@ class SbSController(Controller):
         self._view.button_default_segments.clicked.connect(self.add_default_segments)
         self._view.button_remove_segment.clicked.connect(self.remove_segment)
 
-        self._view.sig_table_segments_selected.connect(self.view_segment)
+        self._view.sig_table_segments_selected.connect(self.segment_selection_changed)
     
     # Measurements ---
+    def set_measurement_interaction_buttons_enabled(self, enabled: bool):
+        measurement_interaction_buttons = (
+            self._view.button_remove,
+            self._view.button_edit,
+            self._view.button_matcher,
+        )
+        for button in measurement_interaction_buttons:
+            button.setEnabled(enabled)
+
+
+    def add_measurement(self, measurement: OpticsMeasurement):
+        self._view.get_measurement_list().add_item(measurement) 
+    
     @Slot()
     def open_measurements(self):
         LOGGER.debug("Opening new optics measurement. Asking for folder paths.")
@@ -103,16 +116,27 @@ class SbSController(Controller):
     @Slot(tuple)
     def measurement_selection_changed(self, measurements: Sequence[OpticsMeasurement]):
         LOGGER.debug(f"Selected {len(measurements)} measurements.")
+        if not len(measurements):
+            self.set_measurement_interaction_buttons_enabled(False)
+            self._view.set_segments(SegmentTableModel())
+            self.segment_selection_changed()
+            self.set_all_segment_buttons_enabled(False)
+            return
+
+        self.set_measurement_interaction_buttons_enabled(True)
+        self.set_all_segment_buttons_enabled(True)
+
         if len(measurements) > 1:
             self._view.button_edit.setEnabled(False)
+            self._view.set_segments(SegmentTableModel())
+            self.segment_selection_changed()
             return
-        else:
-            self._view.button_edit.setEnabled(True)
 
         measurement = measurements[0]
         segment_model = SegmentTableModel()
         segment_model.add_items(measurement.segments)
         self._view.set_segments(segment_model)
+        self.segment_selection_changed()
 
     def get_single_measurement(self) -> OpticsMeasurement:
         measurements = self._view.get_selected_measurements()
@@ -123,14 +147,42 @@ class SbSController(Controller):
         return measurements[0]
     
     # Segments -----------------------------------------------------------------
+
+    def set_segment_interaction_buttons_enabled(self, enabled: bool = True):
+        segment_interaction_buttons = (
+            self._view.button_run_segment,
+            self._view.button_copy_segment,
+            self._view.button_remove_segment,
+        )
+        for button in segment_interaction_buttons:
+            button.setEnabled(enabled)
+    
+    def set_all_segment_buttons_enabled(self, enabled: bool = True):
+        segment_buttons = (
+            self._view.button_run_segment,
+            self._view.button_copy_segment,
+            self._view.button_remove_segment,
+            self._view.button_new_segment,
+            self._view.button_default_segments,
+            self._view.button_load_segments,
+        )
+        for button in segment_buttons:
+            button.setEnabled(enabled)
+
     @Slot(tuple)
-    def view_segment(self, segments: Sequence[SegmentModel]):
+    def segment_selection_changed(self, segments: Sequence[SegmentModel] = None):
+        if segments is None:
+            segments = self._view.get_selected_segments()
+            
         LOGGER.debug(f"Showing {len(segments)} segments.")
+        if not len(segments):
+            self.set_segment_interaction_buttons_enabled(False)
+            return
+
+        self.set_segment_interaction_buttons_enabled(True)
         if len(segments) > 1:
             LOGGER.debug("More than one segment selected. Clearing Plots.")
             return
-
-        segment = segments[0]
         # Plot segements
     
     @Slot()
@@ -210,5 +262,25 @@ class SbSController(Controller):
         for measurement in selected_measurements:
             for segment in segments:
                 measurement.try_remove_segment(segment)
+
+        self.measurement_selection_changed(selected_measurements)
+
+    @Slot()
+    def run_segments(self, segments: Sequence[SegmentModel] = None):
+        if segments is None:
+            segments = self._view.get_selected_segments()
+            if not segments:
+                LOGGER.error("Please select at least one segment to run.")
+                return
+
+        LOGGER.debug(f"Running {len(segments)} segments.")
+        selected_measurements = self._view.get_selected_measurements()
+        if not selected_measurements:
+            LOGGER.error("Please select at least one measurement.")
+            return
+
+        for measurement in selected_measurements:
+            for segment in segments:
+                measurement.run_segment(segment)
 
         self.measurement_selection_changed(selected_measurements)
