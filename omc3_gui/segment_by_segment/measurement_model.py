@@ -2,7 +2,7 @@
 import logging
 from dataclasses import dataclass, field, fields
 from pathlib import Path
-from typing import Any, ClassVar, Dict, Union
+from typing import Any, ClassVar, Dict, List, Union
 
 from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import (BETA_NAME, EXT, KICK_NAME, MODEL_DIRECTORY,
@@ -23,6 +23,11 @@ LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class OpticsMeasurement:
+    """ Class to load and hold the optics-measurement folder. 
+    This class also stores the meta-data for the loaded measurement, 
+    which can then be passed on to the segment-by-segment.
+    The :func:`omc3_gui.utils.dataclass_ui.metafield` is used to provide hints about the fields for the GUI.
+    """
     measurement_dir: Path = metafield("Optics Measurement", "Path to the optics-measurement folder")
     model_dir: Path =       metafield("Model",              "Path to the model folder",        default=None)
     accel: str =            metafield("Accelerator",        "Name of the accelerator",         default=None)
@@ -30,7 +35,9 @@ class OpticsMeasurement:
     year: str =             metafield("Year",               "Year of the measurement (model)", default=None, choices=LHC_MODEL_YEARS)
     ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None, choices=(1, 2, 3, 4))
     beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, choices=(1, 2)) 
-    segments: Dict[str, SegmentModel] = field(default_factory=dict) # List of segments
+    # List of segments. Using a list here, so the name and start/end can be changed
+    # without having to modify anything here.
+    _segments: List[SegmentModel] = field(default_factory=list)
 
     DEFAULT_OUTPUT_DIR: ClassVar[str] = "sbs"
 
@@ -38,6 +45,7 @@ class OpticsMeasurement:
         if self.output_dir is None:
             self.output_dir = self.measurement_dir / self.DEFAULT_OUTPUT_DIR
 
+    # Visualization ------------------------------------------------------------
     def display(self) -> str:
         return str(self.measurement_dir.name)
 
@@ -65,6 +73,36 @@ class OpticsMeasurement:
         l = max(len(name) for name, _ in parts)
         return "\n".join(f"{name:{l}s}: {value}" for name, value in parts if value is not None)
 
+    # Segment Control ----------------------------------------------------------
+    def remove_segment(self, segment: SegmentModel):
+        self.segments.remove(segment)
+
+    def add_segment(self, segment: SegmentModel):
+        if segment in self.segments:
+            raise NameError(f"Segment {segment} is already in {self}")
+        
+        if segment.name in [s.name for s in self.segments]:
+            raise NameError(f"A segment with name {segment.name} is already in {self}")
+
+        self.segments.append(segment)
+    
+    def try_add_segment(self, segment: SegmentModel):
+        try:
+            self.add_segment(segment)
+        except NameError as e:
+            LOGGER.error(str(e))
+    
+    def try_remove_segment(self, segment: SegmentModel):
+        try:
+            self.remove_segment(segment)
+        except ValueError as e:
+            LOGGER.error(str(e))
+    
+    @property
+    def segments(self) -> List[SegmentModel]:
+        return self._segments
+
+    # Builder ------------------------------------------------------------------
     @classmethod
     def from_path(cls, path: Path) -> "OpticsMeasurement":
         """ Creates an OpticsMeasurement from a folder, by trying 

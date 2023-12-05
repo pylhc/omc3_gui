@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Sequence, Tuple
+from typing import List, Sequence, Tuple, Union
 from omc3_gui.segment_by_segment.segment_model import SegmentModel
 from omc3_gui.utils.base_classes import Controller
 from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog, OpenDirectoryDialog
@@ -31,18 +31,17 @@ class SbSController(Controller):
 
     
     def connect_signals(self):
-        self._view.sig_load_button_clicked.connect(self.open_measurements)
-        self._view.sig_edit_optics_button_clicked.connect(self.edit_measurement)
-        self._view.sig_list_optics_double_clicked.connect(self.edit_measurement)
-        self._view.sig_list_optics_selected.connect(self.view_measurement)
+        self._view.button_load.clicked.connect(self.open_measurements)
+        self._view.button_edit.clicked.connect(self.edit_measurement)
+        self._view.button_remove.clicked.connect(self.remove_measurement)
 
-        self._view.sig_new_segment_button_clicked.connect(self.new_segment)
-        self._view.sig_copy_segment_button_clicked.connect(self.copy_segment)
-        # self._view.sig_run_segment_button_clicked.connect(self.run_segment)
-        # self._view.sig_remove_segment_button_clicked.connect(self.remove_segment)
-        # self._view.sig_remove_button_clicked.connect(self.remove_measurement)
-        self._view.sig_default_segments_button_clicked.connect(self.add_default_segments)
-        # self._view.sig_load_segments_button_clicked.connect(self.load_segments)
+        self._view.sig_list_optics_double_clicked.connect(self.edit_measurement)
+        self._view.sig_list_optics_selected.connect(self.measurement_selection_changed)
+
+        self._view.button_new_segment.clicked.connect(self.new_segment)
+        self._view.button_copy_segment.clicked.connect(self.copy_segment)
+        self._view.button_default_segments.clicked.connect(self.add_default_segments)
+        self._view.button_remove_segment.clicked.connect(self.remove_segment)
 
         self._view.sig_table_segments_selected.connect(self.view_segment)
     
@@ -74,8 +73,15 @@ class SbSController(Controller):
 
         self._view.set_selected_measurements(measurement_indices)
     
-    @Slot(OpticsMeasurement)
-    def edit_measurement(self, measurement: OpticsMeasurement):
+    @Slot()
+    def edit_measurement(self, measurement: OpticsMeasurement = None):
+        if measurement is None:
+            try:
+                measurement = self.get_single_measurement()
+            except ValueError as e:
+                LOGGER.warning(str(e))
+                return
+
         LOGGER.debug(f"Opening edit dialog for {measurement.display()}.")
         dialog = OpticsMeasurementDialog(
             parent=self._view,
@@ -84,20 +90,39 @@ class SbSController(Controller):
         if dialog.exec_():
             LOGGER.debug("Edit dialog closed. Updating measurement.")
 
+    @Slot()
+    def remove_measurement(self, measurements: Sequence[OpticsMeasurement] = None):
+        if measurements is None:
+            measurements = self._view.get_selected_measurements()
+            if not len(measurements):
+                LOGGER.warning("No measurement selected.")
+                return
+        self._view.get_measurement_list().remove_items(measurements)
+        self._view.set_selected_measurements()
+
     @Slot(tuple)
-    def view_measurement(self, measurements: Sequence[OpticsMeasurement]):
-        LOGGER.debug(f"Showing {len(measurements)} measurements.")
+    def measurement_selection_changed(self, measurements: Sequence[OpticsMeasurement]):
+        LOGGER.debug(f"Selected {len(measurements)} measurements.")
         if len(measurements) > 1:
-            LOGGER.debug("More than one measurement selected.")
+            self._view.button_edit.setEnabled(False)
             return
+        else:
+            self._view.button_edit.setEnabled(True)
 
         measurement = measurements[0]
         segment_model = SegmentTableModel()
-        segment_model.add_items(measurement.segments.values())
+        segment_model.add_items(measurement.segments)
         self._view.set_segments(segment_model)
 
+    def get_single_measurement(self) -> OpticsMeasurement:
+        measurements = self._view.get_selected_measurements()
+        if len(measurements) == 0:
+            raise ValueError("Please select at least one measurement.")
+        if len(measurements) > 1:
+            raise ValueError("Please select only one measurement.")
+        return measurements[0]
     
-    # Segments ---
+    # Segments -----------------------------------------------------------------
     @Slot(tuple)
     def view_segment(self, segments: Sequence[SegmentModel]):
         LOGGER.debug(f"Showing {len(segments)} segments.")
@@ -126,9 +151,9 @@ class SbSController(Controller):
                 segment = SegmentModel(*segment_tuple)
                 segment.start = f"{segment.start}.B{beam}"
                 segment.end = f"{segment.end}.B{beam}"
-                measurement.segments[segment.name] = segment
+                measurement.try_add_segment(segment)
 
-        self.view_measurement(selected_measurements)
+        self.measurement_selection_changed(selected_measurements)
 
     @Slot()
     def new_segment(self):
@@ -143,12 +168,18 @@ class SbSController(Controller):
         # Might have unexpected side-effects. (jdilly)
         new_segment = SegmentModel("New Segment")  
         for measurement in selected_measurements:
-            measurement.segments[new_segment.name] = new_segment
+            measurement.try_add_segment(new_segment)
 
-        self.view_measurement(selected_measurements)
+        self.measurement_selection_changed(selected_measurements)
     
-    @Slot(tuple)
-    def copy_segment(self, segments: Sequence[SegmentModel]):
+    @Slot()
+    def copy_segment(self, segments: Sequence[SegmentModel] = None):
+        if segments is None:
+            segments = self._view.get_selected_segments()
+            if not segments:
+                LOGGER.error("Please select at least one segment to copy.")
+                return
+
         LOGGER.debug(f"Copying {len(segments)} segments.")
         selected_measurements = self._view.get_selected_measurements()
         if not selected_measurements:
@@ -158,6 +189,26 @@ class SbSController(Controller):
         for measurement in selected_measurements:
             for segment in segments:
                 new_segment = SegmentModel(f"{segment.name} - Copy", start=segment.start, end=segment.end)
-                measurement.segments[new_segment.name] = new_segment
+                measurement.try_add_segment(new_segment)
             
-        self.view_measurement(selected_measurements)
+        self.measurement_selection_changed(selected_measurements)
+    
+    @Slot()
+    def remove_segment(self, segments: Sequence[SegmentModel] = None):
+        if segments is None:
+            segments = self._view.get_selected_segments()
+            if not segments:
+                LOGGER.error("Please select at least one segment to remove.")
+                return
+
+        LOGGER.debug(f"Removing {len(segments)} segments.")
+        selected_measurements = self._view.get_selected_measurements()
+        if not selected_measurements:
+            LOGGER.error("Please select at least one measurement.")
+            return
+
+        for measurement in selected_measurements:
+            for segment in segments:
+                measurement.try_remove_segment(segment)
+
+        self.measurement_selection_changed(selected_measurements)
