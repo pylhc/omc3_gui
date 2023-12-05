@@ -19,3 +19,8 @@ class SegmentModel:
         if self.is_element():
             return self.name
         return f"{self.name},{self.start},{self.end}"
+
+    @property
+    def id(self) -> str:
+        """ Unique identifier for the measurement, used in the GUI. """
+        return self.name

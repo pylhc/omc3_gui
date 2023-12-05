@@ -47,7 +47,12 @@ class OpticsMeasurement:
 
     # Visualization ------------------------------------------------------------
     def display(self) -> str:
-        return str(self.measurement_dir.name)
+        return self.measurement_dir.name
+
+    @property
+    def id(self) -> str:
+        """ Unique identifier for the measurement, used in the GUI. """
+        return self.measurement_dir.name
 
     @classmethod
     def get_label(cls, name: str) -> str:
@@ -68,7 +73,7 @@ class OpticsMeasurement:
         as to be used in a tool-tip.  """
         parts = [
             (self.get_label(f.name), getattr(self, f.name)) for f in fields(self) 
-            if f.name  not in ("elements", "segments")
+            if not f.name.startswith("_")
         ]
         l = max(len(name) for name, _ in parts)
         return "\n".join(f"{name:{l}s}: {value}" for name, value in parts if value is not None)
