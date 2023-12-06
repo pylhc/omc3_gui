@@ -32,6 +32,7 @@ class OpticsMeasurement:
     model_dir: Path =       metafield("Model",              "Path to the model folder",        default=None)
     accel: str =            metafield("Accelerator",        "Name of the accelerator",         default=None)
     output_dir: Path =      metafield("Output",             "Path to the sbs-output folder",   default=None) 
+    corrections: Path =     metafield("Corrections",        "Path to the corrections file",    default=None)
     year: str =             metafield("Year",               "Year of the measurement (model)", default=None, choices=LHC_MODEL_YEARS)
     ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None, choices=(1, 2, 3, 4))
     beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, choices=(1, 2)) 
@@ -106,6 +107,23 @@ class OpticsMeasurement:
     @property
     def segments(self) -> List[SegmentModel]:
         return self._segments
+
+    # Segment-by-Segment Parameters --------------------------------------------
+    def get_sbs_parameters(self) -> Dict[str, Any]:
+        parameters = dict(
+            measurement_dir=self.measurement_dir,
+            corrections=self.corrections,
+            output_dir=self.output_dir,
+            accel = self.accel,
+            model_dir = self.model_dir,
+        )
+        if self.beam is not None:
+            parameters["beam"] = self.beam
+        if self.year is not None:
+            parameters["year"] = self.year
+        if self.ring is not None:
+            parameters["ring"] = self.ring 
+        return parameters
 
     # Builder ------------------------------------------------------------------
     @classmethod

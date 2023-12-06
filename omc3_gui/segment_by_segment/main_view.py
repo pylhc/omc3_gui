@@ -14,7 +14,7 @@ from omc3_gui.segment_by_segment.segment_model import SegmentModel
 from omc3_gui.utils import colors
 from omc3_gui.utils.base_classes import View
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
-from omc3_gui.utils.widgets import DefaultButton, EditButton, OpenButton, RemoveButton, RunButton
+from omc3_gui.utils.widgets import DefaultButton, EditButton, OpenButton, RemoveButton, RunButton, RunningSpinner
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,14 +26,15 @@ class SbSWindow(View):
     WINDOW_TITLE = "OMC Segment-by-Segment"
 
     # QtSignals need to be defined as class-attributes
-    # Optics Measurements ---
     sig_list_optics_double_clicked = Signal(OpticsMeasurement)
     sig_list_optics_selected = Signal(tuple)  # Tuple[OpticsMeasurement]
     sig_table_segments_selected = Signal(tuple)
+    sig_thread_spinner_double_clicked = Signal()
     
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(self.WINDOW_TITLE)
+        self.setStatusBar(self.statusBar())
         
         # List of UI elements accessible as instance-attributes:
         # Widgets ---
@@ -44,10 +45,11 @@ class SbSWindow(View):
         self._table_segments: QtWidgets.QTableView = None
 
         # Buttons ---
-        self.button_load: QtWidgets.QPushButton = None
-        self.button_remove: QtWidgets.QPushButton = None
-        self.button_edit: QtWidgets.QPushButton = None
-        self.button_matcher: QtWidgets.QPushButton = None
+        self.button_load_measurement: QtWidgets.QPushButton = None
+        self.button_remove_measurement: QtWidgets.QPushButton = None
+        self.button_edit_measurement: QtWidgets.QPushButton = None
+        self.button_edit_corrections: QtWidgets.QPushButton = None
+        self.button_run_matcher: QtWidgets.QPushButton = None
 
         self.button_run_segment: QtWidgets.QPushButton = None
         self.button_remove_segment: QtWidgets.QPushButton = None
@@ -106,23 +108,27 @@ class SbSWindow(View):
 
                 def build_measurement_buttons():
                     grid_buttons = QtWidgets.QGridLayout()
-                    grid_buttons_filler = HorizontalGridLayoutFiller(layout=grid_buttons, cols=2)
+                    grid_buttons_filler = HorizontalGridLayoutFiller(layout=grid_buttons, cols=3)
 
                     load = OpenButton("Load")
                     grid_buttons_filler.add(load)
-                    self.button_load = load
+                    self.button_load_measurement = load
+                    
+                    edit = EditButton()
+                    grid_buttons_filler.add(edit)
+                    self.button_edit_measurement = edit
 
                     remove = RemoveButton()
                     grid_buttons_filler.add(remove)
-                    self.button_remove = remove
-
-                    edit = EditButton()
-                    grid_buttons_filler.add(edit, col_span=2)
-                    self.button_edit = edit
+                    self.button_remove_measurement = remove
 
                     matcher = RunButton("Run Matcher")
                     grid_buttons_filler.add(matcher, col_span=2)
-                    self.button_matcher = matcher
+                    self.button_run_matcher = matcher
+                    
+                    edit_corrections = DefaultButton("Corrections")
+                    grid_buttons_filler.add(edit_corrections)
+                    self.button_edit_corrections = edit_corrections
                 
                     return grid_buttons
 
@@ -194,7 +200,6 @@ class SbSWindow(View):
         self._central.setStretchFactor(1, 3)
         
         self.setCentralWidget(self._central)
-        
     
     def _create_tabs(self, tab_widget: QtWidgets.QTabWidget) -> Dict[str, "DualPlot"]:
         tabs = {}
@@ -224,7 +229,6 @@ class SbSWindow(View):
     def set_segments(self, segment_model: SegmentTableModel):
         self._table_segments.setModel(segment_model)
         self._table_segments.selectionModel().selectionChanged.connect(self._handle_table_segments_selected)
-
 
     def get_segments(self) -> SegmentTableModel:
         return self._table_segments.model()

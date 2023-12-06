@@ -3,11 +3,12 @@ import re
 import sys
 from typing import List, Union
 import typing
-from qtpy.QtCore import QObject
-from qtpy.QtWidgets import QApplication, QFileDialog, QMenuBar, QDesktopWidget, QWidgetAction
+from qtpy.QtCore import QObject, Slot, QEvent, Qt
+from qtpy.QtWidgets import QApplication, QFileDialog, QMenuBar, QDesktopWidget, QWidgetAction, QStatusBar, QToolTip
 from qtpy import QtGui
 from omc3_gui import __version__
 from omc3_gui.utils.log_handler import get_console_formatter
+from omc3_gui.utils.widgets import RunningSpinner
 
 try:
     from accwidgets.app_frame import ApplicationFrame
@@ -18,8 +19,10 @@ except ImportError:
 
 try:
     from accwidgets.log_console import LogConsoleFormatter as AccPyLogConsoleFormatter
+    from accwidgets.app_frame._about_dialog import AboutDialog
 except ImportError:
     AccPyLogConsoleFormatter = object
+    AboutDialog = None
 
 
 
@@ -42,8 +45,6 @@ class Controller(QObject):
 
 class View(ApplicationFrame):
 
-    __app_version__ = __version__
-    _menu_bar: QMenuBar
     
     def __init__(self, *args, **kwargs):
         kwargs["use_log_console"] = kwargs.get("use_log_console", True)
@@ -52,10 +53,15 @@ class View(ApplicationFrame):
         except TypeError:
             del kwargs["use_log_console"]
             super().__init__(*args, **kwargs)   # QT Main window
+        
+        self._menu_bar: QMenuBar = None
+        self._thread_spinner: RunningSpinner = None
+        self.app_version = __version__
 
         self._adapt_logger()
         self._adapt_to_screensize()
         self.build_menu_bar()
+        self.build_status_bar()
 
     def build_menu_bar(self):
         self._menu_bar = QMenuBar()
@@ -78,11 +84,29 @@ class View(ApplicationFrame):
         # Set menu bar ---
         self.setMenuBar(self._menu_bar)
 
+    def build_status_bar(self):
+        status_bar: QStatusBar = self.statusBar()
+        
+        # Build thread spinner ---
+        thread_spinner = RunningSpinner(parent=status_bar, center_on_parent=False)
+        status_bar.addPermanentWidget(thread_spinner)
+        thread_spinner.mouseDoubleClickEvent = lambda *args, **kwargs: self.sig_thread_spinner_double_clicked.emit()
+        thread_spinner.stop()
+        self._thread_spinner = thread_spinner
+       
+        self.setStatusBar(status_bar)
+    
+    @property
+    def thread_spinner(self) -> RunningSpinner:
+        return self._thread_spinner
+
     def _adapt_to_screensize(self):
         """ Sets the window size to 2/3 of the screen size. """
         screen_shape = QDesktopWidget().screenGeometry()
-        self.resize(2 * screen_shape.width() / 3,
-                    2 * screen_shape.height() / 3)
+        self.resize(
+            int(2 * screen_shape.width() / 3),
+            int(2 * screen_shape.height() / 3)
+        )
 
     def _adapt_logger(self):
         """ Changes the appearance of the log console. """
@@ -100,13 +124,35 @@ class View(ApplicationFrame):
             self.log_console.console.model.visible_levels |=  {logging.DEBUG}
 
     def setWindowTitle(self, title: str):
-        super().setWindowTitle(f"{title} v{self.__app_version__}")
+        super().setWindowTitle(f"{title} v{self.app_version}")
 
     def toggleFullScreen(self):
         if self.isFullScreen():
             self.showNormal()
         else:
             self.showFullScreen()
+
+    @Slot()
+    def showAboutDialog(self) -> None:
+        """
+        Display an 'about' dialog.
+        """
+        if AboutDialog is None:
+            return
+
+        name = self.windowTitle()
+        try:
+            name = " ".join(name.split()[:-1])
+        except (IndexError, TypeError, AttributeError):
+            pass
+
+        dialog = AboutDialog(
+            app_name=name,
+            version=self.appVersion,
+            icon=self.windowIcon(),
+            parent=self,
+        )
+        dialog.exec_()
 
 
 class LogConsoleFormatter(AccPyLogConsoleFormatter):

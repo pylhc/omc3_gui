@@ -1,7 +1,10 @@
+from functools import partial
 import logging
-from typing import Sequence
+from pathlib import Path
+from typing import Any, Dict, List, Sequence
 
 from qtpy.QtCore import Slot
+from qtpy import QtWidgets
 
 from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
 from omc3_gui.segment_by_segment.main_model import SegmentTableModel, Settings
@@ -11,6 +14,11 @@ from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
 from omc3_gui.segment_by_segment.segment_model import SegmentModel
 from omc3_gui.utils.base_classes import Controller
 from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog
+
+from omc3.sbs_propagation import segment_by_segment
+
+from omc3_gui.utils.threads import BackgroundThread
+from omc3_gui.utils.widgets import RunningSpinner
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,16 +31,16 @@ class SbSController(Controller):
         super().__init__(SbSWindow())
         self.connect_signals()
         self.settings = Settings()
-        self._last_selected_optics_path = None
+        self._last_selected_optics_path: Path = None
+        self._running_tasks: List[BackgroundThread] = []
 
         self.set_measurement_interaction_buttons_enabled(False)
         self.set_all_segment_buttons_enabled(False)
 
-
     def connect_signals(self):
-        self._view.button_load.clicked.connect(self.open_measurements)
-        self._view.button_edit.clicked.connect(self.edit_measurement)
-        self._view.button_remove.clicked.connect(self.remove_measurement)
+        self._view.button_load_measurement.clicked.connect(self.open_measurements)
+        self._view.button_edit_measurement.clicked.connect(self.edit_measurement)
+        self._view.button_remove_measurement.clicked.connect(self.remove_measurement)
         self._view.button_run_segment.clicked.connect(self.run_segments)
 
         self._view.sig_list_optics_double_clicked.connect(self.edit_measurement)
@@ -44,13 +52,50 @@ class SbSController(Controller):
         self._view.button_remove_segment.clicked.connect(self.remove_segment)
 
         self._view.sig_table_segments_selected.connect(self.segment_selection_changed)
+        self._view.sig_thread_spinner_double_clicked.connect(self._show_running_tasks)
+    
+    @Slot()
+    def _update_tasks_status(self):
+        status_bar: QtWidgets.QStatusBar = self._view.statusBar()
+        if self._running_tasks:
+            # status_bar.show()
+            status_bar.showMessage(f"{len(self._running_tasks)} Task(s) running ...")
+            status_bar.setToolTip(
+                f"{len(self._running_tasks)} Running Task(s):\n  - "
+                + "\n  - ".join([task.message for task in self._running_tasks])
+            )
+            self._view.thread_spinner.start()
+        else:
+            status_bar.setToolTip(None)
+            status_bar.clearMessage()
+            self._view.thread_spinner.stop()
+            # status_bar.hide()
+
+    @Slot()
+    def _add_running_task(self, task: BackgroundThread):
+        # Automatically remove task when finished
+        remove_task_fun = partial(self._remove_running_task, task=task)
+        task.finished.connect(remove_task_fun)
+
+        self._running_tasks.append(task)
+        self._update_tasks_status()
+
+    @Slot()
+    def _remove_running_task(self, task):
+        self._running_tasks.remove(task)
+        self._update_tasks_status()
+
+    @Slot()
+    def _show_running_tasks(self):
+        LOGGER.debug(f"Running tasks: {self._running_tasks}")
     
     # Measurements ---
     def set_measurement_interaction_buttons_enabled(self, enabled: bool):
         measurement_interaction_buttons = (
-            self._view.button_remove,
-            self._view.button_edit,
-            self._view.button_matcher,
+            self._view.button_remove_measurement,
+            self._view.button_edit_measurement,
+            self._view.button_run_matcher,
+            self._view.button_edit_corrections,
         )
         for button in measurement_interaction_buttons:
             button.setEnabled(enabled)
@@ -127,7 +172,7 @@ class SbSController(Controller):
         self.set_all_segment_buttons_enabled(True)
 
         if len(measurements) > 1:
-            self._view.button_edit.setEnabled(False)
+            self._view.button_edit_measurement.setEnabled(False)
             self._view.set_segments(SegmentTableModel())
             self.segment_selection_changed()
             return
@@ -279,8 +324,24 @@ class SbSController(Controller):
             LOGGER.error("Please select at least one measurement.")
             return
 
-        for measurement in selected_measurements:
-            for segment in segments:
-                measurement.run_segment(segment)
+        segment_parameters = [s.to_input_string() for s in segments if not s.is_element()]
+        element_parameters = [s.to_input_string() for s in segments if s.is_element()] 
 
-        self.measurement_selection_changed(selected_measurements)
+        for measurement in selected_measurements:
+            measurement_task = BackgroundThread(
+                function=partial(
+                    segment_by_segment, 
+                    **measurement.get_sbs_parameters(),
+                    segments=segment_parameters or None,
+                    elements=element_parameters or None,
+                ),
+                message=f"SbS for {measurement.display()}",
+            )
+            self._add_running_task(task=measurement_task)
+
+            LOGGER.info(f"Starting {measurement_task.message}")
+            measurement_task.start()
+
+
+
+
