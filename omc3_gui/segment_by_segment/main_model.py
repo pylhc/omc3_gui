@@ -222,10 +222,7 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
         self.dataChanged.emit(self.index(i, 0), self.index(i, self.rowCount() - 1))
         
     def flags(self, index):
-        i = index.row()
-        j = index.column()
-        segment: SegmentModel = self.get_item_at(i)
-        if segment.enabled:
-            return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
-
-        return Qt.ItemIsEditable | Qt.ItemIsSelectable
+        # i = index.row()
+        # j = index.column()
+        # segment: SegmentModel = self.get_item_at(i)
+        return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable

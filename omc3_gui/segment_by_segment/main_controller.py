@@ -1,10 +1,11 @@
-from functools import partial
 import logging
+from functools import partial
 from pathlib import Path
 from typing import Any, Dict, List, Sequence
 
-from qtpy.QtCore import Slot
+from omc3.sbs_propagation import segment_by_segment
 from qtpy import QtWidgets
+from qtpy.QtCore import Slot
 
 from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
 from omc3_gui.segment_by_segment.main_model import SegmentTableModel, Settings
@@ -14,11 +15,8 @@ from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
 from omc3_gui.segment_by_segment.segment_model import SegmentModel
 from omc3_gui.utils.base_classes import Controller
 from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog
-
-from omc3.sbs_propagation import segment_by_segment
-
 from omc3_gui.utils.threads import BackgroundThread
-from omc3_gui.utils.widgets import RunningSpinner
+from omc3_gui.segment_by_segment.segment_view import SegmentDialog
 
 LOGGER = logging.getLogger(__name__)
 
@@ -89,7 +87,7 @@ class SbSController(Controller):
     def _show_running_tasks(self):
         LOGGER.debug(f"Running tasks: {self._running_tasks}")
     
-    # Measurements ---
+    # Measurements -------------------------------------------------------------
     def set_measurement_interaction_buttons_enabled(self, enabled: bool):
         measurement_interaction_buttons = (
             self._view.button_remove_measurement,
@@ -145,7 +143,7 @@ class SbSController(Controller):
             parent=self._view,
             optics_measurement=measurement,
         )
-        if dialog.exec_():
+        if dialog.exec_() == dialog.Accepted:
             LOGGER.debug("Edit dialog closed. Updating measurement.")
 
     @Slot()
@@ -260,12 +258,15 @@ class SbSController(Controller):
             LOGGER.error("Please select at least one measurement.")
             return
         
-        # add the same segment to all selected measurements! 
-        # This allows for renaming it in one, and having the same name in all.
-        # Might have unexpected side-effects. (jdilly)
-        new_segment = SegmentModel("New Segment")  
+        LOGGER.debug(f"Opening edit dialog for a new segment.")
+        dialog = SegmentDialog(parent=self._view)
+        if dialog.exec_() == dialog.Rejected:
+            LOGGER.debug("Segment dialog cancelled.")
+            return
+
+        LOGGER.debug("Segment dialog closed. Updating segement.")
         for measurement in selected_measurements:
-            measurement.try_add_segment(new_segment)
+            measurement.try_add_segment(dialog.segment.copy())
 
         self.measurement_selection_changed(selected_measurements)
     

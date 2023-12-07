@@ -10,7 +10,7 @@ import inspect
 import re
 from dataclasses import MISSING, Field, dataclass, field, fields
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 from omc3_gui.utils import file_dialogs
 
 from qtpy import QtWidgets
@@ -22,12 +22,14 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
+
+
 # Helper for the dataclass definitions -----------------------------------------
 @dataclass
 class MetaData:
     label: Optional[str] = None
     comment: Optional[str] = None
-    choices: Optional[Sequence] = None
+    validate: Optional[Callable] = None
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -36,10 +38,17 @@ class MetaData:
         return getattr(self, key, default)
 
     
-def metafield(label: str, comment: str, default=MISSING, choices: Sequence = None) -> Field:
+def metafield(label: str, comment: str, default=MISSING, validate: Optional[Callable] = None) -> Field:
     """ Convenience function to create a dataclass-field with metadata. """
-    return field(default=default, metadata=MetaData(label=label, comment=comment, choices=choices))
+    return field(default=default, metadata=MetaData(label=label, comment=comment, validate=validate))
 
+
+def choices_validator(*choices: Any) -> Callable:
+    """ Return a validator that checks if a given value is in the choices. """
+    def validator(value):
+        if value not in choices:
+            raise ValueError(f"Value {value} is not in {choices}.")
+    return validator
 
 class FilePath(Path):
     """ Convenience Class to indicate that the Path should lead to a file. """
@@ -52,7 +61,7 @@ class DirectoryPath(Path):
 
 
 
-# DataClass UI Building -------------------------------------------------------- 
+# DataClass UI Controller -------------------------------------------------------- 
 
 @dataclass
 class FieldUIDef:
@@ -158,23 +167,23 @@ class DataClassUI:
         for name in self.fields.keys():
             self.update_model_from_widget(name)
 
-    def check_choices(self, only_modified: bool = False):
+    def validate(self, only_modified: bool = False):
         """ Checks all edit-widgets for valid choices. """
-        fields_choices = []
+        invalid_fields_str = []
         for name in self.fields.keys():
             field = self.model.__dataclass_fields__[name]
             field_ui = self.fields[field.name]
             if only_modified and not field_ui.modified:
                 continue
             
-            choices = field.metadata.get("choices")
-            if choices is not None:
+            validate_function = field.metadata.get("validate")
+            if validate_function is not None:
                 value = self.fields[field.name].get_value()
-                if value not in choices:
-                    fields_choices.append(f"{field_ui.label.text()}: {value} not in {choices}")
+                if not validate_function(value):
+                    invalid_fields_str.append(f"{field_ui.label.text()}: {value} is not a valid choice.")
 
-        if fields_choices:
-            full_str = "\n".join(fields_choices)
+        if invalid_fields_str:
+            full_str = "\n".join(invalid_fields_str)
             raise ValueError(f'The following fields contain wrong values:\n{full_str}')
 
     @classmethod
@@ -264,6 +273,78 @@ class DataClassUI:
                 layout.addWidget(button, idx_row, 2)
 
         return dataclass_ui
+
+
+# View -------------------------------------------------------------------------
+
+class DataClassDialog(QtWidgets.QDialog):
+
+    WINDOW_TITLE = "Edit DataClass"
+    DEFAULT_SIZE = (800, 600)  # width, height, use -1 for auto
+    
+    def __init__(self, dataclass_ui: DataClassUI, parent=None):
+        super().__init__(parent)
+        self._button_ok: QtWidgets.QPushButton = None
+        self._button_cancel: QtWidgets.QPushButton = None
+        self._button_box: QtWidgets.QDialogButtonBox = None
+
+        self._dataclass_ui: DataClassUI = dataclass_ui
+        self._build_gui()
+        self._connect_signals()
+        self._set_size(width=self.DEFAULT_SIZE[0], height=self.DEFAULT_SIZE[1])
+        self.update_ui()
+
+
+    def _set_size(self, width: int = -1, height: int = -1):
+        # Set position to the center of the parent (does not work in WSL for me, jdilly 2023)
+        # parent = self.parent()
+        # if parent is not None:
+        #     parent_geo = parent.geometry()
+        #     parent_pos = parent.mapToGlobal(parent.pos())  # multiscreen support
+        #     if width >= 0:
+        #         x = parent_pos.x() + parent_geo.width() / 2
+        #     else:
+        #         x = parent_pos.x() + (parent_geo.width() - width) / 2
+
+        #     if height >=0 :
+        #         y = parent_pos.y() + parent_geo.height() / 2
+        #     else:
+        #         y = parent_pos.y() + (parent_geo.height() - height) / 2
+        #     self.move(x, y)
+        
+        # Set size
+        self.resize(width, height)
+
+    def _build_gui(self):
+        self.setWindowTitle(self.WINDOW_TITLE)
+        layout = QtWidgets.QVBoxLayout()
+        layout.addLayout(self._dataclass_ui.layout)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        self._button_box = QtWidgets.QDialogButtonBox(QBtn)
+        layout.addWidget(self._button_box)
+
+        self.setLayout(layout)
+    
+    def _connect_signals(self):
+        self._button_box.accepted.connect(self.accept)
+        self._button_box.rejected.connect(self.reject)
+
+    def update_ui(self, new_model: object = None):
+        if new_model is not None:
+            self._dataclass_ui.model = new_model 
+        self._dataclass_ui.update_ui()  # triggers changes, so the labels appear in "changed" state
+        self._dataclass_ui.reset_labels()  # so we reset them
+
+    def accept(self):
+        try:
+            self._dataclass_ui.validate(only_modified=True)
+        except ValueError as e:
+            QtWidgets.QMessageBox.critical(self, "Error", str(e))
+            return
+
+        self._dataclass_ui.update_model()
+        super().accept() 
 
 
 # Type-to-Widget Helpers ----------------------------------------------------------------

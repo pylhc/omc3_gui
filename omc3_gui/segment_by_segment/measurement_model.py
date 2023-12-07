@@ -10,7 +10,7 @@ from omc3.optics_measurements.constants import (BETA_NAME, EXT, KICK_NAME, MODEL
 from tfs.reader import read_headers
 
 from omc3_gui.segment_by_segment.segment_model import SegmentModel
-from omc3_gui.utils.dataclass_ui import metafield
+from omc3_gui.utils.dataclass_ui import choices_validator as choices, metafield
 
 SEQUENCE = "SEQUENCE"
 DATE = "DATE"
@@ -33,9 +33,9 @@ class OpticsMeasurement:
     accel: str =            metafield("Accelerator",        "Name of the accelerator",         default=None)
     output_dir: Path =      metafield("Output",             "Path to the sbs-output folder",   default=None) 
     corrections: Path =     metafield("Corrections",        "Path to the corrections file",    default=None)
-    year: str =             metafield("Year",               "Year of the measurement (model)", default=None, choices=LHC_MODEL_YEARS)
-    ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None, choices=(1, 2, 3, 4))
-    beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, choices=(1, 2)) 
+    year: str =             metafield("Year",               "Year of the measurement (model)", default=None, validate=choices(*LHC_MODEL_YEARS))
+    ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None, validate=choices(1, 2, 3, 4))
+    beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, validate=choices(1, 2)) 
     # List of segments. Using a list here, so the name and start/end can be changed
     # without having to modify anything here.
     _segments: List[SegmentModel] = field(default_factory=list)
@@ -54,7 +54,7 @@ class OpticsMeasurement:
 
     @property
     def id(self) -> str:
-        """ Unique identifier for the measurement, used in the GUI. """
+        """ Unique identifier for the measurement, used in the ItemModel. """
         return str(self.output_dir)
 
     @classmethod
