@@ -27,6 +27,7 @@ LOGGER = logging.getLogger(__name__)
 # Helper for the dataclass definitions -----------------------------------------
 @dataclass
 class MetaData:
+    """ Metadata for a dataclass-field. """
     label: Optional[str] = None
     comment: Optional[str] = None
     validate: Optional[Callable] = None
@@ -278,16 +279,18 @@ class DataClassUI:
 # View -------------------------------------------------------------------------
 
 class DataClassDialog(QtWidgets.QDialog):
+    """ Simple dialog window to display the DataClassUI layout. 
+    Adds some convenience functionality like "Ok" and "Cancel" buttons
+    and automatic data-validation on close.
+    """
 
     WINDOW_TITLE = "Edit DataClass"
     DEFAULT_SIZE = (800, 600)  # width, height, use -1 for auto
     
     def __init__(self, dataclass_ui: DataClassUI, parent=None):
         super().__init__(parent)
-        self._button_ok: QtWidgets.QPushButton = None
-        self._button_cancel: QtWidgets.QPushButton = None
         self._button_box: QtWidgets.QDialogButtonBox = None
-
+        
         self._dataclass_ui: DataClassUI = dataclass_ui
         self._build_gui()
         self._connect_signals()
