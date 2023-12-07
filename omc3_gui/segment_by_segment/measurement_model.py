@@ -48,12 +48,14 @@ class OpticsMeasurement:
 
     # Visualization ------------------------------------------------------------
     def display(self) -> str:
-        return self.measurement_dir.name
+        if self.output_dir.name == self.DEFAULT_OUTPUT_DIR:
+            return self.measurement_dir.name
+        return f"{self.measurement_dir.name} -> {self.output_dir.name}"
 
     @property
     def id(self) -> str:
         """ Unique identifier for the measurement, used in the GUI. """
-        return self.measurement_dir.name
+        return str(self.output_dir)
 
     @classmethod
     def get_label(cls, name: str) -> str:
