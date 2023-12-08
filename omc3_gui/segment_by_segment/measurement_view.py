@@ -18,7 +18,7 @@ class OpticsMeasurementDialog(DataClassDialog):
             optics_measurement = OpticsMeasurement(measurement_dir=TO_BE_DEFINED, output_dir=TO_BE_DEFINED)
 
         dataclass_ui = DataClassUI.build_dataclass_ui(
-            field_def=[
+            field_definitions=[
                 FieldUIDef(name="measurement_dir", editable=False), 
                 *(FieldUIDef(name) for name in ("model_dir", "output_dir", "accel", "beam", "year", "ring"))
             ],

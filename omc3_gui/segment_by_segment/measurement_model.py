@@ -1,4 +1,4 @@
-
+from __future__ import annotations  # Together with TYPE_CHECKING: allow circular imports for type-hints
 import logging
 from dataclasses import dataclass, field, fields
 from pathlib import Path
@@ -9,8 +9,11 @@ from omc3.optics_measurements.constants import (BETA_NAME, EXT, KICK_NAME, MODEL
                                                 PHASE_NAME)
 from tfs.reader import read_headers
 
-from omc3_gui.segment_by_segment.segment_model import SegmentModel
 from omc3_gui.utils.dataclass_ui import choices_validator as choices, metafield
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from omc3_gui.segment_by_segment.segment_model import SegmentDataModel 
 
 SEQUENCE = "SEQUENCE"
 DATE = "DATE"
@@ -38,7 +41,7 @@ class OpticsMeasurement:
     beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, validate=choices(1, 2)) 
     # List of segments. Using a list here, so the name and start/end can be changed
     # without having to modify anything here.
-    _segments: List[SegmentModel] = field(default_factory=list)
+    _segments: List[SegmentDataModel] = field(default_factory=list)
 
     DEFAULT_OUTPUT_DIR: ClassVar[str] = "sbs"
 
@@ -82,32 +85,52 @@ class OpticsMeasurement:
         return "\n".join(f"{name:{l}s}: {value}" for name, value in parts if value is not None)
 
     # Segment Control ----------------------------------------------------------
-    def remove_segment(self, segment: SegmentModel):
-        self.segments.remove(segment)
+    def remove_segment(self, segment: SegmentDataModel):
+        try:
+            self.segments.remove(segment)
+        except ValueError as e:
+            raise ValueError(f"Segment with name {segment.name} is not in {self.display()}.") from e
 
-    def add_segment(self, segment: SegmentModel):
+    def add_segment(self, segment: SegmentDataModel):
         if segment in self.segments:
-            raise NameError(f"Segment {segment} is already in {self}")
+            raise NameError(f"Segment {segment} is already in {self.display()}")
         
         if segment.name in [s.name for s in self.segments]:
-            raise NameError(f"A segment with name {segment.name} is already in {self}")
+            raise NameError(f"A segment with name {segment.name} is already in {self.display()}")
 
         self.segments.append(segment)
     
-    def try_add_segment(self, segment: SegmentModel):
+    def try_add_segment(self, segment: SegmentDataModel) -> bool:
         try:
             self.add_segment(segment)
         except NameError as e:
             LOGGER.error(str(e))
+            return False
+        return True
     
-    def try_remove_segment(self, segment: SegmentModel):
+    def try_remove_segment(self, segment: Union[SegmentDataModel, str]) -> bool:
+        if isinstance(segment, str):
+            try:
+                segment = self.get_segment_by_name(segment)
+            except NameError as e:
+                LOGGER.error(str(e))
+                return False
+
         try:
             self.remove_segment(segment)
         except ValueError as e:
             LOGGER.error(str(e))
+            return False
+        return True
+    
+    def get_segment_by_name(self, name: str) -> SegmentDataModel:
+        for segment in self.segments:
+            if segment.name == name:
+                return segment
+        raise NameError(f"No segment with name {name} in {self.display()}.")
     
     @property
-    def segments(self) -> List[SegmentModel]:
+    def segments(self) -> List[SegmentDataModel]:
         return self._segments
 
     # Segment-by-Segment Parameters --------------------------------------------

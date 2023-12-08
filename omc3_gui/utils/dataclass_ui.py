@@ -10,7 +10,7 @@ import inspect
 import re
 from dataclasses import MISSING, Field, dataclass, field, fields
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union, get_type_hints
 from omc3_gui.utils import file_dialogs
 
 from qtpy import QtWidgets
@@ -189,26 +189,32 @@ class DataClassUI:
 
     @classmethod
     def build_dataclass_ui(cls, 
-        field_def: Sequence[Union[FieldUIDef, str]], dclass: Union[type, object] = None) -> 'DataClassUI':
+        field_definitions: Sequence[Union[FieldUIDef, str]], dclass: Union[type, object]) -> 'DataClassUI':
         """ Builds a DataClassUI from a list of field definitions.
         NOTE: `dclass` is not automatically attached to the resulting class,
         as this function works with classes and instances, but the attached object needs to be the instance.
         
         Args:
             field_def (Sequence[Union[FieldUIDef, str]]): list of field definitions
-            dclass (Union[type, object], optional): dataclass type or instance. Defaults to None. 
+            dclass (Union[type, object]): DataClass type or instance.
 
         Returns:
             DataClassUI: A grid-layout containing edit-widgets and labels.
         """
-        field_instances = {}
-        if dclass is not None:
-            field_instances = {field.name: field for field in fields(dclass)}
+        field_instances: Dict[str, Field] = {field.name: field for field in fields(dclass)}
+        field_types = get_dataclass_types(
+            dclass, 
+            [
+                field.name for field in field_definitions 
+                if field is not None and not isinstance(field, str) and field.name in field_instances.keys()
+             ]
+        )
+        # 
 
         layout = QtWidgets.QGridLayout()
         dataclass_ui = cls(layout)
-
-        for idx_row, field in enumerate(field_def):
+        
+        for idx_row, field in enumerate(field_definitions):
             if field is None:
                 layout.addWidget(HorizontalSeparator(), idx_row, 0, 1, 3)
                 continue
@@ -230,7 +236,8 @@ class DataClassUI:
             # If field.type is not given, use evaluate from dataclass. 
             # Check __args__ in case of Union/Optional and use first one.
             # The type needs to be instanciable!
-            field_type = field.type or getattr(field_inst.type, "__args__", [field_inst.type])[0]  
+            eval_type = field_types[field.name]  # evaluated type, might be Optional/Union etc with __args__
+            field_type = field.type or getattr(eval_type, "__args__", [eval_type])[0]  
 
             widget = TYPE_TO_WIDGET_MAP.get(field_type, QtWidgets.QLineEdit)()
 
@@ -441,3 +448,42 @@ def get_field_inline_comments(dclass: type) -> Dict[str, str]:
             found_fields[match.group('field')] = match.group('comment')
 
     return found_fields
+
+
+
+def get_dataclass_types(dclass: Union[type, object], names: Sequence[str]):
+    """ 
+    Returns a dictionary mapping field names to their associated types.
+
+    Why this weird way?
+    First of all, we avoided the cyclic imports of type-hints by using 
+    the `from __future__ import annotations`, but whith 
+    this, all type-hints on the dataclasses become `ForwardReferences`, 
+    i.e. strings. So if we get them from the dataclass-fields
+    via `field.type` or `field.type.__args__`, we cannot instanciate them later on.
+
+    `get_type_hints()` from `typing` solves this problem, but it 
+    evaluates the type-hints of all fields in the dataclass. 
+    But this can causes again import errors, because the classes were not actually imported
+    (this is why there are no cyclic imports)!
+
+    So this function allows using `get_type_hints()` on the dataclass 
+    itself, but only gets the types of the fields that we need, in the hopes 
+    that there is no import problem with those. 
+    
+    If you are here because there is, you need to redesing your dataclass/imports.
+    Sorry.
+
+    Args:
+        dclass (type): The data class to extract field types from.
+        names (Sequence[str]): The names of the fields to extract types from.
+
+    Returns:
+        Dict[str, type]: A dictionary mapping field names to their associated types. 
+    """
+    required_annotations = {
+        name: value for name, value in dict(dclass.__annotations__).items() if name in names
+    }
+    class SafeMock:
+        __annotations__ = required_annotations
+    return get_type_hints(SafeMock) 

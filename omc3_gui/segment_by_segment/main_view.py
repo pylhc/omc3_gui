@@ -10,11 +10,12 @@ from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 from omc3_gui.plotting.classes import DualPlot
 from omc3_gui.segment_by_segment.main_model import MeasurementListModel, SegmentTableModel
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
-from omc3_gui.segment_by_segment.segment_model import SegmentModel
+from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
 from omc3_gui.utils import colors
 from omc3_gui.utils.base_classes import View
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
-from omc3_gui.utils.widgets import DefaultButton, EditButton, OpenButton, RemoveButton, RunButton, RunningSpinner
+from omc3_gui.utils.styles import MONOSPACED_TOOLTIP
+from omc3_gui.utils.widgets import (DefaultButton, EditButton, OpenButton, RemoveButton, RunButton)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -233,7 +234,7 @@ class SbSWindow(View):
     def get_segments(self) -> SegmentTableModel:
         return self._table_segments.model()
 
-    def get_selected_segments(self) -> Tuple[SegmentModel]:
+    def get_selected_segments(self) -> Tuple[SegmentItemModel]:
         selected: List[QModelIndex] = self._table_segments.selectedIndexes()
         return tuple(s.data(role=Qt.EditRole) for s in selected if s.column() == 0)  # need only one per row
     
@@ -261,15 +262,7 @@ class MeasurementListView(QtWidgets.QListView):
         self.setModel(MeasurementListModel())
         self.setItemDelegate(ColoredItemDelegate())
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        tooltip_style = f"""
-            QToolTip {{
-                background-color: {colors.TOOLTIP_BACKGROUND}; /* Light gray background */
-                color: {colors.TOOLTIP_TEXT}; /* Dark gray text */
-                border: 1px solid {colors.TOOLTIP_BORDER}; /* Gray border */
-                font-family: "Courier New", monospace; /* Monospaced font */
-            }}
-        """
-        self.setStyleSheet(tooltip_style)
+        self.setStyleSheet(MONOSPACED_TOOLTIP)
 
 
 class SegmentTableView(QtWidgets.QTableView):
@@ -288,6 +281,7 @@ class SegmentTableView(QtWidgets.QTableView):
         self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.setShowGrid(True)
+        self.setStyleSheet(MONOSPACED_TOOLTIP)
     
     # def mousePressEvent(self, e: QtGui.QMouseEvent) -> None:
     #     idx = self.indexAt(e.pos())

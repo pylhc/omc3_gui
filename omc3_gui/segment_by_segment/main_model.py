@@ -8,7 +8,7 @@ from qtpy.QtCore import Qt
 
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
-from omc3_gui.segment_by_segment.segment_model import SegmentModel
+from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
 
 LOGGER = logging.getLogger(__name__)
 
@@ -169,7 +169,7 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
     _COLUMNS = {0: "Segment", 1: "Start", 2: "End"}
     _COLUMNS_MAP = {0: "name", 1: "start", 2: "end"}
     
-    _items: Dict[str, SegmentModel]  # only for the IDE
+    _items: Dict[str, SegmentItemModel]  # only for the IDE
     
     def __init__(self, *args, **kwargs): 
         super(QtCore.QAbstractTableModel, self).__init__(*args, **kwargs)
@@ -189,34 +189,33 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
     def data(self, index: QtCore.QModelIndex, role=QtCore.Qt.DisplayRole):
         i = index.row()
         j = index.column()
-        segment: SegmentModel = self.get_item_at(i)
+        segment: SegmentItemModel = self.get_item_at(i)
         
         if role == QtCore.Qt.DisplayRole:
             return str(getattr(segment, self._COLUMNS_MAP[j]))
         
+        if role == Qt.ToolTipRole:
+            return segment.tooltip()
+
         if role == Qt.EditRole:
             return segment
-
+        
     def setData(self, index, value, role):
         i = index.row()
         j = index.column()
-        segment: SegmentModel = self.get_item_at(i)
-        old_name = segment.name 
+        segment: SegmentItemModel = self.get_item_at(i)
 
         if role == Qt.EditRole:
             if value is None or value == "":
                 return False
 
             setattr(segment, self._COLUMNS_MAP[j], value)
-            if segment.name != old_name:
-                self.update_item(segment, old_id=old_name)
-            else:
-                self.dataChanged.emit(index, index)
+            self.dataChanged.emit(index, index)
             return True
     
     def toggle_row(self, index):
         i = index.row()
-        segment: SegmentModel = self.get_item_at(i)
+        segment: SegmentItemModel = self.get_item_at(i)
         segment.enabled = not segment.enabled
         self.headerDataChanged.emit(Qt.Horizontal, 0, self.rowCount() - 1)
         self.dataChanged.emit(self.index(i, 0), self.index(i, self.rowCount() - 1))

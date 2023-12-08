@@ -12,7 +12,7 @@ from omc3_gui.segment_by_segment.main_model import SegmentTableModel, Settings
 from omc3_gui.segment_by_segment.main_view import SbSWindow
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
-from omc3_gui.segment_by_segment.segment_model import SegmentModel
+from omc3_gui.segment_by_segment.segment_model import SegmentDataModel, SegmentItemModel, compare_segments
 from omc3_gui.utils.base_classes import Controller
 from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog
 from omc3_gui.utils.threads import BackgroundThread
@@ -169,16 +169,21 @@ class SbSController(Controller):
         self.set_measurement_interaction_buttons_enabled(True)
         self.set_all_segment_buttons_enabled(True)
 
-        if len(measurements) > 1:
-            self._view.button_edit_measurement.setEnabled(False)
-            self._view.set_segments(SegmentTableModel())
-            self.segment_selection_changed()
-            return
 
-        measurement = measurements[0]
-        segment_model = SegmentTableModel()
-        segment_model.add_items(measurement.segments)
-        self._view.set_segments(segment_model)
+        segment_table_items: List[SegmentItemModel] = []
+
+        for measurement in measurements:
+            for segment in measurement.segments:
+                for segment_item in segment_table_items:
+                    if compare_segments(segment, segment_item):
+                        segment_item.append_segment(segment)
+                        break
+                else:
+                    segment_table_items.append(SegmentItemModel.from_segments([segment]))
+
+        segment_table = SegmentTableModel()
+        segment_table.add_items(segment_table_items)
+        self._view.set_segments(segment_table)
         self.segment_selection_changed()
 
     def get_single_measurement(self) -> OpticsMeasurement:
@@ -213,11 +218,11 @@ class SbSController(Controller):
             button.setEnabled(enabled)
 
     @Slot(tuple)
-    def segment_selection_changed(self, segments: Sequence[SegmentModel] = None):
+    def segment_selection_changed(self, segments: Sequence[SegmentItemModel] = None):
         if segments is None:
             segments = self._view.get_selected_segments()
             
-        LOGGER.debug(f"Showing {len(segments)} segments.")
+        LOGGER.debug(f"{len(segments)} Segment(s) selected.")
         if not len(segments):
             self.set_segment_interaction_buttons_enabled(False)
             return
@@ -243,7 +248,7 @@ class SbSController(Controller):
                 continue
 
             for segment_tuple in DEFAULT_SEGMENTS:
-                segment = SegmentModel(*segment_tuple)
+                segment = SegmentDataModel(*segment_tuple)
                 segment.start = f"{segment.start}.B{beam}"
                 segment.end = f"{segment.end}.B{beam}"
                 measurement.try_add_segment(segment)
@@ -266,12 +271,14 @@ class SbSController(Controller):
 
         LOGGER.debug("Segment dialog closed. Updating segement.")
         for measurement in selected_measurements:
-            measurement.try_add_segment(dialog.segment.copy())
+            new_segment_copy = dialog.segment.copy()
+            new_segment_copy.measurement = measurement
+            measurement.try_add_segment(new_segment_copy)
 
         self.measurement_selection_changed(selected_measurements)
     
     @Slot()
-    def copy_segment(self, segments: Sequence[SegmentModel] = None):
+    def copy_segment(self, segments: Sequence[SegmentItemModel] = None):
         if segments is None:
             segments = self._view.get_selected_segments()
             if not segments:
@@ -285,14 +292,19 @@ class SbSController(Controller):
             return
 
         for measurement in selected_measurements:
-            for segment in segments:
-                new_segment = SegmentModel(f"{segment.name} - Copy", start=segment.start, end=segment.end)
+            for segment_item in segments:
+                try:
+                    meas_segment = measurement.get_segment_by_name(segment_item.name)
+                except NameError as e:
+                    LOGGER.warning(f"Could not copy segment. {e!s}")
+                    continue
+                new_segment = get_segment_copy_with_unique_name(meas_segment, measurement)
                 measurement.try_add_segment(new_segment)
             
         self.measurement_selection_changed(selected_measurements)
     
     @Slot()
-    def remove_segment(self, segments: Sequence[SegmentModel] = None):
+    def remove_segment(self, segments: Sequence[SegmentItemModel] = None):
         if segments is None:
             segments = self._view.get_selected_segments()
             if not segments:
@@ -306,13 +318,13 @@ class SbSController(Controller):
             return
 
         for measurement in selected_measurements:
-            for segment in segments:
-                measurement.try_remove_segment(segment)
+            for segment_item in segments:
+                measurement.try_remove_segment(segment_item.name)
 
         self.measurement_selection_changed(selected_measurements)
 
     @Slot()
-    def run_segments(self, segments: Sequence[SegmentModel] = None):
+    def run_segments(self, segments: Sequence[SegmentDataModel] = None):
         if segments is None:
             segments = self._view.get_selected_segments()
             if not segments:
@@ -344,5 +356,14 @@ class SbSController(Controller):
             measurement_task.start()
 
 
-
+def get_segment_copy_with_unique_name(segment: SegmentDataModel, measurement: OpticsMeasurement) -> SegmentDataModel:
+    new_segment = segment.copy()
+    idx = 0
+    segment_names = [s.name for s in measurement.segments]
+    new_name = new_segment.name
+    while new_name in segment_names:
+        idx += 1
+        new_name = f"{segment.name}_{idx}"
+    new_segment.name = new_name
+    return new_segment
 
