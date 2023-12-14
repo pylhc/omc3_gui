@@ -1,7 +1,7 @@
 import logging
 from functools import partial
 from pathlib import Path
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Sequence, Tuple
 
 from omc3.sbs_propagation import segment_by_segment
 from qtpy import QtWidgets
@@ -13,10 +13,12 @@ from omc3_gui.segment_by_segment.main_view import SbSWindow
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
 from omc3_gui.segment_by_segment.segment_model import SegmentDataModel, SegmentItemModel, compare_segments
-from omc3_gui.utils.base_classes import Controller
+from omc3_gui.utils.ui_base_classes import Controller
 from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog
 from omc3_gui.utils.threads import BackgroundThread
 from omc3_gui.segment_by_segment.segment_view import SegmentDialog
+from omc3.definitions.optics import ColumnsAndLabels
+from omc3_gui.plotting.classes import DualPlot
 
 LOGGER = logging.getLogger(__name__)
 
@@ -231,7 +233,11 @@ class SbSController(Controller):
         if len(segments) > 1:
             LOGGER.debug("More than one segment selected. Clearing Plots.")
             return
+
         # Plot segements
+        def_and_widget: Tuple[ColumnsAndLabels, DualPlot] = self._view.get_current_tab()
+        definition, widget = def_and_widget
+        # plot_segments()
     
     @Slot()
     def add_default_segments(self):
@@ -248,7 +254,7 @@ class SbSController(Controller):
                 continue
 
             for segment_tuple in DEFAULT_SEGMENTS:
-                segment = SegmentDataModel(*segment_tuple)
+                segment = SegmentDataModel(measurement, *segment_tuple)
                 segment.start = f"{segment.start}.B{beam}"
                 segment.end = f"{segment.end}.B{beam}"
                 measurement.try_add_segment(segment)
@@ -291,15 +297,26 @@ class SbSController(Controller):
             LOGGER.error("Please select at least one measurement.")
             return
 
-        for measurement in selected_measurements:
-            for segment_item in segments:
+        for segment_item in segments:
+            new_segment_name = f"{segment_item.name} - Copy"
+            for measurement in selected_measurements:  
+                # Check if copied segment name already exists in one of the measurements
                 try:
-                    meas_segment = measurement.get_segment_by_name(segment_item.name)
-                except NameError as e:
-                    LOGGER.warning(f"Could not copy segment. {e!s}")
-                    continue
-                new_segment = get_segment_copy_with_unique_name(meas_segment, measurement)
-                measurement.try_add_segment(new_segment)
+                    measurement.get_segment_by_name(new_segment_name)
+                except NameError:
+                    pass
+                else:
+                    LOGGER.error(
+                        f"Could not create copy \"{new_segment_name}\" as it already exists in {measurement.display()}."
+                    )
+                    break
+            else:
+                # None of the measurements have the copied segment name, so add to the measurements
+                for measurement in selected_measurements:
+                    for segment in segment_item.segments:
+                        new_segment = segment.copy()
+                        new_segment.name = new_segment_name
+                        measurement.try_add_segment(new_segment)
             
         self.measurement_selection_changed(selected_measurements)
     
@@ -324,7 +341,7 @@ class SbSController(Controller):
         self.measurement_selection_changed(selected_measurements)
 
     @Slot()
-    def run_segments(self, segments: Sequence[SegmentDataModel] = None):
+    def run_segments(self, segments: Sequence[SegmentItemModel] = None):
         if segments is None:
             segments = self._view.get_selected_segments()
             if not segments:
@@ -354,16 +371,3 @@ class SbSController(Controller):
 
             LOGGER.info(f"Starting {measurement_task.message}")
             measurement_task.start()
-
-
-def get_segment_copy_with_unique_name(segment: SegmentDataModel, measurement: OpticsMeasurement) -> SegmentDataModel:
-    new_segment = segment.copy()
-    idx = 0
-    segment_names = [s.name for s in measurement.segments]
-    new_name = new_segment.name
-    while new_name in segment_names:
-        idx += 1
-        new_name = f"{segment.name}_{idx}"
-    new_segment.name = new_name
-    return new_segment
-

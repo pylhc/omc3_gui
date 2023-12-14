@@ -1,26 +1,28 @@
 
 # from omc3_gui.segment_by_segment.segment_by_segment_ui import Ui_main_window
 import logging
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, Iterator, List, Sequence, Tuple
 
 from PyQt5 import QtGui
 from qtpy import QtGui, QtWidgets
-from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot
+from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot, QEvent
 
 from omc3_gui.plotting.classes import DualPlot
 from omc3_gui.segment_by_segment.main_model import MeasurementListModel, SegmentTableModel
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
 from omc3_gui.utils import colors
-from omc3_gui.utils.base_classes import View
+from omc3_gui.utils.ui_base_classes import View
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
 from omc3_gui.utils.styles import MONOSPACED_TOOLTIP
 from omc3_gui.utils.widgets import (DefaultButton, EditButton, OpenButton, RemoveButton, RunButton)
+from omc3.definitions.optics import ColumnsAndLabels, PHASE_COLUMN
+from omc3_gui.utils.iteration_classes import IterClass 
 
 LOGGER = logging.getLogger(__name__)
 
-class Tab:
-    PHASE: str = "Phase"
+class Tabs(IterClass):
+    PHASE: ColumnsAndLabels = PHASE_COLUMN
 
 
 class SbSWindow(View):
@@ -41,7 +43,6 @@ class SbSWindow(View):
         # Widgets ---
         self._cental: QtWidgets.QSplitter = None
         self._tabs_widget: QtWidgets.QTabWidget = None
-        self._tabs: Dict[str, DualPlot] = None
         self._list_view_measurements: QtWidgets.QListView = None
         self._table_segments: QtWidgets.QTableView = None
 
@@ -191,7 +192,8 @@ class SbSWindow(View):
 
         def build_tabs_widget():  # --- Right Hand Side
             self._tabs_widget = QtWidgets.QTabWidget()
-            self._tabs = self._create_tabs(self._tabs_widget)
+            for tab in Tabs.values():
+                self._tabs_widget.addTab(DualPlot(), tab.text_label.capitalize())
             return self._tabs_widget
 
         self._central.addWidget(build_tabs_widget())
@@ -202,14 +204,10 @@ class SbSWindow(View):
         
         self.setCentralWidget(self._central)
     
-    def _create_tabs(self, tab_widget: QtWidgets.QTabWidget) -> Dict[str, "DualPlot"]:
-        tabs = {}
-
-        new_plot = DualPlot()
-        tab_widget.addTab(new_plot, Tab.PHASE)
-        tabs[Tab.PHASE] = new_plot
-
-        return tabs
+    def get_current_tab(self) -> Tuple[ColumnsAndLabels, DualPlot]:
+        widget = self._tabs_widget.currentWidget()
+        index = self._tabs_widget.currentIndex()
+        return list(Tabs.values())[index], widget
 
     # Getters and Setters
     def set_measurements(self, measurement_model: MeasurementListModel):
