@@ -1,7 +1,11 @@
+"""
+Utils: File Dialogs
+-------------------
 
+Helper functions to open files.
+"""
 import logging
 from pathlib import Path
-from typing import List, Optional, Union
 
 from qtpy.QtWidgets import QApplication, QFileDialog, QStyle
 
@@ -21,7 +25,7 @@ class OpenFilesDialog(QFileDialog):
         super().__init__(**kwargs)  # parent, caption, directory, filter, options
         self.setOption(QFileDialog.Option.DontUseNativeDialog, True)
 
-    def run_selection_dialog(self) -> List[Path]:
+    def run_selection_dialog(self) -> list[Path]:
       if self.exec_():
          return [Path(f) for f in self.selectedFiles()]
       return []

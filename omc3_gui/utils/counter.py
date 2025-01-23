@@ -1,3 +1,9 @@
+""" 
+Utils: Counter
+--------------
+
+Classes to do some automatic counting and filling. 
+"""
 from qtpy import QtWidgets
 
 

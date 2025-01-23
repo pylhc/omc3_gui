@@ -1,11 +1,19 @@
+""" 
+Segment-by-Segment Model
+------------------------
+
+This is the main model for the Segment-by-Segment application.
+"""
+from __future__ import annotations
+
 import enum
 from dataclasses import dataclass
 import logging
-from typing import Any, Dict, Hashable, List, Protocol, Sequence
+from typing import Any, Protocol
+from collections.abc import Hashable, Sequence
 
 from qtpy import QtCore
 from qtpy.QtCore import Qt
-
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
@@ -38,7 +46,7 @@ class UniqueItemListModel:
     """
 
     def __init__(self):
-        self._items: List[Item] = []
+        self._items: list[Item] = []
 
     def try_emit_change(self, emit: bool = True):
         """ Emits a dataChanged-signal if the model has changed, and if the 
@@ -119,7 +127,7 @@ class UniqueItemListModel:
 
 class MeasurementListModel(QtCore.QAbstractListModel, UniqueItemListModel):
 
-    _items: Dict[str, OpticsMeasurement]  # only for the IDE
+    _items: dict[str, OpticsMeasurement]  # only for the IDE
     
     class ColorIDs(enum.IntEnum):
         NONE = 0
@@ -169,7 +177,7 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
     _COLUMNS = {0: "Segment", 1: "Start", 2: "End"}
     _COLUMNS_MAP = {0: "name", 1: "start", 2: "end"}
     
-    _items: Dict[str, SegmentItemModel]  # only for the IDE
+    _items: dict[str, SegmentItemModel]  # only for the IDE
     
     def __init__(self, *args, **kwargs): 
         super(QtCore.QAbstractTableModel, self).__init__(*args, **kwargs)

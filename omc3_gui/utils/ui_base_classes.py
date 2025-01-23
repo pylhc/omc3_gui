@@ -1,8 +1,12 @@
+""" 
+Utils: UI Base Classes
+----------------------
+
+This module contains base classes for UI's.
+"""
 import logging
 import re
 import sys
-from typing import List, Union
-import typing
 from qtpy.QtCore import QObject, Slot, QEvent, Qt
 from qtpy.QtWidgets import QApplication, QFileDialog, QMenuBar, QDesktopWidget, QWidgetAction, QStatusBar, QToolTip
 from qtpy import QtGui
@@ -10,23 +14,30 @@ from omc3_gui import __version__
 from omc3_gui.utils.log_handler import get_console_formatter
 from omc3_gui.utils.widgets import RunningSpinner
 
-try:
+try:  # CERN Application Frame
     from accwidgets.app_frame import ApplicationFrame
     from accwidgets.qt import exec_app_interruptable
-except ImportError:
+except ImportError:  # Standard QT
     from qtpy.QtWidgets import QMainWindow as ApplicationFrame
-    exec_app_interruptable = lambda app: app.exec()
 
-try:
+    def exec_app_interruptable(app):
+        app.exec_()
+
+try:  # CERN Console
     from accwidgets.log_console import LogConsoleFormatter as AccPyLogConsoleFormatter
     from accwidgets.app_frame._about_dialog import AboutDialog
-except ImportError:
+except ImportError:  # Deactivated
     AccPyLogConsoleFormatter = object
     AboutDialog = None
 
 
-
 class Controller(QObject):
+    """ 
+    Base class for the controller of a UI.
+
+    The controller is the glue between the view and the model
+    and also the entry-point for the app.
+    """
 
     def __init__(self, view: ApplicationFrame, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -44,8 +55,11 @@ class Controller(QObject):
     
 
 class View(ApplicationFrame):
+    """ 
+    Base class for the view of a UI.
 
-    
+    Adds a menu bar and a status bar as well as the log-console (if in CERN mode).
+    """
     def __init__(self, *args, **kwargs):
         kwargs["use_log_console"] = kwargs.get("use_log_console", True)
         try:

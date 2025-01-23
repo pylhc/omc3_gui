@@ -1,6 +1,12 @@
+""" 
+Utils: Threads
+--------------
+
+Helper functions for threads.
+"""
 import logging
 from qtpy.QtCore import QThread, Signal
-from typing import Callable
+from collections.abc import Callable
 
 LOGGER = logging.getLogger(__name__)
 

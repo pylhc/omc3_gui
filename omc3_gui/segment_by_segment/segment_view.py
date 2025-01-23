@@ -1,3 +1,9 @@
+""" 
+Segment View
+------------
+
+This module contains the view for the segment dialog.
+"""
 from pathlib import Path
 
 from qtpy import QtWidgets

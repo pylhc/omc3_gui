@@ -1,6 +1,6 @@
 """ 
-DataClass UI
-------------
+Utils: DataClass UI
+-------------------
 
 This module allows to generate a simple UI's for dataclasses,
 which allows to edit the values of a dataclass.
@@ -10,7 +10,8 @@ import inspect
 import re
 from dataclasses import MISSING, Field, dataclass, field, fields
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union, get_type_hints
+from typing import Any, Optional, Union, get_type_hints
+from collections.abc import Callable, Sequence
 from omc3_gui.utils import file_dialogs
 
 from qtpy import QtWidgets
@@ -126,7 +127,7 @@ class DataClassUI:
     """
     layout: QtWidgets.QGridLayout   # final layout of the UI for dataclass
     model: object = None            # dataclass instance
-    fields: Dict[str, FieldUI] = field(default_factory=dict) # stored field UI-elements
+    fields: dict[str, FieldUI] = field(default_factory=dict) # stored field UI-elements
 
     def reset_labels(self):
         """ Resets all labels to indicate that the field shows the currently set value in the dataclass."""
@@ -201,7 +202,7 @@ class DataClassUI:
         Returns:
             DataClassUI: A grid-layout containing edit-widgets and labels.
         """
-        field_instances: Dict[str, Field] = {field.name: field for field in fields(dclass)}
+        field_instances: dict[str, Field] = {field.name: field for field in fields(dclass)}
         field_types = get_dataclass_types(
             dclass, 
             [
@@ -376,7 +377,7 @@ TYPE_TO_WIDGET_MAP = {
 }
 
 
-def build_getter_setter(widget: QtWidgets.QWidget, field_type: type) -> Tuple[Callable, Callable]:
+def build_getter_setter(widget: QtWidgets.QWidget, field_type: type) -> tuple[Callable, Callable]:
     """ Getter/Setter Factory for widgets. 
     
     Args:
@@ -422,7 +423,7 @@ def run_dialog(dialog: file_dialogs.OpenFilesDialog, get_value: Callable, set_va
 
 # Other ------------------------------------------------------------------------
 
-def get_field_inline_comments(dclass: type) -> Dict[str, str]:
+def get_field_inline_comments(dclass: type) -> dict[str, str]:
     """
     Returns a dictionary mapping field names to their associated inline code-comments.
     Has been replaced by the use of the metadata, but I like the function,

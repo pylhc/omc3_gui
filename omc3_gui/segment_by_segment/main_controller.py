@@ -1,7 +1,15 @@
+""" 
+Segment-by-Segment Controller
+-----------------------------
+
+This is the main controller for the Segment-by-Segment application.
+"""
+from __future__ import annotations
+
 import logging
 from functools import partial
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple
+from collections.abc import Sequence
 
 from omc3.sbs_propagation import segment_by_segment
 from qtpy import QtWidgets
@@ -31,8 +39,8 @@ class SbSController(Controller):
         super().__init__(SbSWindow())
         self.connect_signals()
         self.settings = Settings()
-        self._last_selected_optics_path: Path = None
-        self._running_tasks: List[BackgroundThread] = []
+        self._last_selected_optics_path: Path | None = None
+        self._running_tasks: list[BackgroundThread] = []
 
         self.set_measurement_interaction_buttons_enabled(False)
         self.set_all_segment_buttons_enabled(False)
@@ -172,7 +180,7 @@ class SbSController(Controller):
         self.set_all_segment_buttons_enabled(True)
 
 
-        segment_table_items: List[SegmentItemModel] = []
+        segment_table_items: list[SegmentItemModel] = []
 
         for measurement in measurements:
             for segment in measurement.segments:
@@ -235,7 +243,7 @@ class SbSController(Controller):
             return
 
         # Plot segements
-        def_and_widget: Tuple[ColumnsAndLabels, DualPlot] = self._view.get_current_tab()
+        def_and_widget: tuple[ColumnsAndLabels, DualPlot] = self._view.get_current_tab()
         definition, widget = def_and_widget
         # plot_segments()
     
@@ -269,7 +277,7 @@ class SbSController(Controller):
             LOGGER.error("Please select at least one measurement.")
             return
         
-        LOGGER.debug(f"Opening edit dialog for a new segment.")
+        LOGGER.debug("Opening edit dialog for a new segment.")
         dialog = SegmentDialog(parent=self._view)
         if dialog.exec_() == dialog.Rejected:
             LOGGER.debug("Segment dialog cancelled.")

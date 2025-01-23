@@ -1,3 +1,9 @@
+""" 
+Utils: Logging
+--------------
+
+Helper functions for logging.
+"""
 import sys
 import os
 import logging
@@ -41,7 +47,7 @@ def get_console_formatter():
     return formatter
 
 
-def init_logging(level: int = None):
+def init_logging(level: int | None = None):
     """ Set up a basic logger. """
     if level is None:
         level = logging.DEBUG if sys.flags.debug else logging.INFO

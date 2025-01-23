@@ -1,6 +1,6 @@
 """
-Widgets 
--------
+Utils: Widgets 
+--------------
 
 Pre-Defined Widgets go here.
 """
@@ -15,7 +15,7 @@ class RunButton(QtWidgets.QPushButton):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not args and not "text" in kwargs:
+        if not args and "text" not in kwargs:
             self.setText("Run")
 
         self.setStyleSheet(
@@ -28,7 +28,7 @@ class OpenButton(QtWidgets.QPushButton):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not args and not "text" in kwargs:
+        if not args and "text" not in kwargs:
             self.setText("Open")
 
         self.setStyleSheet(
@@ -41,7 +41,7 @@ class RemoveButton(QtWidgets.QPushButton):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not args and not "text" in kwargs:
+        if not args and "text" not in kwargs:
             self.setText("Remove")
 
         self.setStyleSheet(
@@ -53,7 +53,7 @@ class EditButton(QtWidgets.QPushButton):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not args and not "text" in kwargs:
+        if not args and "text" not in kwargs:
             self.setText("Edit")
 
         self.setStyleSheet(

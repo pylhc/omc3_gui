@@ -1,3 +1,13 @@
+""" 
+Utils: Colors
+-------------
+
+This module contains the color definitions for the application.
+All colors should be defined here for consistency and the elements
+will then refer to the main color-constants, e.g. `colors.TEXT_DARK` 
+(not to the colors themselves).
+This allows for a unified look and feel.
+"""
 BLACK_87 = "#212121"
 BLACK_54 = "#757575"
 BLACK_38 = "#9e9e9e"

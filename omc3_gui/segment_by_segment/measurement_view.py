@@ -1,3 +1,9 @@
+""" 
+Measurement View
+----------------
+
+This module contains the view for the measurement dialog.
+"""
 from pathlib import Path
 
 from qtpy import QtWidgets

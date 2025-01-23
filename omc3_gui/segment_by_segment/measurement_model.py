@@ -1,19 +1,32 @@
-from __future__ import annotations  # Together with TYPE_CHECKING: allow circular imports for type-hints
+""" 
+Measurement Model
+-----------------
+
+This module contains the model for the Optics Measurement 
+in the Segment-by-Segment application.
+"""
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field, fields
 from pathlib import Path
-from typing import Any, ClassVar, Dict, List, Union
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from omc3.model.constants import TWISS_DAT
-from omc3.optics_measurements.constants import (BETA_NAME, EXT, KICK_NAME, MODEL_DIRECTORY,
-                                                PHASE_NAME)
+from omc3.optics_measurements.constants import (
+    BETA_NAME,
+    EXT,
+    KICK_NAME,
+    MODEL_DIRECTORY,
+    PHASE_NAME,
+)
 from tfs.reader import read_headers
 
-from omc3_gui.utils.dataclass_ui import choices_validator as choices, metafield
-from typing import TYPE_CHECKING
+from omc3_gui.utils.dataclass_ui import choices_validator as choices
+from omc3_gui.utils.dataclass_ui import metafield
 
 if TYPE_CHECKING:
-    from omc3_gui.segment_by_segment.segment_model import SegmentDataModel 
+    from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
 
 SEQUENCE = "SEQUENCE"
 DATE = "DATE"
@@ -41,7 +54,7 @@ class OpticsMeasurement:
     beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, validate=choices(1, 2)) 
     # List of segments. Using a list here, so the name and start/end can be changed
     # without having to modify anything here.
-    _segments: List[SegmentDataModel] = field(default_factory=list)
+    _segments: list[SegmentDataModel] = field(default_factory=list)
 
     DEFAULT_OUTPUT_DIR: ClassVar[str] = "sbs"
 
@@ -62,6 +75,7 @@ class OpticsMeasurement:
 
     @classmethod
     def get_label(cls, name: str) -> str:
+        """ Returns the label for the field named `name`. """
         try:
             return cls.__dataclass_fields__[name].metadata["label"]
         except KeyError:
@@ -69,6 +83,7 @@ class OpticsMeasurement:
 
     @classmethod
     def get_comment(cls, name: str) -> str:
+        """ Returns the comment for the field named `name`. """
         try:
             return cls.__dataclass_fields__[name].metadata["comment"]
         except KeyError:
@@ -108,7 +123,7 @@ class OpticsMeasurement:
             return False
         return True
     
-    def try_remove_segment(self, segment: Union[SegmentDataModel, str]) -> bool:
+    def try_remove_segment(self, segment: SegmentDataModel | str) -> bool:
         if isinstance(segment, str):
             try:
                 segment = self.get_segment_by_name(segment)
@@ -130,11 +145,11 @@ class OpticsMeasurement:
         raise NameError(f"No segment with name {name} in {self.display()}.")
     
     @property
-    def segments(self) -> List[SegmentDataModel]:
+    def segments(self) -> list[SegmentDataModel]:
         return self._segments
 
     # Segment-by-Segment Parameters --------------------------------------------
-    def get_sbs_parameters(self) -> Dict[str, Any]:
+    def get_sbs_parameters(self) -> dict[str, Any]:
         parameters = dict(
             measurement_dir=self.measurement_dir,
             corrections=self.corrections,
@@ -210,7 +225,7 @@ def _parse_model_dir_from_optics_measurement(measurement_path: Path) -> Path:
     return path
 
 
-def _parse_info_from_model_dir(model_dir: Path) -> Dict[str, Any]:
+def _parse_info_from_model_dir(model_dir: Path) -> dict[str, Any]:
     """ Checking twiss.dat for more info about the accelerator.
 
     Args:
@@ -243,7 +258,7 @@ def _parse_info_from_model_dir(model_dir: Path) -> Dict[str, Any]:
     return result
 
 
-def _get_lhc_model_year(date: Union[str, None]) -> Union[str, None]:
+def _get_lhc_model_year(date: str | None) -> str | None:
     """ Parses the year from the date in the LHC twiss.dat file 
     and tries to find the closest model-year."""
     if date is None:

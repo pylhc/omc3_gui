@@ -1,4 +1,11 @@
-from typing import Iterator, Tuple, Any
+""" 
+Utils: Iterable Classes
+-----------------------
+
+This module contains classes that are or make other classes iterable over their attributes.
+"""
+from typing import Any
+from collections.abc import Iterator
 
 EXCLUDED_NAME = "EXCLUDED_ATTRIBUTES"
 
@@ -6,7 +13,6 @@ EXCLUDED_NAME = "EXCLUDED_ATTRIBUTES"
 
 class IterableAttributeNames(type):
     """ Makes the class itself iterable over its attribute names. """
-
 
     def __iter__(self) -> Iterator[str]:
         for attr in dir(self):
@@ -24,7 +30,7 @@ class IterableAttributeValues(type):
 
 class IterableAttributeItems(type):
     """ Makes the class itself iterable over its attribute name and values. """
-    def __iter__(self) -> Iterator[Tuple[str, Any]]:
+    def __iter__(self) -> Iterator[tuple[str, Any]]:
         for attr, value in self.__dict__.items():
             if not attr.startswith("__"):
                 yield attr, value
@@ -48,6 +54,6 @@ class IterClass(metaclass=IterableAttributeNames):
             yield getattr(cls, attr)
     
     @classmethod
-    def items(cls) -> Iterator[Tuple[str, Any]]:
+    def items(cls) -> Iterator[tuple[str, Any]]:
         for attr in cls:
             yield attr, getattr(cls, attr)

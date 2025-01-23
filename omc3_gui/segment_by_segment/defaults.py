@@ -1,4 +1,9 @@
+""" 
+Segment-by-Segment Defaults
+---------------------------
 
+Defaults for segment by segment.
+"""
 
 DEFAULT_SEGMENTS =(
     ("IP1", "BPM.12L1", "BPM.12R1"),

@@ -1,12 +1,19 @@
-from __future__ import annotations  # Together with TYPE_CHECKING: allow circular imports for type-hints
-from dataclasses import dataclass, field
-from typing import List, Optional, Union
+""" 
+Segment Model
+-------------
 
-from omc3_gui.utils.dataclass_ui import metafield
-from omc3_gui.utils import colors
+This module contains the model for the Segments 
+in the Segment-by-Segment application.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
 from omc3.segment_by_segment.segments import SegmentDiffs
 
-from typing import TYPE_CHECKING
+from omc3_gui.utils import colors
+from omc3_gui.utils.dataclass_ui import metafield
 
 if TYPE_CHECKING:
     from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
@@ -26,9 +33,9 @@ def not_empty(value):
 class SegmentDataModel:
     measurement: OpticsMeasurement
     name: str =            metafield("Name",  "Name of the Segment", validate=not_empty)
-    start: Optional[str] = metafield("Start", "Start of the Segment", default=None, validate=not_empty)
-    end: Optional[str] =   metafield("End",   "End of the Segment",   default=None, validate=not_empty)
-    _data: Optional[SegmentDiffs] = None
+    start: str | None = metafield("Start", "Start of the Segment", default=None, validate=not_empty)
+    end: str | None =   metafield("End",   "End of the Segment",   default=None, validate=not_empty)
+    _data: SegmentDiffs | None = None
 
     def __str__(self):
         return self.name
@@ -68,7 +75,7 @@ class SegmentItemModel:
         self._segments = []
 
     @classmethod
-    def from_segments(cls, segments: List[SegmentDataModel]) -> "SegmentItemModel":
+    def from_segments(cls, segments: list[SegmentDataModel]) -> "SegmentItemModel":
         new = cls(segments[0].name, segments[0].start, segments[0].end)
         new.segments = segments  # also checks for equality of given segments
         return new
@@ -109,11 +116,11 @@ class SegmentItemModel:
             segment.end = value
 
     @property
-    def segments(self) -> List[SegmentDataModel]:
+    def segments(self) -> list[SegmentDataModel]:
         return self._segments
     
     @segments.setter
-    def segments(self, segments: List[SegmentDataModel]):
+    def segments(self, segments: list[SegmentDataModel]):
         if any(not compare_segments(self, segment) for segment in segments):
             raise ValueError(
                 "At least one given segment has a different "
@@ -143,16 +150,16 @@ class SegmentItemModel:
         """ String representation of the segment as used in inputs."""
         return to_input_string(self)
     
-def compare_segments(a: Union[SegmentDataModel, SegmentItemModel], b: Union[SegmentDataModel, SegmentItemModel]):
+def compare_segments(a: SegmentDataModel | SegmentItemModel, b: SegmentDataModel | SegmentItemModel):
     return a.name == b.name and a.start == b.start and a.end == b.end
 
 
 # Common functions -------------------------------------------------------------
 
-def is_element(segment: [SegmentItemModel, SegmentDataModel]):
+def is_element(segment: SegmentItemModel | SegmentDataModel):
     return segment.start is None or segment.end is None
 
-def to_input_string(segment: [SegmentItemModel, SegmentDataModel]):
+def to_input_string(segment: SegmentItemModel | SegmentDataModel):
     if is_element(segment):
         return segment.name
     return f"{segment.name},{segment.start},{segment.end}"

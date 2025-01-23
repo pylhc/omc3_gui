@@ -1,4 +1,9 @@
+""" 
+Utils: Styles
+-------------
 
+Helper functions to style UI elements and plots.
+"""
 from omc3_gui.utils import colors
 
 MONOSPACED_TOOLTIP = f"""

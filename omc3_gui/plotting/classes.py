@@ -1,5 +1,9 @@
+""" 
+Plotting: Classes
+-----------------
 
-
+Containers for figures, plots, etc.
+"""
 import pyqtgraph as pg
 from accwidgets.graph import StaticPlotWidget
 from accwidgets.graph.widgets.plotitem import ExViewBox
@@ -33,7 +37,9 @@ class DualPlot(pg.LayoutWidget):
 class PlotWidget(StaticPlotWidget):
     
     def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())
+        # super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())
+        super().__init__(*args, **kwargs)
+        
         
         # fixes for our plots
         self.setBackground("w")

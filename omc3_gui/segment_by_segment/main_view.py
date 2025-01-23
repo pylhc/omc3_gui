@@ -1,23 +1,39 @@
+""" 
+Segment-by-Segment View
+-----------------------
 
+This is the main view for the Segment-by-Segment application.
+"""
 # from omc3_gui.segment_by_segment.segment_by_segment_ui import Ui_main_window
-import logging
-from typing import Dict, Iterator, List, Sequence, Tuple
+from __future__ import annotations
 
+import logging
+from collections.abc import Sequence
+
+from omc3.definitions.optics import PHASE_COLUMN, ColumnsAndLabels
 from PyQt5 import QtGui
 from qtpy import QtGui, QtWidgets
-from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot, QEvent
+from qtpy.QtCore import QEvent, QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
 from omc3_gui.plotting.classes import DualPlot
-from omc3_gui.segment_by_segment.main_model import MeasurementListModel, SegmentTableModel
+from omc3_gui.segment_by_segment.main_model import (
+    MeasurementListModel,
+    SegmentTableModel,
+)
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
 from omc3_gui.utils import colors
-from omc3_gui.utils.ui_base_classes import View
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
+from omc3_gui.utils.iteration_classes import IterClass
 from omc3_gui.utils.styles import MONOSPACED_TOOLTIP
-from omc3_gui.utils.widgets import (DefaultButton, EditButton, OpenButton, RemoveButton, RunButton)
-from omc3.definitions.optics import ColumnsAndLabels, PHASE_COLUMN
-from omc3_gui.utils.iteration_classes import IterClass 
+from omc3_gui.utils.ui_base_classes import View
+from omc3_gui.utils.widgets import (
+    DefaultButton,
+    EditButton,
+    OpenButton,
+    RemoveButton,
+    RunButton,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -204,7 +220,7 @@ class SbSWindow(View):
         
         self.setCentralWidget(self._central)
     
-    def get_current_tab(self) -> Tuple[ColumnsAndLabels, DualPlot]:
+    def get_current_tab(self) -> tuple[ColumnsAndLabels, DualPlot]:
         widget = self._tabs_widget.currentWidget()
         index = self._tabs_widget.currentIndex()
         return list(Tabs.values())[index], widget
@@ -216,7 +232,7 @@ class SbSWindow(View):
     def get_measurement_list(self) -> MeasurementListModel:
         return self._list_view_measurements.model()
 
-    def get_selected_measurements(self) -> Tuple[OpticsMeasurement]:
+    def get_selected_measurements(self) -> tuple[OpticsMeasurement]:
         selected = self._list_view_measurements.selectedIndexes()
         return tuple(s.data(role=Qt.EditRole) for s in selected)
 
@@ -232,8 +248,8 @@ class SbSWindow(View):
     def get_segments(self) -> SegmentTableModel:
         return self._table_segments.model()
 
-    def get_selected_segments(self) -> Tuple[SegmentItemModel]:
-        selected: List[QModelIndex] = self._table_segments.selectedIndexes()
+    def get_selected_segments(self) -> tuple[SegmentItemModel]:
+        selected: list[QModelIndex] = self._table_segments.selectedIndexes()
         return tuple(s.data(role=Qt.EditRole) for s in selected if s.column() == 0)  # need only one per row
     
     def plot(self):
