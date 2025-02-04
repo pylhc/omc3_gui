@@ -10,7 +10,7 @@ import inspect
 import re
 from dataclasses import MISSING, Field, dataclass, field, fields
 from pathlib import Path
-from typing import Any, Optional, Union, get_type_hints
+from typing import Any, get_type_hints
 from collections.abc import Callable, Sequence
 from omc3_gui.utils import file_dialogs
 
@@ -29,9 +29,9 @@ LOGGER = logging.getLogger(__name__)
 @dataclass
 class MetaData:
     """ Metadata for a dataclass-field. """
-    label: Optional[str] = None
-    comment: Optional[str] = None
-    validate: Optional[Callable] = None
+    label: str | None = None
+    comment: str | None = None
+    validate: Callable | None = None  # needs to return a truthy value if valid, else falsy or raise
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -40,7 +40,7 @@ class MetaData:
         return getattr(self, key, default)
 
     
-def metafield(label: str, comment: str, default=MISSING, validate: Optional[Callable] = None) -> Field:
+def metafield(label: str, comment: str, default=MISSING, validate: Callable | None = None) -> Field:
     """ Convenience function to create a dataclass-field with metadata. """
     return field(default=default, metadata=MetaData(label=label, comment=comment, validate=validate))
 
@@ -50,7 +50,9 @@ def choices_validator(*choices: Any) -> Callable:
     def validator(value):
         if value not in choices:
             raise ValueError(f"Value {value} is not in {choices}.")
+        return True
     return validator
+
 
 class FilePath(Path):
     """ Convenience Class to indicate that the Path should lead to a file. """
@@ -75,10 +77,10 @@ class FieldUIDef:
     isetlf if possible, but values given here take precedence. 
     """
     name: str                        # name of the field in the dataclass
-    label: Optional[str] = None      # label of the field
-    type: Optional[type] = None       # type of the field's data, needs to be instanciable
-    comment: Optional[str] = None    # comment for the field, e.g. used for tooltips
-    editable: Optional[bool] = True  # sets field to be editable
+    label: str | None = None         # label of the field
+    pytype: type | None = None       # type of the field's data, needs to be instanciable
+    comment: str | None = None       # comment for the field, e.g. used for tooltips
+    editable: bool | None = True     # sets field to be editable
 
 
 @dataclass
@@ -91,7 +93,7 @@ class FieldUI:
     label: QtWidgets.QLabel    # label-widget of the field
     get_value: Callable        # getter for the widget value, returns the value as appropriate type for the dataclass
     set_value: Callable        # setter for the widget value
-    text_color: Optional[str] = colors.TEXT_DARK  # default text-color for both widget and label
+    text_color: str | None = colors.TEXT_DARK  # default text-color for both widget and label
     modified: bool = False     # flag indicating if the widget-content has been modified by the user
 
     def __post_init__(self):
@@ -170,7 +172,13 @@ class DataClassUI:
             self.update_model_from_widget(name)
 
     def validate(self, only_modified: bool = False):
-        """ Checks all edit-widgets for valid choices. """
+        """ Checks all edit-widgets for valid choices. 
+        
+        The validation function NEED to return a truthy value, if 
+        the choice is valid. If it is invalid, they can either return a falsy
+        value or raise an exception. In the latter case, this exception will be
+        printed instead of the default message.
+        """
         invalid_fields_str = []
         for name in self.fields.keys():
             field = self.model.__dataclass_fields__[name]
@@ -181,8 +189,15 @@ class DataClassUI:
             validate_function = field.metadata.get("validate")
             if validate_function is not None:
                 value = self.fields[field.name].get_value()
-                if not validate_function(value):
-                    invalid_fields_str.append(f"{field_ui.label.text()}: {value} is not a valid choice.")
+
+                validation_result = False
+                try: 
+                    validation_result = validate_function(value)
+                except ValueError as e:
+                    invalid_fields_str.append(f"{field_ui.label.text()}: {str(e)}")
+                else: 
+                    if not validation_result:
+                        invalid_fields_str.append(f"{field_ui.label.text()}: {value} is not a valid choice.")
 
         if invalid_fields_str:
             full_str = "\n".join(invalid_fields_str)
@@ -190,14 +205,14 @@ class DataClassUI:
 
     @classmethod
     def build_dataclass_ui(cls, 
-        field_definitions: Sequence[Union[FieldUIDef, str]], dclass: Union[type, object]) -> 'DataClassUI':
+        field_definitions: Sequence[FieldUIDef | str], dclass: type | object) -> 'DataClassUI':
         """ Builds a DataClassUI from a list of field definitions.
         NOTE: `dclass` is not automatically attached to the resulting class,
         as this function works with classes and instances, but the attached object needs to be the instance.
         
         Args:
-            field_def (Sequence[Union[FieldUIDef, str]]): list of field definitions
-            dclass (Union[type, object]): DataClass type or instance.
+            field_def (Sequence[FieldUIDef | str]): list of field definitions
+            dclass (type | object): DataClass type or instance.
 
         Returns:
             DataClassUI: A grid-layout containing edit-widgets and labels.
@@ -215,49 +230,49 @@ class DataClassUI:
         layout = QtWidgets.QGridLayout()
         dataclass_ui = cls(layout)
         
-        for idx_row, field in enumerate(field_definitions):
-            if field is None:
+        for idx_row, field_def in enumerate(field_definitions):
+            if field_def is None:
                 layout.addWidget(HorizontalSeparator(), idx_row, 0, 1, 3)
                 continue
 
-            if isinstance(field, str):
-                layout.addWidget(QtWidgets.QLabel(field), idx_row, 0)
+            if isinstance(field_def, str):
+                layout.addWidget(QtWidgets.QLabel(field_def), idx_row, 0)
                 continue
             
-            if field.name not in field_instances:
-                raise ValueError(f"Field {field.name} not found in dataclass {dclass}")
-            field_inst = field_instances[field.name]
+            if field_def.name not in field_instances:
+                raise ValueError(f"Field {field_def.name} not found in dataclass {dclass}")
+            field_inst = field_instances[field_def.name]
             
             # Label ---
-            qlabel = QtWidgets.QLabel(field.label or field_inst.metadata.get("label", field.name))
-            qlabel.setToolTip(field.comment or field_inst.metadata.get("comment", ""))
+            qlabel = QtWidgets.QLabel(field_def.label or field_inst.metadata.get("label", field_def.name))
+            qlabel.setToolTip(field_def.comment or field_inst.metadata.get("comment", ""))
             layout.addWidget(qlabel, idx_row, 0)
             
             # User input ---
-            # If field.type is not given, use evaluate from dataclass. 
+            # If field_def.type is not given, use evaluate from dataclass. 
             # Check __args__ in case of Union/Optional and use first one.
             # The type needs to be instanciable!
-            eval_type = field_types[field.name]  # evaluated type, might be Optional/Union etc with __args__
-            field_type = field.type or getattr(eval_type, "__args__", [eval_type])[0]  
+            eval_type = field_types[field_def.name]  # evaluated type, might be Optional/Union etc with __args__
+            field_type = field_def.pytype or getattr(eval_type, "__args__", [eval_type])[0]  
 
             widget = TYPE_TO_WIDGET_MAP.get(field_type, QtWidgets.QLineEdit)()
 
             try:
-                widget.setReadOnly(not field.editable)
+                widget.setReadOnly(not field_def.editable)
             except AttributeError:
-                widget.setEnabled(field.editable)
+                widget.setEnabled(field_def.editable)
 
 
             get_value, set_value = build_getter_setter(widget, field_type)
-            dataclass_ui.fields[field.name] = FieldUI(
+            dataclass_ui.fields[field_def.name] = FieldUI(
                 widget=widget, 
                 label=qlabel,
                 set_value=set_value,
                 get_value=get_value,
-                text_color=colors.TEXT_DARK if field.editable else colors.GREYED_OUT_TEXT_DARK
+                text_color=colors.TEXT_DARK if field_def.editable else colors.GREYED_OUT_TEXT_DARK
             )
             
-            if not issubclass(field_type, Path) or not field.editable:
+            if not issubclass(field_type, Path) or not field_def.editable:
                 layout.addWidget(widget, idx_row, 1, 1, 2)
             else:
                 layout.addWidget(widget, idx_row, 1)
@@ -363,7 +378,7 @@ class DataClassDialog(QtWidgets.QDialog):
 class QFullIntSpinBox(QtWidgets.QSpinBox):
     """ Like a QSpinBox, but overwriting default range(0,100) with maximum integer range. """
 
-    def __init__(self, parent: Optional[QtWidgets.QWidget] = None) -> None:
+    def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(parent)
         self.setRange(-2**31, 2**31 - 1)  # range of signed 32-bit integers 
 
@@ -452,7 +467,7 @@ def get_field_inline_comments(dclass: type) -> dict[str, str]:
 
 
 
-def get_dataclass_types(dclass: Union[type, object], names: Sequence[str]):
+def get_dataclass_types(dclass: type | object, names: Sequence[str]):
     """ 
     Returns a dictionary mapping field names to their associated types.
 
@@ -461,7 +476,7 @@ def get_dataclass_types(dclass: Union[type, object], names: Sequence[str]):
     the `from __future__ import annotations`, but whith 
     this, all type-hints on the dataclasses become `ForwardReferences`, 
     i.e. strings. So if we get them from the dataclass-fields
-    via `field.type` or `field.type.__args__`, we cannot instanciate them later on.
+    via `field.pytype` or `field.pytype.__args__`, we cannot instanciate them later on.
 
     `get_type_hints()` from `typing` solves this problem, but it 
     evaluates the type-hints of all fields in the dataclass. 

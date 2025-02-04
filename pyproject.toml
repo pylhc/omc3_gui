@@ -1,0 +1,91 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "omc3_gui/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/doc",
+  "/tests",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["omc3_gui"]
+
+[project]
+name = "omc3-gui"
+readme = "README.md"
+description = "QT Graphical User Interface wrapper of the ``omc3`` package"
+authors = [
+    {name = "OMC Team", email = "pylhc@github.com"},  # see zenodo file / commits for details
+]
+license = "MIT"
+dynamic = ["version"]
+requires-python = ">=3.10"
+
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "omc3[optional]>= 0.22.0",
+    "qtpy >= 2.3.1",  # runs with either PySide2/6 or PyQt5/6
+    "pyqtgraph",
+]
+
+
+[project.optional-dependencies]
+cern = [
+        "omc3[cern]",
+        "accwidgets[app_frame,log_console]",  # app_frame,rbac,log_console,screenshot,graph
+]
+test = [
+  "pytest >= 7.0",
+  "pytest-cov >= 2.9",
+  "pytest-timeout >= 1.4",
+]
+doc = [
+  "sphinx >= 7.0",
+  "sphinx_rtd_theme >= 2.0",
+]
+
+all = [
+  "omc3_gui[cern]",
+  "omc3_gui[test]",
+  "omc3_gui[doc]",
+]
+
+[project.urls]
+homepage = "https://github.com/pylhc/omc3_gui"
+repository = "https://github.com/pylhc/omc3_gui"
+documentation = "https://pylhc.github.io/omc3_gui/"
+changelog = "https://github.com/pylhc/omc3_gui/blob/master/CHANGELOG.md"
+
+# ----- Testing ----- #
+
+[tool.pytest.ini_options]
+markers = [
+    "basic: basic tests run for every commit",
+    "extended: test run on PRs",
+    "cern_network: tests that require access to afs or the technical network",
+]
+# Helpful for pytest-debugging (leave commented out on commit):
+#log_cli = true
+#log_cli_level = "DEBUG"

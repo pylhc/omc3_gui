@@ -4,9 +4,8 @@ Measurement View
 
 This module contains the view for the measurement dialog.
 """
+from dataclasses import fields
 from pathlib import Path
-
-from qtpy import QtWidgets
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.utils.dataclass_ui import DataClassDialog, FieldUIDef, DataClassUI
@@ -19,14 +18,15 @@ class OpticsMeasurementDialog(DataClassDialog):
     WINDOW_TITLE = "Optics Measurement"
     DEFAULT_SIZE = (800, -1)
     
-    def __init__(self, parent=None, optics_measurement: OpticsMeasurement = None):
+    def __init__(self, parent=None, optics_measurement: OpticsMeasurement | None = None):
         if optics_measurement is None:
             optics_measurement = OpticsMeasurement(measurement_dir=TO_BE_DEFINED, output_dir=TO_BE_DEFINED)
 
+        non_editable = ("measurement_dir", )  # set by program not by user
         dataclass_ui = DataClassUI.build_dataclass_ui(
             field_definitions=[
-                FieldUIDef(name="measurement_dir", editable=False), 
-                *(FieldUIDef(name) for name in ("model_dir", "output_dir", "accel", "beam", "year", "ring"))
+                FieldUIDef(field.name, editable=field.name not in non_editable) 
+                for field in fields(OpticsMeasurement) if field.name[0] != "_"
             ],
             dclass=OpticsMeasurement,
         )

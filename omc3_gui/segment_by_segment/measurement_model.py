@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
 SEQUENCE = "SEQUENCE"
 DATE = "DATE"
-LHC_MODEL_YEARS = (2012, 2015, 2016, 2017, 2018, 2022, 2023)  # TODO: get from omc3
+LHC_MODEL_YEARS = ("2012", "2015", "2016", "2017", "2018", "2022", "2023", "2024", "2025", "2026")  # TODO: get from omc3
 
 FILES_TO_LOOK_FOR = (f"{name}{plane}" for name in (KICK_NAME, PHASE_NAME, BETA_NAME) for plane in ("x", "y"))
 
