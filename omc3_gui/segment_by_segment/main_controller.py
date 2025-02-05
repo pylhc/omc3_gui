@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from functools import partial
 from pathlib import Path
-from collections.abc import Sequence
+from typing import TYPE_CHECKING, reveal_type
 
 from omc3.sbs_propagation import segment_by_segment
 from qtpy import QtWidgets
@@ -28,12 +28,15 @@ from omc3_gui.segment_by_segment.segment_view import SegmentDialog
 from omc3.definitions.optics import ColumnsAndLabels
 from omc3_gui.plotting.classes import DualPlot
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
 LOGGER = logging.getLogger(__name__)
 
 class SbSController(Controller):
     
     settings: Settings
-    _view: SbSWindow   # for the IDE
+    _view: SbSWindow
 
     def __init__(self):
         super().__init__(SbSWindow())
@@ -46,25 +49,31 @@ class SbSController(Controller):
         self.set_all_segment_buttons_enabled(False)
 
     def connect_signals(self):
-        self._view.button_load_measurement.clicked.connect(self.open_measurements)
-        self._view.button_edit_measurement.clicked.connect(self.edit_measurement)
-        self._view.button_remove_measurement.clicked.connect(self.remove_measurement)
-        self._view.button_run_segment.clicked.connect(self.run_segments)
+        """ Connect the signals from the GUI components (view) to the slots (controller). """
+        view: SbSWindow = self._view  # for shorthand and type hinting
 
-        self._view.sig_list_optics_double_clicked.connect(self.edit_measurement)
-        self._view.sig_list_optics_selected.connect(self.measurement_selection_changed)
+        view.button_load_measurement.clicked.connect(self.open_measurements)
+        view.button_edit_measurement.clicked.connect(self.edit_measurement)
+        view.button_remove_measurement.clicked.connect(self.remove_measurement)
+        view.button_run_segment.clicked.connect(self.run_segments)
 
-        self._view.button_new_segment.clicked.connect(self.new_segment)
-        self._view.button_copy_segment.clicked.connect(self.copy_segment)
-        self._view.button_default_segments.clicked.connect(self.add_default_segments)
-        self._view.button_remove_segment.clicked.connect(self.remove_segment)
+        view.sig_list_optics_double_clicked.connect(self.edit_measurement)
+        view.sig_list_optics_selected.connect(self.measurement_selection_changed)
 
-        self._view.sig_table_segments_selected.connect(self.segment_selection_changed)
-        self._view.sig_thread_spinner_double_clicked.connect(self._show_running_tasks)
+        view.button_new_segment.clicked.connect(self.new_segment)
+        view.button_copy_segment.clicked.connect(self.copy_segment)
+        view.button_default_segments.clicked.connect(self.add_default_segments)
+        view.button_remove_segment.clicked.connect(self.remove_segment)
+
+        view.sig_table_segments_selected.connect(self.segment_selection_changed)
+        view.sig_thread_spinner_double_clicked.connect(self._show_running_tasks)
     
     @Slot()
     def _update_tasks_status(self):
-        status_bar: QtWidgets.QStatusBar = self._view.statusBar()
+        """ Update the status bar with the number of running tasks. """
+        view: SbSWindow = self._view  
+        status_bar: QtWidgets.QStatusBar = view.statusBar()
+        
         if self._running_tasks:
             # status_bar.show()
             status_bar.showMessage(f"{len(self._running_tasks)} Task(s) running ...")
@@ -72,15 +81,17 @@ class SbSController(Controller):
                 f"{len(self._running_tasks)} Running Task(s):\n  - "
                 + "\n  - ".join([task.message for task in self._running_tasks])
             )
-            self._view.thread_spinner.start()
+            view.thread_spinner.start()
         else:
             status_bar.setToolTip(None)
             status_bar.clearMessage()
-            self._view.thread_spinner.stop()
+            view.thread_spinner.stop()
             # status_bar.hide()
 
     @Slot()
     def _add_running_task(self, task: BackgroundThread):
+        """ Add a task to the list of running tasks. """
+        
         # Automatically remove task when finished
         remove_task_fun = partial(self._remove_running_task, task=task)
         task.finished.connect(remove_task_fun)
@@ -90,38 +101,56 @@ class SbSController(Controller):
 
     @Slot()
     def _remove_running_task(self, task):
+        """ Remove a task from the list of running tasks. """
         self._running_tasks.remove(task)
         self._update_tasks_status()
 
     @Slot()
     def _show_running_tasks(self):
+        """ Show (i.e. log) the list of running tasks. """
         LOGGER.debug(f"Running tasks: {self._running_tasks}")
     
     # Measurements -------------------------------------------------------------
-    def set_measurement_interaction_buttons_enabled(self, enabled: bool):
+    def set_measurement_interaction_buttons_enabled(self, enabled: bool = True):
+        """ Enable/disable the buttons that interact with measurements. 
+        
+        Args:
+            enabled (bool): True to enable, False to disable.
+        """
+        view: SbSWindow = self._view  
+
         measurement_interaction_buttons = (
-            self._view.button_remove_measurement,
-            self._view.button_edit_measurement,
-            self._view.button_run_matcher,
-            self._view.button_edit_corrections,
+            view.button_remove_measurement,
+            view.button_edit_measurement,
+            view.button_run_matcher,
+            view.button_edit_corrections,
         )
         for button in measurement_interaction_buttons:
             button.setEnabled(enabled)
 
 
     def add_measurement(self, measurement: OpticsMeasurement):
-        self._view.get_measurement_list().add_item(measurement) 
+        """ Add a measurement to the GUI. 
+        
+        Args:
+            measurement (OpticsMeasurement): The measurement to add.
+        """
+        view: SbSWindow = self._view  # for type hinting
+        view.get_measurement_list().add_item(measurement) 
     
     @Slot()
     def open_measurements(self):
+        """ Open the file dialog for optics measurements. """
+        view: SbSWindow = self._view  
+
         LOGGER.debug("Opening new optics measurement. Asking for folder paths.")
         filenames = OpenDirectoriesDialog(
-            parent=self._view,
+            parent=view,
             caption="Select Optics Folders", 
             directory=str(self._last_selected_optics_path) if self._last_selected_optics_path else None,
         ).run_selection_dialog()
 
-        loaded_measurements = self._view.get_measurement_list()
+        loaded_measurements = view.get_measurement_list()
         measurement_indices = []
 
         LOGGER.debug(f"User selected {len(filenames)} files.")
@@ -137,10 +166,16 @@ class SbSController(Controller):
 
             self._last_selected_optics_path = filename.parent
 
-        self._view.set_selected_measurements(measurement_indices)
+        view.set_selected_measurements(measurement_indices)
     
     @Slot()
-    def edit_measurement(self, measurement: OpticsMeasurement = None):
+    def edit_measurement(self, measurement: OpticsMeasurement | None = None):
+        """ Open the edit dialog for a measurement.
+        If no measurement is given, the currently selected measurement is used.
+
+        Args:
+            measurement (OpticsMeasurement | None, optional): The measurement to edit. Defaults to None.
+        """
         if measurement is None:
             try:
                 measurement = self.get_single_measurement()
@@ -157,21 +192,37 @@ class SbSController(Controller):
             LOGGER.debug("Edit dialog closed. Updating measurement.")
 
     @Slot()
-    def remove_measurement(self, measurements: Sequence[OpticsMeasurement] = None):
+    def remove_measurement(self, measurements: Sequence[OpticsMeasurement] | None = None):
+        """ Remove measurements from the GUI.
+        If no measurements are given, the currently selected measurements are removed.        
+
+        Args:
+            measurements (Sequence[OpticsMeasurement] | None, optional): The measurements to remove. Defaults to None.
+        """
+        view: SbSWindow = self._view  
+
         if measurements is None:
-            measurements = self._view.get_selected_measurements()
+            measurements = view.get_selected_measurements()
             if not len(measurements):
                 LOGGER.warning("No measurement selected.")
                 return
-        self._view.get_measurement_list().remove_items(measurements)
-        self._view.set_selected_measurements()
+        
+        view.get_measurement_list().remove_items(measurements)
+        view.set_selected_measurements()
 
     @Slot(tuple)
     def measurement_selection_changed(self, measurements: Sequence[OpticsMeasurement]):
+        """ Updates the GUI when the selected measurements change. 
+        
+        Args:
+            measurements: Sequence[OpticsMeasurement]: The new selection of measurements.
+        """
         LOGGER.debug(f"Selected {len(measurements)} measurements.")
+        view: SbSWindow = self._view  
+
         if not len(measurements):
             self.set_measurement_interaction_buttons_enabled(False)
-            self._view.set_segments(SegmentTableModel())
+            view.set_segments(SegmentTableModel())
             self.segment_selection_changed()
             self.set_all_segment_buttons_enabled(False)
             return
@@ -197,40 +248,69 @@ class SbSController(Controller):
         self.segment_selection_changed()
 
     def get_single_measurement(self) -> OpticsMeasurement:
-        measurements = self._view.get_selected_measurements()
+        """ Get a single selected measurement from the GUI. 
+        Raises ValueError if no measurement is selected or multiple measurements are selected. 
+        """
+        view: SbSWindow = self._view  
+        measurements = view.get_selected_measurements()
+
         if len(measurements) == 0:
             raise ValueError("Please select at least one measurement.")
+
         if len(measurements) > 1:
             raise ValueError("Please select only one measurement.")
+        
         return measurements[0]
     
     # Segments -----------------------------------------------------------------
 
     def set_segment_interaction_buttons_enabled(self, enabled: bool = True):
+        """ Enable/disable the buttons that interact with segments. 
+    
+        Args:    
+            enabled (bool): True to enable, False to disable.
+        """
+        view: SbSWindow = self._view  
+
         segment_interaction_buttons = (
-            self._view.button_run_segment,
-            self._view.button_copy_segment,
-            self._view.button_remove_segment,
+            view.button_run_segment,
+            view.button_copy_segment,
+            view.button_remove_segment,
         )
         for button in segment_interaction_buttons:
             button.setEnabled(enabled)
     
     def set_all_segment_buttons_enabled(self, enabled: bool = True):
+        """ Enable/disable all segment buttons. 
+    
+        Args:
+            enabled (bool): True to enable, False to disable.
+        """
+        view: SbSWindow = self._view  
+
         segment_buttons = (
-            self._view.button_run_segment,
-            self._view.button_copy_segment,
-            self._view.button_remove_segment,
-            self._view.button_new_segment,
-            self._view.button_default_segments,
-            self._view.button_load_segments,
+            view.button_run_segment,
+            view.button_copy_segment,
+            view.button_remove_segment,
+            view.button_new_segment,
+            view.button_default_segments,
+            view.button_load_segments,
         )
         for button in segment_buttons:
             button.setEnabled(enabled)
 
     @Slot(tuple)
-    def segment_selection_changed(self, segments: Sequence[SegmentItemModel] = None):
+    def segment_selection_changed(self, segments: Sequence[SegmentItemModel] | None = None):
+        """ Updates the GUI when the selected segments change.
+        If no segments are given, the currently selected segments are used.
+        
+        Args:
+            segments: Sequence[SegmentItemModel]: The new selection of segments.
+        """
+        view: SbSWindow = self._view  
+
         if segments is None:
-            segments = self._view.get_selected_segments()
+            segments = view.get_selected_segments()
             
         LOGGER.debug(f"{len(segments)} Segment(s) selected.")
         if not len(segments):
@@ -243,14 +323,19 @@ class SbSController(Controller):
             return
 
         # Plot segements
-        def_and_widget: tuple[ColumnsAndLabels, DualPlot] = self._view.get_current_tab()
+        def_and_widget: tuple[ColumnsAndLabels, DualPlot] = view.get_current_tab()
         definition, widget = def_and_widget
         # plot_segments()
     
     @Slot()
     def add_default_segments(self):
+        """ Add default segments to the currently selected measurements. 
+        These segments are defined in :data:`omc3_gui.segment_by_segment.defaults.DEFAULT_SEGMENTS`. 
+        """
         LOGGER.debug("Adding default segments.")
-        selected_measurements = self._view.get_selected_measurements()
+        view: SbSWindow = self._view  
+
+        selected_measurements = view.get_selected_measurements()
         if not selected_measurements:
             LOGGER.error("Please select at least one measurement.")
             return
@@ -271,14 +356,17 @@ class SbSController(Controller):
 
     @Slot()
     def new_segment(self):
+        """ Create a new segment and add it to the currently selected measurements. """
         LOGGER.debug("Creating new segment.")
-        selected_measurements = self._view.get_selected_measurements()
+        view: SbSWindow = self._view  
+
+        selected_measurements = view.get_selected_measurements()
         if not selected_measurements:
             LOGGER.error("Please select at least one measurement.")
             return
         
         LOGGER.debug("Opening edit dialog for a new segment.")
-        dialog = SegmentDialog(parent=self._view)
+        dialog = SegmentDialog(parent=view)
         if dialog.exec_() == dialog.Rejected:
             LOGGER.debug("Segment dialog cancelled.")
             return
@@ -292,15 +380,23 @@ class SbSController(Controller):
         self.measurement_selection_changed(selected_measurements)
     
     @Slot()
-    def copy_segment(self, segments: Sequence[SegmentItemModel] = None):
+    def copy_segment(self, segments: Sequence[SegmentItemModel] | None = None):
+        """ Create a copy of the given segments and add them to the currently selected measurements. 
+        If no segments are given, the currently selected segments are copied.
+
+        Args:
+            segments: Sequence[SegmentItemModel]: The segments to copy.
+        """
+        view: SbSWindow = self._view  
+
         if segments is None:
-            segments = self._view.get_selected_segments()
+            segments = view.get_selected_segments()
             if not segments:
                 LOGGER.error("Please select at least one segment to copy.")
                 return
 
         LOGGER.debug(f"Copying {len(segments)} segments.")
-        selected_measurements = self._view.get_selected_measurements()
+        selected_measurements = view.get_selected_measurements()
         if not selected_measurements:
             LOGGER.error("Please select at least one measurement.")
             return
@@ -329,15 +425,23 @@ class SbSController(Controller):
         self.measurement_selection_changed(selected_measurements)
     
     @Slot()
-    def remove_segment(self, segments: Sequence[SegmentItemModel] = None):
+    def remove_segment(self, segments: Sequence[SegmentItemModel] | None = None):
+        """ Remove the given segments from the currently selected measurements. 
+        If no segments are given, the currently selected segments are removed.
+        
+        Args:
+            segments: Sequence[SegmentItemModel]: The segments to remove.
+        """
+        view: SbSWindow = self._view  
+
         if segments is None:
-            segments = self._view.get_selected_segments()
+            segments = view.get_selected_segments()
             if not segments:
                 LOGGER.error("Please select at least one segment to remove.")
                 return
 
         LOGGER.debug(f"Removing {len(segments)} segments.")
-        selected_measurements = self._view.get_selected_measurements()
+        selected_measurements = view.get_selected_measurements()
         if not selected_measurements:
             LOGGER.error("Please select at least one measurement.")
             return
@@ -349,15 +453,23 @@ class SbSController(Controller):
         self.measurement_selection_changed(selected_measurements)
 
     @Slot()
-    def run_segments(self, segments: Sequence[SegmentItemModel] = None):
+    def run_segments(self, segments: Sequence[SegmentItemModel] | None = None):
+        """ Run the given segments on the currently selected measurements.
+        If no segments are given, the currently selected segments are run.
+        
+        Args:
+            segments: Sequence[SegmentItemModel]: The segments to run.
+        """
+        view: SbSWindow = self._view  
+
         if segments is None:
-            segments = self._view.get_selected_segments()
+            segments = view.get_selected_segments()
             if not segments:
                 LOGGER.error("Please select at least one segment to run.")
                 return
 
         LOGGER.debug(f"Running {len(segments)} segments.")
-        selected_measurements = self._view.get_selected_measurements()
+        selected_measurements: Sequence[OpticsMeasurement] = view.get_selected_measurements()
         if not selected_measurements:
             LOGGER.error("Please select at least one measurement.")
             return
