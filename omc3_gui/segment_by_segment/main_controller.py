@@ -9,24 +9,28 @@ from __future__ import annotations
 import logging
 from functools import partial
 from pathlib import Path
-from typing import TYPE_CHECKING, reveal_type
+from typing import TYPE_CHECKING
 
+from omc3.definitions.optics import ColumnsAndLabels
 from omc3.sbs_propagation import segment_by_segment
 from qtpy import QtWidgets
 from qtpy.QtCore import Slot
 
+from omc3_gui.plotting.classes import DualPlot
 from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
 from omc3_gui.segment_by_segment.main_model import SegmentTableModel, Settings
 from omc3_gui.segment_by_segment.main_view import SbSWindow
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
-from omc3_gui.segment_by_segment.segment_model import SegmentDataModel, SegmentItemModel, compare_segments
-from omc3_gui.utils.ui_base_classes import Controller
+from omc3_gui.segment_by_segment.segment_model import (
+    SegmentDataModel,
+    SegmentItemModel,
+    compare_segments,
+)
+from omc3_gui.segment_by_segment.segment_view import SegmentDialog
 from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog
 from omc3_gui.utils.threads import BackgroundThread
-from omc3_gui.segment_by_segment.segment_view import SegmentDialog
-from omc3.definitions.optics import ColumnsAndLabels
-from omc3_gui.plotting.classes import DualPlot
+from omc3_gui.utils.ui_base_classes import Controller
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -391,9 +395,10 @@ class SbSController(Controller):
 
         if segments is None:
             segments = view.get_selected_segments()
-            if not segments:
-                LOGGER.error("Please select at least one segment to copy.")
-                return
+        
+        if not segments:
+            LOGGER.error("Please select at least one segment to copy.")
+            return
 
         LOGGER.debug(f"Copying {len(segments)} segments.")
         selected_measurements = view.get_selected_measurements()
@@ -436,9 +441,10 @@ class SbSController(Controller):
 
         if segments is None:
             segments = view.get_selected_segments()
-            if not segments:
-                LOGGER.error("Please select at least one segment to remove.")
-                return
+        
+        if not segments:
+            LOGGER.error("Please select at least one segment to remove.")
+            return
 
         LOGGER.debug(f"Removing {len(segments)} segments.")
         selected_measurements = view.get_selected_measurements()
@@ -464,9 +470,10 @@ class SbSController(Controller):
 
         if segments is None:
             segments = view.get_selected_segments()
-            if not segments:
-                LOGGER.error("Please select at least one segment to run.")
-                return
+        
+        if not segments:
+            LOGGER.error("Please select at least one segment to run.")
+            return
 
         LOGGER.debug(f"Running {len(segments)} segments.")
         selected_measurements: Sequence[OpticsMeasurement] = view.get_selected_measurements()
@@ -478,16 +485,25 @@ class SbSController(Controller):
         element_parameters = [s.to_input_string() for s in segments if s.is_element()] 
 
         for measurement in selected_measurements:
-            measurement_task = BackgroundThread(
-                function=partial(
+            # Create sbs-callable from measurement/inputs
+            sbs_function  = partial(
                     segment_by_segment, 
                     **measurement.get_sbs_parameters(),
                     segments=segment_parameters or None,
                     elements=element_parameters or None,
-                ),
+                )
+
+            # Create thread
+            measurement_task = BackgroundThread(
+                function=sbs_function,
                 message=f"SbS for {measurement.display()}",
             )
-            self._add_running_task(task=measurement_task)
-
+            
+            # Run task
             LOGGER.info(f"Starting {measurement_task.message}")
+            self._add_running_task(task=measurement_task)
             measurement_task.start()
+            
+            # For Debugging: Start sbs directly ---
+            # sbs_function()
+            # -------------------------------------

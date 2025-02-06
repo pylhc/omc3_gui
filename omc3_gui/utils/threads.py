@@ -12,6 +12,15 @@ LOGGER = logging.getLogger(__name__)
 
 
 class BackgroundThread(QThread):
+    """ Thread that runs a function in the background,
+    providing a post- and exception-hook.
+    
+    Args:
+        function (Callable): The function to run in the background.
+        message (str): The message to display while the function is running.
+        on_end_function (Callable): A function to call when the function is done.
+        on_exception_function (Callable): A function to call when the function throws an exception.
+    """
 
     on_exception = Signal([str])
 
@@ -31,6 +40,10 @@ class BackgroundThread(QThread):
         return self._message
 
     def run(self):
+        """ 
+        Runner for the thread.
+        This function is called automatically when the thread is started. 
+        """
         try:
             self._function()
         except Exception as e:
@@ -38,6 +51,10 @@ class BackgroundThread(QThread):
             self.on_exception.emit(str(e))
 
     def start(self):
+        """
+        Connects the thread to the on_end and on_exception signals and starts the thread.
+        This function is triggered manually to start the thread.
+        """
         self.finished.connect(self._on_end)
         self.on_exception.connect(self._on_exception)
         super(BackgroundThread, self).start()

@@ -28,11 +28,12 @@ from omc3_gui.utils.dataclass_ui import metafield
 if TYPE_CHECKING:
     from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
 
-SEQUENCE = "SEQUENCE"
-DATE = "DATE"
-LHC_MODEL_YEARS = ("2012", "2015", "2016", "2017", "2018", "2022", "2023", "2024", "2025", "2026")  # TODO: get from omc3
+SEQUENCE: str = "SEQUENCE"
+DATE: str = "DATE"
 
-FILES_TO_LOOK_FOR = (f"{name}{plane}" for name in (KICK_NAME, PHASE_NAME, BETA_NAME) for plane in ("x", "y"))
+LHC_MODEL_YEARS: tuple[str, ...] = ("2012", "2015", "2016", "2017", "2018", "2022", "2023", "2024", "2025", "2026")  # TODO: get from omc3
+
+FILES_TO_LOOK_FOR: tuple[str, ...] = tuple(f"{name}{plane}" for name in (KICK_NAME, PHASE_NAME, BETA_NAME) for plane in ("x", "y"))
 
 LOGGER = logging.getLogger(__name__)
 
@@ -193,6 +194,7 @@ class OpticsMeasurement:
             or (meas.accel == 'psb' and meas.ring is None)
         ):
             LOGGER.error(f"Info parsed from measurement folder '{path!s}' is incomplete. Adjust manually!!") 
+            # TODO: Popup error message as well?
         return meas
 
 
@@ -214,15 +216,11 @@ def _parse_model_dir_from_optics_measurement(measurement_path: Path) -> Path:
             LOGGER.debug(f"{file_name!s} not found in {measurement_path!s}.")
         else:
             if MODEL_DIRECTORY in headers:
-                LOGGER.debug(f"{MODEL_DIRECTORY!s} found in {file_name!s}!")
-                break
+                LOGGER.debug(f"{MODEL_DIRECTORY!s} found in {file_name!s}: {headers[MODEL_DIRECTORY]!s}!")
+                return Path(headers[MODEL_DIRECTORY])
 
             LOGGER.debug(f"{MODEL_DIRECTORY!s} not found in {file_name!s}.")
-    else:
-        raise FileNotFoundError(f"Could not find '{MODEL_DIRECTORY}' in any of {FILES_TO_LOOK_FOR!r} in {measurement_path!r}")
-    path = Path(headers[MODEL_DIRECTORY])
-    LOGGER.debug(f"Associated model dir found: {path!s}")
-    return path
+    raise FileNotFoundError(f"Could not find '{MODEL_DIRECTORY}' in any of {FILES_TO_LOOK_FOR!r} in {measurement_path!r}")
 
 
 def _parse_info_from_model_dir(model_dir: Path) -> dict[str, Any]:
@@ -269,7 +267,12 @@ def _get_lhc_model_year(date: str | None) -> str | None:
         LOGGER.debug(f"Could not parse year from '{date}'!")
         return None
 
-    for year in sorted(LHC_MODEL_YEARS, reverse=True):
+    for lhc_year in sorted(LHC_MODEL_YEARS, reverse=True):
+        try:
+            year = int(lhc_year)
+        except ValueError:
+            continue
+
         if year <= found_year:
             LOGGER.debug(f"Assume model year {year!s} from '{date}'!")
             return str(year)

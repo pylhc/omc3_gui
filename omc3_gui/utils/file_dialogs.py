@@ -95,7 +95,7 @@ class OpenAnyMultiDialog(OpenFilesDialog):
         i.e. its content is shown. Overwrite super().accept() to prevent that and close the dialog instead.
         """
         if not self.selectedFiles():
-            LOGGER.warning(f"Nothing selected. Try again or cancel.")
+            LOGGER.warning("Nothing selected. Try again or cancel.")
             return
 
         self.done(QFileDialog.Accepted)
