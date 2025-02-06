@@ -23,8 +23,13 @@ class DualPlot(pg.LayoutWidget):
         # self.bottom.setMouseMode(pg.ViewBox.PanMode)
 
     @property
-    def plots(self):
+    def plots(self) -> tuple[pg.PlotWidget, pg.PlotWidget]:
         return (self.top, self.bottom)
+
+    
+    def clear(self) -> None:    
+        for plot in self.plots:
+            plot.clear()
     
 
     def connect_x(self) -> None:
@@ -39,7 +44,6 @@ class PlotWidget(StaticPlotWidget):
     def __init__(self, *args, **kwargs) -> None:
         # super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())
         super().__init__(*args, **kwargs)
-        
         
         # fixes for our plots
         self.setBackground("w")

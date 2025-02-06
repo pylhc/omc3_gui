@@ -10,18 +10,23 @@ from __future__ import annotations
 import logging
 from collections.abc import Sequence
 
-from omc3.definitions.optics import PHASE_COLUMN, ColumnsAndLabels
+from omc3.definitions.optics import PHASE_COLUMN, ColumnsAndLabels, S_COLUMN
+from omc3.segment_by_segment.constants import (
+    FORWARD, BACKWARD, CORRECTED
+)
 from PyQt5 import QtGui
+import pandas as pd
 from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import QEvent, QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
 from omc3_gui.plotting.classes import DualPlot
+from omc3_gui.plotting.tfs_plotter import plot_dataframes
 from omc3_gui.segment_by_segment.main_model import (
     MeasurementListModel,
     SegmentTableModel,
 )
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
-from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
+from omc3_gui.segment_by_segment.segment_model import SegmentDataModel, SegmentItemModel
 from omc3_gui.utils import colors
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
 from omc3_gui.utils.iteration_classes import IterClass
@@ -53,7 +58,6 @@ class SbSWindow(View):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(self.WINDOW_TITLE)
-        self.setStatusBar(self.statusBar())
         
         # List of UI elements accessible as instance-attributes:
         # Widgets ---
@@ -78,8 +82,6 @@ class SbSWindow(View):
         
         self._build_gui()
         self._connect_signals()
-
-        self.plot()
 
     def _connect_signals(self):
         # Optics Measurements ---
@@ -253,21 +255,35 @@ class SbSWindow(View):
         return tuple(s.data(role=Qt.EditRole) for s in selected if s.column() == 0)  # need only one per row
     
     def plot(self):
-        pass
-        # for plot in self._tabs["Phase"].plots:
-        #     data = pg.PlotDataItem([1,2,3], [4,5,6], data=["one", "two", "three"], name="Testing Line", symbol='o')
-        #     data.scatter.opts['hoverable'] = True
-        #     # data.sigPointsHovered.connect(self.hovered)
-        #     # data.sigPointsClicked.connect(self.clicked)
-        #     plot.addItem(data)
+        """ Trigger a plot update with the currently selected segments. 
 
-    
-    def hovered(self, item, points, ev):
-        print('hovered')
-    
-    def clicked(self, item, points, ev):
-        print('clicked')
+        Not sure if this logic should be part of the view or the controller... leave it here for now (jdilly, 2025)
+        """
+        def_and_widget: tuple[ColumnsAndLabels, DualPlot] = self.get_current_tab()
+        definition, widget = def_and_widget
 
+        segments = self.get_selected_segments()
+        if len(segments) != 1:
+            LOGGER.error("Please select exactly one segment to plot.")
+            return
+        
+        s_column = S_COLUMN
+        segments_data: list[SegmentDataModel] = segments[0].segments
+        for plane, plot in zip("xy", [widget.top, widget.bottom]): 
+            data_name = f"{definition.text_label}_{plane}"
+            dataframes = [segment.data[data_name] for segment in segments_data if segment.has_run()]
+            plane_def = definition.set_plane(plane)
+
+            xcolumn = s_column.column
+            ycolumn = f"{FORWARD}{plane_def.column}"
+            yerrcolumn = f"{FORWARD}{plane_def.error_column}"
+
+            plot_dataframes(plot, dataframes, xcolumn, ycolumn, yerrcolumn)
+
+
+    def clear_plots(self):
+        widget: DualPlot = self.get_current_tab()[1]
+        widget.clear()
 
 class MeasurementListView(QtWidgets.QListView):
     

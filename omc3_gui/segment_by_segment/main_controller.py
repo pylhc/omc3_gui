@@ -11,12 +11,10 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from omc3.definitions.optics import ColumnsAndLabels
 from omc3.sbs_propagation import segment_by_segment
 from qtpy import QtWidgets
 from qtpy.QtCore import Slot
 
-from omc3_gui.plotting.classes import DualPlot
 from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
 from omc3_gui.segment_by_segment.main_model import SegmentTableModel, Settings
 from omc3_gui.segment_by_segment.main_view import SbSWindow
@@ -76,10 +74,10 @@ class SbSController(Controller):
     def _update_tasks_status(self):
         """ Update the status bar with the number of running tasks. """
         view: SbSWindow = self._view  
-        status_bar: QtWidgets.QStatusBar = view.statusBar()
+        status_bar: QtWidgets.QStatusBar = view.statusBar()  # seems to return it, if already exist, because spinner is there
         
         if self._running_tasks:
-            # status_bar.show()
+            # status_bar.show()  # looks nice, but moves the window around too much ... 
             status_bar.showMessage(f"{len(self._running_tasks)} Task(s) running ...")
             status_bar.setToolTip(
                 f"{len(self._running_tasks)} Running Task(s):\n  - "
@@ -112,7 +110,7 @@ class SbSController(Controller):
     @Slot()
     def _show_running_tasks(self):
         """ Show (i.e. log) the list of running tasks. """
-        LOGGER.debug(f"Running tasks: {self._running_tasks}")
+        LOGGER.debug(f"Running tasks: {[task.message for task in self._running_tasks]}")
     
     # Measurements -------------------------------------------------------------
     def set_measurement_interaction_buttons_enabled(self, enabled: bool = True):
@@ -234,7 +232,6 @@ class SbSController(Controller):
         self.set_measurement_interaction_buttons_enabled(True)
         self.set_all_segment_buttons_enabled(True)
 
-
         segment_table_items: list[SegmentItemModel] = []
 
         for measurement in measurements:
@@ -312,6 +309,7 @@ class SbSController(Controller):
             segments: Sequence[SegmentItemModel]: The new selection of segments.
         """
         view: SbSWindow = self._view  
+        view.clear_plots()
 
         if segments is None:
             segments = view.get_selected_segments()
@@ -326,10 +324,7 @@ class SbSController(Controller):
             LOGGER.debug("More than one segment selected. Clearing Plots.")
             return
 
-        # Plot segements
-        def_and_widget: tuple[ColumnsAndLabels, DualPlot] = view.get_current_tab()
-        definition, widget = def_and_widget
-        # plot_segments()
+        view.plot()
     
     @Slot()
     def add_default_segments(self):

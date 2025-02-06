@@ -109,6 +109,7 @@ class View(ApplicationFrame):
         self._thread_spinner = thread_spinner
        
         self.setStatusBar(status_bar)
+        # status_bar.hide()  # looks nice, but moves the window around too much ... 
     
     @property
     def thread_spinner(self) -> RunningSpinner:
