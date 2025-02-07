@@ -5,20 +5,21 @@ Utils: DataClass UI
 This module allows to generate a simple UI's for dataclasses,
 which allows to edit the values of a dataclass.
 """
-from functools import partial
+from __future__ import annotations
+
 import inspect
+import logging
 import re
+from collections.abc import Callable, Sequence
 from dataclasses import MISSING, Field, dataclass, field, fields
+from functools import partial
 from pathlib import Path
 from typing import Any, get_type_hints
-from collections.abc import Callable, Sequence
-from omc3_gui.utils import file_dialogs
 
 from qtpy import QtWidgets
 
+from omc3_gui.utils import colors, file_dialogs
 from omc3_gui.utils.widgets import HorizontalSeparator
-from omc3_gui.utils import colors
-import logging
 
 LOGGER = logging.getLogger(__name__)
 

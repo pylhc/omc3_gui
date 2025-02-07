@@ -7,7 +7,7 @@ in the Segment-by-Segment application.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from omc3.segment_by_segment.segments import SegmentDiffs
@@ -18,12 +18,10 @@ from omc3_gui.utils.dataclass_ui import metafield
 if TYPE_CHECKING:
     from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 
-
-# HTML in tooltips does not work for me, and I cannot figure out why (jdilly)
-# OK = f"<font color=\"{colors.GREEN_DARK}\">✓</font>"
-# NO = f"<font color=\"{colors.RED_DARK}\">✗</font>"
-OK = "✓"
-NO = "✗"
+OK = f"<font color=\"{colors.GREEN_DARK}\">✓</font>"
+NO = f"<font color=\"{colors.RED_DARK}\">✗</font>"
+# OK = "✓"
+# NO = "✗"
 
 def not_empty(value):
     return value != ""
@@ -124,7 +122,7 @@ class SegmentItemModel:
         if any(not compare_segments(self, segment) for segment in segments):
             raise ValueError(
                 "At least one given segment has a different "
-                "definition than the others or than this {self.__class__.name}."
+                f"definition than the others or than this {self.__class__.name}."
             )
         self._segments = segments
 
@@ -139,9 +137,19 @@ class SegmentItemModel:
     
     def tooltip(self) -> str:
         """ Returns a string with information about the segment, 
-        as to be used in a tool-tip.  """
-        parts = [f" {OK if segment.has_run() else NO}    {segment.measurement.display()}" for segment in self.segments]
-        return "Run | Contained in:\n" + "\n".join(parts)
+        as to be used in a tool-tip.  
+        
+        Hint: Use fully HTML compatible strings, otherwise Qt will revert to plain text. 
+              e.g. use <br> instead of \\n. Also &nbsp; instead of whitespaces, as they are collapsed in HTML.
+    
+        """
+        parts = [
+            f"<tr><td>{OK if segment.has_run() else NO}</td>"
+            "<td></td>"
+            f"<td>{segment.measurement.display()}</td></tr>" 
+            for segment in self.segments
+        ]
+        return "<tr><th>Run</th><th>|</th><th>In Measurement</th></tr>" + "".join(parts)
 
     def is_element(self):
         return is_element(self)

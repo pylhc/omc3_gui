@@ -4,7 +4,12 @@ Utils: Counter
 
 Classes to do some automatic counting and filling. 
 """
-from qtpy import QtWidgets
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from qtpy import QtWidgets
 
 
 class Counter:
@@ -37,7 +42,8 @@ class Counter:
 
 
 class HorizontalGridLayoutFiller:
-    """Fills a grid-layout with widgets, without having to give row and col positions, 
+    """
+    Fills a grid-layout with widgets, without having to give row and col positions, 
     but allows giving a col-span.
     """
 
@@ -61,7 +67,6 @@ class HorizontalGridLayoutFiller:
             if self._rows is not None and self._current_row >= self._rows:
                 raise ValueError("Grid is already full.")
 
-    
     addWidget = add
 
         

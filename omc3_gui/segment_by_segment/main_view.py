@@ -11,15 +11,14 @@ import logging
 from collections.abc import Sequence
 
 from omc3.definitions.optics import PHASE_COLUMN, ColumnsAndLabels, S_COLUMN
-from omc3.segment_by_segment.constants import (
-    FORWARD, BACKWARD, CORRECTED
-)
+from omc3.segment_by_segment.definitions import PropagableColumns
 from PyQt5 import QtGui
 import pandas as pd
 from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import QEvent, QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
 from omc3_gui.plotting.classes import DualPlot
+from omc3_gui.plotting.latex_to_html import latex_to_html_converter
 from omc3_gui.plotting.tfs_plotter import plot_dataframes
 from omc3_gui.segment_by_segment.main_model import (
     MeasurementListModel,
@@ -207,7 +206,6 @@ class SbSWindow(View):
             return navigation_widget
         self._central.addWidget(build_navigation_widget())
 
-
         def build_tabs_widget():  # --- Right Hand Side
             self._tabs_widget = QtWidgets.QTabWidget()
             for tab in Tabs.values():
@@ -270,15 +268,28 @@ class SbSWindow(View):
         s_column = S_COLUMN
         segments_data: list[SegmentDataModel] = segments[0].segments
         for plane, plot in zip("xy", [widget.top, widget.bottom]): 
-            data_name = f"{definition.text_label}_{plane}"
-            dataframes = [segment.data[data_name] for segment in segments_data if segment.has_run()]
-            plane_def = definition.set_plane(plane)
+            data_name = f"{definition.text_label}_{plane}"  # coincides with the name in TfsCollection
+            dataframes = {
+                segment.measurement.display(): segment.data[data_name] 
+                for segment in segments_data if segment.has_run()
+            }
+            
+            plane_def = definition.set_plane(plane.upper())
 
             xcolumn = s_column.column
-            ycolumn = f"{FORWARD}{plane_def.column}"
-            yerrcolumn = f"{FORWARD}{plane_def.error_column}"
+            column_def = PropagableColumns(plane_def.column, plane="")  # `.column` already contains plane
+            ycolumn = column_def.forward
+            yerrcolumn = column_def.error_forward
 
-            plot_dataframes(plot, dataframes, xcolumn, ycolumn, yerrcolumn)
+            plot_dataframes(
+                plot=plot, 
+                dataframes=dataframes, 
+                xcolumn=xcolumn, 
+                ycolumn=ycolumn, 
+                yerrcolumn=yerrcolumn,
+                xlabel=s_column.label,
+                ylabel=latex_to_html_converter(plane_def.label),
+            )
 
 
     def clear_plots(self):

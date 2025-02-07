@@ -42,16 +42,18 @@ class DualPlot(pg.LayoutWidget):
 class PlotWidget(StaticPlotWidget):
     
     def __init__(self, *args, **kwargs) -> None:
-        # super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())
-        super().__init__(*args, **kwargs)
-        
-        # fixes for our plots
+        super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())  # requires accwidgets >= 3.0.11
         self.setBackground("w")
-        self.plotItem.getViewBox().setMouseMode(ZoomingViewBox.RectMode)
 
 
 class ZoomingViewBox(ExViewBox):
-    pass
+    """ ViewBox that imitates the bahavior of the Java-GUI a bit closer. 
+    
+    TODO: !
+    """
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.setMouseMode(ZoomingViewBox.RectMode)  # mode that makes zooming rectangles
 
     # def mouseDragEvent(self, ev):
 
