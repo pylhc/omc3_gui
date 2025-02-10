@@ -3,6 +3,19 @@ Segment-by-Segment View
 -----------------------
 
 This is the main view for the Segment-by-Segment application.
+
+TODO: 
+
+To be implemented:
+ - Editor for the correction file (select file if there is none).
+ 
+
+Missing
+ - tickboxes for plotting forward/backward propagation
+ - tickbox for legend?
+ - History on double-click
+ - 
+
 """
 # from omc3_gui.segment_by_segment.segment_by_segment_ui import Ui_main_window
 from __future__ import annotations
@@ -10,12 +23,11 @@ from __future__ import annotations
 import logging
 from collections.abc import Sequence
 
-from omc3.definitions.optics import PHASE_COLUMN, ColumnsAndLabels, S_COLUMN
+from omc3.definitions.optics import PHASE_COLUMN, S_COLUMN, ColumnsAndLabels
 from omc3.segment_by_segment.definitions import PropagableColumns
 from PyQt5 import QtGui
-import pandas as pd
 from qtpy import QtGui, QtWidgets
-from qtpy.QtCore import QEvent, QItemSelectionModel, QModelIndex, Qt, Signal, Slot
+from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
 from omc3_gui.plotting.classes import DualPlot
 from omc3_gui.plotting.latex_to_html import latex_to_html_converter
@@ -49,12 +61,13 @@ class SbSWindow(View):
     WINDOW_TITLE = "OMC Segment-by-Segment"
 
     # QtSignals need to be defined as class-attributes
-    sig_list_optics_double_clicked = Signal(OpticsMeasurement)
-    sig_list_optics_selected = Signal(tuple)  # Tuple[OpticsMeasurement]
+    sig_list_measurements_double_clicked = Signal(OpticsMeasurement)
+    sig_list_measurements_selected = Signal(tuple)  # Tuple[OpticsMeasurement]
     sig_table_segments_selected = Signal(tuple)
     sig_thread_spinner_double_clicked = Signal()
     
     def __init__(self, parent=None):
+        
         super().__init__(parent)
         self.setWindowTitle(self.WINDOW_TITLE)
         
@@ -77,8 +90,10 @@ class SbSWindow(View):
         self.button_copy_segment: QtWidgets.QPushButton = None
         self.button_new_segment: QtWidgets.QPushButton = None
         self.button_default_segments: QtWidgets.QPushButton = None
+        self.button_save_segments: QtWidgets.QPushButton = None
         self.button_load_segments: QtWidgets.QPushButton = None
-        
+
+        # Build GUI and connect Signals ---        
         self._build_gui()
         self._connect_signals()
 
@@ -94,13 +109,13 @@ class SbSWindow(View):
     @Slot(QModelIndex)
     def _handle_list_measurements_double_clicked(self, idx):
         LOGGER.debug(f"Entry in Optics List double-clicked: {idx.data(role=Qt.DisplayRole)}")
-        self.sig_list_optics_double_clicked.emit(idx.data(role=Qt.EditRole))
+        self.sig_list_measurements_double_clicked.emit(idx.data(role=Qt.EditRole))
 
     @Slot()
     def _handle_list_measurements_selected(self):        
         LOGGER.debug("Optics List selection changed.")
         selected_measurements = self.get_selected_measurements()
-        self.sig_list_optics_selected.emit(selected_measurements)
+        self.sig_list_measurements_selected.emit(selected_measurements)
 
     @Slot()
     def _handle_table_segments_selected(self):
@@ -130,22 +145,27 @@ class SbSWindow(View):
                     grid_buttons_filler = HorizontalGridLayoutFiller(layout=grid_buttons, cols=3)
 
                     load = OpenButton("Load")
+                    load.setToolTip("Load a measurement, i.e. omc3-optics output folder.")
                     grid_buttons_filler.add(load)
                     self.button_load_measurement = load
                     
                     edit = EditButton()
+                    edit.setToolTip("Edit the settings of the currently selected measurement.")
                     grid_buttons_filler.add(edit)
                     self.button_edit_measurement = edit
 
                     remove = RemoveButton()
+                    remove.setToolTip("Remove the currently selected measurement(s).")
                     grid_buttons_filler.add(remove)
                     self.button_remove_measurement = remove
 
                     matcher = RunButton("Run Matcher")
+                    matcher.setToolTip("Run the Segment-by-Segment Matcher.")
                     grid_buttons_filler.add(matcher, col_span=2)
                     self.button_run_matcher = matcher
                     
                     edit_corrections = DefaultButton("Corrections")
+                    edit_corrections.setToolTip("Edit the corrections file of the currently selected measurement.")
                     grid_buttons_filler.add(edit_corrections)
                     self.button_edit_corrections = edit_corrections
                 
@@ -172,31 +192,41 @@ class SbSWindow(View):
                     grid_buttons_filler = HorizontalGridLayoutFiller(layout=grid_buttons, cols=3)
 
                     run = RunButton("Run Segment(s)")
+                    run.setToolTip("Run the currently selected segment(s).")
                     grid_buttons_filler.add(run, col_span=3)
                     self.button_run_segment = run
 
-                    new = DefaultButton("New")
+                    new = OpenButton("New")
+                    new.setToolTip("Add a new segment.")
                     grid_buttons_filler.add(new)
                     self.button_new_segment = new
                     
-                    default = DefaultButton("Add Defaults")
+                    default = EditButton("Add Defaults")
+                    default.setToolTip(
+                        "Add default segments for the currently selected measurements (if not already present)."
+                    )
                     grid_buttons_filler.add(default)
                     self.button_default_segments = default
 
-                    load = OpenButton("Load")
-                    grid_buttons_filler.add(load)
-                    self.button_load_segments = load
-
-
-                    copy = EditButton("Copy")
+                    copy = DefaultButton("Copy")
+                    copy.setToolTip("Create a copy of the currently selected segment(s).")
                     grid_buttons_filler.add(copy)
                     self.button_copy_segment = copy
 
-                    grid_buttons_filler.add(QtWidgets.QWidget())
-                    
                     remove = RemoveButton("Remove")
+                    remove.setToolTip("Remove the currently selected segment(s) from the list (does not delete files).")
                     grid_buttons_filler.add(remove)
                     self.button_remove_segment = remove
+                    
+                    save = DefaultButton("Save")
+                    save.setToolTip("Save current segments definitions to a json file.")
+                    grid_buttons_filler.add(save)
+                    self.button_save_segments = save
+                    
+                    load = DefaultButton("Load")
+                    load.setToolTip("Load segments definitions from an existing SbS-Folder or a json file.")
+                    grid_buttons_filler.add(load)
+                    self.button_load_segments = load
                 
                     return grid_buttons
                 layout.addLayout(build_segment_buttons())
@@ -233,8 +263,11 @@ class SbSWindow(View):
         return self._list_view_measurements.model()
 
     def get_selected_measurements(self) -> tuple[OpticsMeasurement]:
+        """ Get the currently selected measurements from the GUI. 
+        Hint: Use the Qt.UserRole to retrieve the actual OpticsMeasurement.
+        """
         selected = self._list_view_measurements.selectedIndexes()
-        return tuple(s.data(role=Qt.EditRole) for s in selected)
+        return tuple(s.data(role=Qt.UserRole) for s in selected)
 
     def set_selected_measurements(self, indices: Sequence[QModelIndex] = ()):
         self._list_view_measurements.selectionModel().clear()
@@ -249,8 +282,11 @@ class SbSWindow(View):
         return self._table_segments.model()
 
     def get_selected_segments(self) -> tuple[SegmentItemModel]:
+        """ Get the currently selected segments from the GUI. 
+        Hint: Use the Qt.UserRole to retrieve the actual SegmentItemModel.
+        """
         selected: list[QModelIndex] = self._table_segments.selectedIndexes()
-        return tuple(s.data(role=Qt.EditRole) for s in selected if s.column() == 0)  # need only one per row
+        return tuple(s.data(role=Qt.UserRole) for s in selected if s.column() == 0)  # need only one per row
     
     def plot(self):
         """ Trigger a plot update with the currently selected segments. 
@@ -311,6 +347,7 @@ class SegmentTableView(QtWidgets.QTableView):
     def __init__(self):
         super().__init__()
         self.setModel(SegmentTableModel())
+
         header_hor = self.horizontalHeader()
         header_hor.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)       
         header_hor.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
@@ -353,3 +390,5 @@ class ColoredItemDelegate(QtWidgets.QStyledItemDelegate):
         option.palette.setColor(QtGui.QPalette.Text, QtGui.QColor(color))
         
         super().paint(painter, option, index)
+
+

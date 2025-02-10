@@ -8,11 +8,11 @@ import logging
 import re
 import sys
 from qtpy.QtCore import QObject, Slot, QEvent, Qt
-from qtpy.QtWidgets import QApplication, QFileDialog, QMenuBar, QDesktopWidget, QWidgetAction, QStatusBar, QToolTip
+from qtpy.QtWidgets import QApplication, QFileDialog, QMenuBar, QDesktopWidget, QWidgetAction, QStatusBar, QToolTip, QMessageBox
 from qtpy import QtGui
 from omc3_gui import __version__
 from omc3_gui.utils.log_handler import get_console_formatter
-from omc3_gui.utils.widgets import RunningSpinner
+from omc3_gui.utils.widgets import RunningSpinner, showErrorDialog
 
 try:  # CERN Application Frame
     from accwidgets.app_frame import ApplicationFrame
@@ -168,6 +168,15 @@ class View(ApplicationFrame):
             parent=self,
         )
         dialog.exec_()
+
+    def showErrorDialog(self, title: str, message: str):
+        """ Convenience function to displays an error dialog. 
+        
+        Args:
+            title (str): Dialog title.
+            message (str): Dialog message.
+        """
+        showErrorDialog(title, message, parent=self)
 
 
 class LogConsoleFormatter(AccPyLogConsoleFormatter):

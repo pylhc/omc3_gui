@@ -29,6 +29,8 @@ def not_empty(value):
 
 @dataclass
 class SegmentDataModel:
+    """" Container for the segment data, which is also used in the Segment creation dialog. """
+
     measurement: OpticsMeasurement
     name: str =            metafield("Name",  "Name of the Segment", validate=not_empty)
     start: str | None = metafield("Start", "Start of the Segment", default=None, validate=not_empty)
@@ -56,6 +58,7 @@ class SegmentDataModel:
             return self.data.get_path("phase_x").is_file()
         except AttributeError:
             return False
+        # TODO: Maybe load and check first and last BPM? (jdilly, 2025)
 
     def clear_data(self):
         self._data = None
@@ -65,21 +68,24 @@ class SegmentDataModel:
 
 
 class SegmentItemModel:
+    """ Model for a segment item in the Segment-Table of the Segment-by-Segment application. 
+    Each item has name, start and end and attached a list of actual segment-obejcts
+    """
 
     def __init__(self, name: str, start: str = None, end: str = None):
         self._name = name
         self._start = start
         self._end = end
-        self._segments = []
+        self._segments: list[SegmentDataModel] = []
 
     @classmethod
-    def from_segments(cls, segments: list[SegmentDataModel]) -> "SegmentItemModel":
+    def from_segments(cls, segments: list[SegmentDataModel]) -> SegmentItemModel:
         new = cls(segments[0].name, segments[0].start, segments[0].end)
         new.segments = segments  # also checks for equality of given segments
         return new
     
     @classmethod
-    def from_segment(cls, segment: SegmentDataModel) -> "SegmentItemModel":
+    def from_segment(cls, segment: SegmentDataModel) -> SegmentItemModel:
         new = cls(segment.name, segment.start, segment.end)
         return new
 
@@ -131,9 +137,13 @@ class SegmentItemModel:
             raise ValueError(f"Given segment has a different definition than this {self.__class__.name}.")
         self.segments.append(segment)
 
+    @property
     def id(self) -> str:
-        """ Unique identifier for the measurement, used in the ItemModel. """
-        return self.name + str(self.start) + str(self.end)
+        """ Unique identifier for the segment. 
+        Use `name` here, as this determines the output filename and we do not want to 
+        overwrite files with the same name.
+        """
+        return self.name
     
     def tooltip(self) -> str:
         """ Returns a string with information about the segment, 
@@ -157,7 +167,10 @@ class SegmentItemModel:
     def to_input_string(self):
         """ String representation of the segment as used in inputs."""
         return to_input_string(self)
-    
+
+
+# Segment functions ---
+
 def compare_segments(a: SegmentDataModel | SegmentItemModel, b: SegmentDataModel | SegmentItemModel):
     return a.name == b.name and a.start == b.start and a.end == b.end
 

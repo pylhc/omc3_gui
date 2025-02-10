@@ -13,6 +13,8 @@ class DualPlot(pg.LayoutWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
+        pg.setConfigOptions(antialias=True)  # not sure if best place here
+
         self.top = PlotWidget()
         self.bottom = PlotWidget()
 

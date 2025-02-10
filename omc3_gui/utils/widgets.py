@@ -4,10 +4,13 @@ Utils: Widgets
 
 Pre-Defined Widgets go here.
 """
+from __future__ import annotations
 
 import math
 from qtpy import QtWidgets, QtCore, QtGui
+from qtpy.QtWidgets import QMessageBox
 from omc3_gui.utils import colors
+
 
 # Buttons ----------------------------------------------------------------------
 
@@ -189,3 +192,24 @@ class RunningSpinner(QtWidgets.QWidget):
     @property
     def is_spinning(self):
         return self._is_spinning
+
+
+# Dialogs-----------------------------------------------------------------------
+
+def showErrorDialog(title: str, message: str, parent: QtWidgets.QWidget = None):
+    """ Displays an error dialog. 
+
+    Note the error dialog should 
+    
+    Args:
+        title (str): Dialog title.
+        message (str): Dialog message.
+    """
+    message_box = QMessageBox(
+        QMessageBox.Critical,
+        title,
+        message,
+        QMessageBox.Ok,
+        parent,
+    )
+    message_box.exec_()

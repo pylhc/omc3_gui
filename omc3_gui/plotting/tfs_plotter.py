@@ -16,7 +16,28 @@ from qtpy.QtCore import Qt
 PenStyle = Qt.PenStyle
 
 
-def plot_dataframes(plot: pg.PlotWidget, dataframes: dict[str, pd.DataFrame], xcolumn: str, ycolumn: str, yerrcolumn: str, xlabel: str = None, ylabel: str = None):
+def plot_dataframes(
+    plot: pg.PlotWidget, 
+    dataframes: dict[str, pd.DataFrame], 
+    xcolumn: str, 
+    ycolumn: str, 
+    xerrcolumn: str = None,
+    yerrcolumn: str = None,
+    xlabel: str = None, 
+    ylabel: str = None):
+    """ 
+    Plot a collection of DataFrames with pyqtgraph.
+
+    Args:
+        plot (pg.PlotWidget): The plot to plot the dataframes into.
+        dataframes (dict[str, pd.DataFrame]): A dictionary of DataFrames to plot.
+        xcolumn (str): The name of the column to plot on the x-axis.
+        ycolumn (str): The name of the column to plot on the y-axis.
+        xerrcolumn (str): The name of the column to plot as horizontal errorbars.
+        yerrcolumn (str): The name of the column to plot as vertical errorbars.
+        xlabel (str): The label of the x-axis.
+        ylabel (str): The label of the y-axis.
+        """
     for idx, (name, df) in enumerate(dataframes.items()):
         plot_errorbar(plot, x=df[xcolumn], y=df[ycolumn], yerr=df[yerrcolumn], names=df.index, label=name, color=get_mpl_color(idx))
     

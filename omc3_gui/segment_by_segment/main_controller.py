@@ -54,18 +54,25 @@ class SbSController(Controller):
         """ Connect the signals from the GUI components (view) to the slots (controller). """
         view: SbSWindow = self._view  # for shorthand and type hinting
 
+        # Measurements -------------------------------------------------------------
         view.button_load_measurement.clicked.connect(self.open_measurements)
         view.button_edit_measurement.clicked.connect(self.edit_measurement)
         view.button_remove_measurement.clicked.connect(self.remove_measurement)
-        view.button_run_segment.clicked.connect(self.run_segments)
 
-        view.sig_list_optics_double_clicked.connect(self.edit_measurement)
-        view.sig_list_optics_selected.connect(self.measurement_selection_changed)
+        view.button_run_matcher.clicked.connect(self.run_matcher)
+        view.button_edit_corrections.clicked.connect(self.edit_corrections)
 
+        view.sig_list_measurements_double_clicked.connect(self.edit_measurement)
+        view.sig_list_measurements_selected.connect(self.measurement_selection_changed)
+
+        # Segments -------------------------------------------------------------
         view.button_new_segment.clicked.connect(self.new_segment)
         view.button_copy_segment.clicked.connect(self.copy_segment)
         view.button_default_segments.clicked.connect(self.add_default_segments)
         view.button_remove_segment.clicked.connect(self.remove_segment)
+        view.button_run_segment.clicked.connect(self.run_segments)
+        view.button_save_segments.clicked.connect(self.save_segments)
+        view.button_load_segments.clicked.connect(self.load_segments)
 
         view.sig_table_segments_selected.connect(self.segment_selection_changed)
         view.sig_thread_spinner_double_clicked.connect(self._show_running_tasks)
@@ -245,7 +252,7 @@ class SbSController(Controller):
 
         segment_table = SegmentTableModel()
         segment_table.add_items(segment_table_items)
-        self._view.set_segments(segment_table)
+        view.set_segments(segment_table)
         self.segment_selection_changed()
 
     def get_single_measurement(self) -> OpticsMeasurement:
@@ -262,6 +269,27 @@ class SbSController(Controller):
             raise ValueError("Please select only one measurement.")
         
         return measurements[0]
+
+    @ Slot()
+    def run_matcher(self) -> None:
+        """ Run the matcher. """
+        view: SbSWindow = self._view
+
+        # TODO:
+        msg = "The Segment-by-Segment Matcher is not implemented yet."
+        LOGGER.error(msg)
+        view.showErrorDialog("Error: Not Implemented", msg)
+    
+    @ Slot()
+    def edit_corrections(self) -> None:
+        """ Edit the corrections file. """
+        view: SbSWindow = self._view
+
+        # TODO:
+        msg = "Not implemented yet."
+        LOGGER.error(msg)
+        view.showErrorDialog("Error: Not Implemented", msg)
+
     
     # Segments -----------------------------------------------------------------
 
@@ -295,6 +323,7 @@ class SbSController(Controller):
             view.button_remove_segment,
             view.button_new_segment,
             view.button_default_segments,
+            view.button_save_segments,
             view.button_load_segments,
         )
         for button in segment_buttons:
@@ -325,7 +354,7 @@ class SbSController(Controller):
             return
 
         view.plot()
-    
+
     @Slot()
     def add_default_segments(self):
         """ Add default segments to the currently selected measurements. 
@@ -369,7 +398,7 @@ class SbSController(Controller):
         if dialog.exec_() == dialog.Rejected:
             LOGGER.debug("Segment dialog cancelled.")
             return
-
+        
         LOGGER.debug("Segment dialog closed. Updating segement.")
         for measurement in selected_measurements:
             new_segment_copy = dialog.segment.copy()
@@ -452,6 +481,18 @@ class SbSController(Controller):
                 measurement.try_remove_segment(segment_item.name)
 
         self.measurement_selection_changed(selected_measurements)
+
+    @Slot()
+    def load_segments(self):
+        LOGGER.debug("Loading segments from file/folder.")
+        # TODO
+        # Either parse a folder to find the segements therein, or load from a json file.
+        
+    @Slot()
+    def save_segments(self):
+        LOGGER.debug("Saving segments to a file.")
+        # TODO
+        # Save current segements to a json file
 
     @Slot()
     def run_segments(self, segments: Sequence[SegmentItemModel] | None = None):

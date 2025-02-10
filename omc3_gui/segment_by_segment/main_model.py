@@ -17,6 +17,7 @@ from qtpy.QtCore import Qt
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
+from omc3_gui.utils.widgets import showErrorDialog
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,7 +45,6 @@ class UniqueItemListModel:
     and allows for keeping items unique (jdilly, 2023).
     All items need to have an 'id'-property.
     """
-
     def __init__(self):
         self._items: list[Item] = []
 
@@ -165,7 +165,7 @@ class MeasurementListModel(QtCore.QAbstractListModel, UniqueItemListModel):
         if role == Qt.TextColorRole:
             return self.ColorIDs.get_color(meas)
 
-        if role == Qt.EditRole:
+        if role == Qt.UserRole:
             return meas
 
     def rowCount(self, index: QtCore.QModelIndex = None):
@@ -173,42 +173,54 @@ class MeasurementListModel(QtCore.QAbstractListModel, UniqueItemListModel):
 
 
 class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
-
-    _COLUMNS = {0: "Segment", 1: "Start", 2: "End"}
-    _COLUMNS_MAP = {0: "name", 1: "start", 2: "end"}
+    """ Data Model for the table of segments. 
     
-    _items: dict[str, SegmentItemModel]  # only for the IDE
+    Hint: Uses Qt.UserRole to retrieve the actual segment.
+    """
+
+    _COLUMNS: list[str] = ["Segment", "Start", "End"]  # display names
+    _ATTRIBUTES: list[str] = ["name", "start", "end"]  # segment attributes
+    
+    _items: list[SegmentItemModel]  # only for the IDE
     
     def __init__(self, *args, **kwargs): 
         super(QtCore.QAbstractTableModel, self).__init__(*args, **kwargs)
-        super(UniqueItemListModel, self).__init__()
+        super(UniqueItemListModel, self).__init__()  # Items need to be unique
 
     def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
+        """ Sets the header of the table. """
+        # When we are displaying the header, use the display column names
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             return self._COLUMNS[section]
+
+        # Otherwise whatever the default is    
         return super().headerData(section, orientation, role)
 
     def rowCount(self, parent=QtCore.QModelIndex()):
+        """ Returns the number of rows in the model. """
         return len(self._items) 
 
     def columnCount(self, parent=QtCore.QModelIndex()):
+        """ Returns the number of columns in the model. """
         return len(self._COLUMNS) 
 
     def data(self, index: QtCore.QModelIndex, role=QtCore.Qt.DisplayRole):
+        """ Return the data, depending on index and role. """
         i = index.row()
         j = index.column()
         segment: SegmentItemModel = self.get_item_at(i)
         
-        if role == QtCore.Qt.DisplayRole:
-            return str(getattr(segment, self._COLUMNS_MAP[j]))
+        if role == Qt.DisplayRole or role == Qt.EditRole:
+            return str(getattr(segment, self._ATTRIBUTES[j]))
         
         if role == Qt.ToolTipRole:
             return segment.tooltip()
 
-        if role == Qt.EditRole:
+        if role == Qt.UserRole:
             return segment
         
     def setData(self, index, value, role):
+        """ Set the data, depending on index and role. """
         i = index.row()
         j = index.column()
         segment: SegmentItemModel = self.get_item_at(i)
@@ -216,20 +228,25 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
         if role == Qt.EditRole:
             if value is None or value == "":
                 return False
+            
+            attribute = self._ATTRIBUTES[j]
 
-            setattr(segment, self._COLUMNS_MAP[j], value)
+            # Check for duplicates
+            other_segments = [s for s in self._items if s is not segment]
+            old_value = getattr(segment, attribute)
+            setattr(segment, attribute, value)
+            for other_segment in other_segments:
+                if other_segment.id == segment.id:
+                    msg = f"Segment {segment.id} already exists. Please redefine."
+                    setattr(segment, attribute, old_value)
+                    LOGGER.error(msg)
+                    showErrorDialog("Error", msg)
+                    return False
+
             self.dataChanged.emit(index, index)
             return True
-    
-    def toggle_row(self, index):
-        i = index.row()
-        segment: SegmentItemModel = self.get_item_at(i)
-        segment.enabled = not segment.enabled
-        self.headerDataChanged.emit(Qt.Horizontal, 0, self.rowCount() - 1)
-        self.dataChanged.emit(self.index(i, 0), self.index(i, self.rowCount() - 1))
         
     def flags(self, index):
-        # i = index.row()
-        # j = index.column()
-        # segment: SegmentModel = self.get_item_at(i)
+        """ Set the flags for the given index. 
+        At the moment: all elements are editable and selectable. """
         return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
