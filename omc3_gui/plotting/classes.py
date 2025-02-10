@@ -4,9 +4,21 @@ Plotting: Classes
 
 Containers for figures, plots, etc.
 """
+from dataclasses import dataclass
 import pyqtgraph as pg
 from accwidgets.graph import StaticPlotWidget
 from accwidgets.graph.widgets.plotitem import ExViewBox
+from qtpy.QtCore import Signal
+
+
+class ObservablePlotDataItem(pg.PlotDataItem):
+    """A PlotDataItem that emits a signal when visibility changes."""
+    visibilityChanged = Signal(bool)
+
+    def setVisible(self, visible):
+        super().setVisible(visible)
+        self.visibilityChanged.emit(visible)
+
 
 class DualPlot(pg.LayoutWidget):
     
@@ -78,3 +90,5 @@ class ZoomingViewBox(ExViewBox):
     #             self.changePointsColors()
     #         else:
     #             self.updateScaleBox(ev.buttonDownPos(), ev.pos())
+
+

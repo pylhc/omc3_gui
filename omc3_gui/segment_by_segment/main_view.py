@@ -23,21 +23,17 @@ from __future__ import annotations
 import logging
 from collections.abc import Sequence
 
-from omc3.definitions.optics import PHASE_COLUMN, S_COLUMN, ColumnsAndLabels
-from omc3.segment_by_segment.definitions import PropagableColumns
-from PyQt5 import QtGui
+from omc3.definitions.optics import PHASE_COLUMN, ColumnsAndLabels
 from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
 from omc3_gui.plotting.classes import DualPlot
-from omc3_gui.plotting.latex_to_html import latex_to_html_converter
-from omc3_gui.plotting.tfs_plotter import plot_dataframes
 from omc3_gui.segment_by_segment.main_model import (
     MeasurementListModel,
     SegmentTableModel,
 )
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
-from omc3_gui.segment_by_segment.segment_model import SegmentDataModel, SegmentItemModel
+from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
 from omc3_gui.utils import colors
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
 from omc3_gui.utils.iteration_classes import IterClass
@@ -109,7 +105,7 @@ class SbSWindow(View):
     @Slot(QModelIndex)
     def _handle_list_measurements_double_clicked(self, idx):
         LOGGER.debug(f"Entry in Optics List double-clicked: {idx.data(role=Qt.DisplayRole)}")
-        self.sig_list_measurements_double_clicked.emit(idx.data(role=Qt.EditRole))
+        self.sig_list_measurements_double_clicked.emit(idx.data(role=Qt.UserRole))
 
     @Slot()
     def _handle_list_measurements_selected(self):        
@@ -288,49 +284,6 @@ class SbSWindow(View):
         selected: list[QModelIndex] = self._table_segments.selectedIndexes()
         return tuple(s.data(role=Qt.UserRole) for s in selected if s.column() == 0)  # need only one per row
     
-    def plot(self):
-        """ Trigger a plot update with the currently selected segments. 
-
-        Not sure if this logic should be part of the view or the controller... leave it here for now (jdilly, 2025)
-        """
-        def_and_widget: tuple[ColumnsAndLabels, DualPlot] = self.get_current_tab()
-        definition, widget = def_and_widget
-
-        segments = self.get_selected_segments()
-        if len(segments) != 1:
-            LOGGER.error("Please select exactly one segment to plot.")
-            return
-        
-        s_column = S_COLUMN
-        segments_data: list[SegmentDataModel] = segments[0].segments
-        for plane, plot in zip("xy", [widget.top, widget.bottom]): 
-            data_name = f"{definition.text_label}_{plane}"  # coincides with the name in TfsCollection
-            dataframes = {
-                segment.measurement.display(): segment.data[data_name] 
-                for segment in segments_data if segment.has_run()
-            }
-            
-            plane_def = definition.set_plane(plane.upper())
-
-            xcolumn = s_column.column
-            column_def = PropagableColumns(plane_def.column, plane="")  # `.column` already contains plane
-            ycolumn = column_def.forward
-            yerrcolumn = column_def.error_forward
-
-            plot_dataframes(
-                plot=plot, 
-                dataframes=dataframes, 
-                xcolumn=xcolumn, 
-                ycolumn=ycolumn, 
-                yerrcolumn=yerrcolumn,
-                xlabel=s_column.label,
-                ylabel=latex_to_html_converter(plane_def.label),
-            )
-
-
-    def clear_plots(self):
-        widget: DualPlot = self.get_current_tab()[1]
-        widget.clear()
 
 class MeasurementListView(QtWidgets.QListView):
     

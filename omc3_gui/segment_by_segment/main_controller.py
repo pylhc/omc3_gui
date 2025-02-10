@@ -16,7 +16,9 @@ from qtpy import QtWidgets
 from qtpy.QtCore import Slot
 
 from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
-from omc3_gui.segment_by_segment.main_model import SegmentTableModel, Settings
+from omc3_gui.segment_by_segment.plotting import plot_segment_data
+from omc3_gui.segment_by_segment.settings import PlotSettings, Settings
+from omc3_gui.segment_by_segment.main_model import SegmentTableModel
 from omc3_gui.segment_by_segment.main_view import SbSWindow
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
@@ -29,6 +31,7 @@ from omc3_gui.segment_by_segment.segment_view import SegmentDialog
 from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog
 from omc3_gui.utils.threads import BackgroundThread
 from omc3_gui.utils.ui_base_classes import Controller
+from omc3_gui.plotting.classes import DualPlot
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -40,10 +43,11 @@ class SbSController(Controller):
     settings: Settings
     _view: SbSWindow
 
-    def __init__(self):
+    def __init__(self, settings: Settings | None = None):
         super().__init__(SbSWindow())
         self.connect_signals()
-        self.settings = Settings()
+        self.settings = settings or Settings()
+        
         self._last_selected_optics_path: Path | None = None
         self._running_tasks: list[BackgroundThread] = []
 
@@ -338,7 +342,7 @@ class SbSController(Controller):
             segments: Sequence[SegmentItemModel]: The new selection of segments.
         """
         view: SbSWindow = self._view  
-        view.clear_plots()
+        self.clear_plots()
 
         if segments is None:
             segments = view.get_selected_segments()
@@ -353,7 +357,7 @@ class SbSController(Controller):
             LOGGER.debug("More than one segment selected. Clearing Plots.")
             return
 
-        view.plot()
+        self.plot()
 
     @Slot()
     def add_default_segments(self):
@@ -543,3 +547,34 @@ class SbSController(Controller):
             # For Debugging: Start sbs directly ---
             # sbs_function()
             # -------------------------------------
+
+# Plotting ---------------------------------------------------------------------
+    def plot(self):
+        """ Trigger a plot update with the currently selected segments. """
+        view: SbSWindow = self._view
+        settings: PlotSettings = self.settings.plotting
+        
+        segments = view.get_selected_segments()
+        if len(segments) != 1:
+            LOGGER.error("Please select exactly one segment to plot.")
+            return
+        
+        if not settings.forward and not settings.backward:
+            LOGGER.error("Please enable at least one propagation method to show.")
+            return
+
+        segments_data: list[SegmentDataModel] = segments[0].segments
+        definition, widget = view.get_current_tab()
+        plot_segment_data(
+            widget=widget, 
+            definition=definition, 
+            segments=segments_data, 
+            settings=settings,
+        )
+
+
+    def clear_plots(self):
+        """ Clear the plots. """
+        view: SbSWindow = self._view
+        widget: DualPlot = view.get_current_tab()[1]
+        widget.clear()

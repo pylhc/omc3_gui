@@ -13,6 +13,8 @@ from omc3.plotting.utils.colors import get_mpl_color
 
 from qtpy.QtCore import Qt
 
+from omc3_gui.plotting.classes import ObservablePlotDataItem
+
 PenStyle = Qt.PenStyle
 
 
@@ -24,7 +26,11 @@ def plot_dataframes(
     xerrcolumn: str = None,
     yerrcolumn: str = None,
     xlabel: str = None, 
-    ylabel: str = None):
+    ylabel: str = None,
+    legend: bool = True,
+    brightness: int | None = None,
+    marker: str = 'o',
+    ):
     """ 
     Plot a collection of DataFrames with pyqtgraph.
 
@@ -37,18 +43,39 @@ def plot_dataframes(
         yerrcolumn (str): The name of the column to plot as vertical errorbars.
         xlabel (str): The label of the x-axis.
         ylabel (str): The label of the y-axis.
-        """
+        legend (bool, optional): Whether to add a legend to the plot. Defaults to True.
+        brightness (int, optional): The brightness of the colors to use. Defaults to None.
+        marker (str, optional): The marker to use for the data points. Defaults to 'o'.
+    """
+    plot_item: pg.PlotItem = plot.plotItem
+    
+    if legend:
+        plot_item.addLegend(offset=(0, 0))
+    
     for idx, (name, df) in enumerate(dataframes.items()):
-        plot_errorbar(plot, x=df[xcolumn], y=df[ycolumn], yerr=df[yerrcolumn], names=df.index, label=name, color=get_mpl_color(idx))
+        color = pg.Color(get_mpl_color(idx))
+        if brightness is not None:
+            color = color.lighter(brightness)
+        plot_errorbar(
+            plot_item, 
+            x=df[xcolumn], 
+            y=df[ycolumn], 
+            xerr=df.get(xerrcolumn), 
+            yerr=df.get(yerrcolumn), 
+            names=df.index, 
+            label=name, 
+            color=color,
+            marker=marker,
+        )
     
     if xlabel is not None:
-        plot.setLabel("bottom", xlabel)
+        plot_item.setLabel("bottom", xlabel)
 
     if ylabel is not None:
-        plot.setLabel("left", ylabel)
+        plot_item.setLabel("left", ylabel)
         
 def plot_errorbar(
-    plot: pg.PlotWidget,
+    plot: pg.PlotItem,
     *,
     x: Sequence, 
     y: Sequence, 
@@ -56,7 +83,7 @@ def plot_errorbar(
     yerr: Sequence | None = None, 
     names: Sequence | None = None, 
     label: str | None = None,
-    color: str | None = None,
+    color: str | pg.Color | None = None,
     marker: str = 'o', 
     markersize: int = 10,
     linestyle: PenStyle = PenStyle.SolidLine,
@@ -80,6 +107,7 @@ def plot_errorbar(
         markersize (int, optional): The markersize of the errorbar. Defaults to 10.
         linestyle (PenStyle, optional): The linestyle of the errorbar. Defaults to PenStyle.SolidLine.
     """
+
     curvePen = pg.mkPen(color=color, width=linewidth, style=linestyle)    
     errorbarPen = pg.mkPen(color=color, width=linewidth, style=PenStyle.SolidLine)
     
@@ -94,7 +122,7 @@ def plot_errorbar(
     names = safe_convert_to_numpy(names)
     
     tooltips = create_tooltips(x, y, xerr, yerr, names, label)
-    curve = pg.PlotDataItem(
+    curve = ObservablePlotDataItem(
         x=x, y=y, data=tooltips,
         name=label,
         pen=curvePen, 
@@ -114,6 +142,9 @@ def plot_errorbar(
             height=2*yerr if yerr is not None else None, 
             pen=errorbarPen
         )
+        
+        # Connect errorbar and curve's visibility
+        curve.visibilityChanged.connect(errorbar.setVisible)
         plot.addItem(errorbar)
 
     plot.addItem(curve)

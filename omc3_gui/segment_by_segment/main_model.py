@@ -7,7 +7,6 @@ This is the main model for the Segment-by-Segment application.
 from __future__ import annotations
 
 import enum
-from dataclasses import dataclass
 import logging
 from typing import Any, Protocol
 from collections.abc import Hashable, Sequence
@@ -20,11 +19,6 @@ from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
 from omc3_gui.utils.widgets import showErrorDialog
 
 LOGGER = logging.getLogger(__name__)
-
-
-@dataclass
-class Settings:
-    pass
 
 
 class Item(Protocol):
