@@ -10,12 +10,15 @@ import numpy as np
 import pandas as pd
 import pyqtgraph as pg
 from omc3.plotting.utils.colors import get_mpl_color
+import logging
 
 from qtpy.QtCore import Qt
 
 from omc3_gui.plotting.classes import ObservablePlotDataItem
 
 PenStyle = Qt.PenStyle
+
+LOGGER = logging.getLogger(__name__)
 
 
 def plot_dataframes(
@@ -30,6 +33,8 @@ def plot_dataframes(
     legend: bool = True,
     brightness: int | None = None,
     marker: str = 'o',
+    linestyle: PenStyle = PenStyle.SolidLine,
+    suffix: str = "",
     ):
     """ 
     Plot a collection of DataFrames with pyqtgraph.
@@ -46,6 +51,8 @@ def plot_dataframes(
         legend (bool, optional): Whether to add a legend to the plot. Defaults to True.
         brightness (int, optional): The brightness of the colors to use. Defaults to None.
         marker (str, optional): The marker to use for the data points. Defaults to 'o'.
+        linestyle (PenStyle, optional): The linestyle to use for the data points. Defaults to PenStyle.SolidLine.
+        suffix (str, optional): The suffix to add to the legend. Defaults to "".
     """
     plot_item: pg.PlotItem = plot.plotItem
     
@@ -56,6 +63,13 @@ def plot_dataframes(
         color = pg.Color(get_mpl_color(idx))
         if brightness is not None:
             color = color.lighter(brightness)
+        
+        try:
+            df[ycolumn]
+        except KeyError:
+            LOGGER.debug(f"Could not find column '{ycolumn}' in DataFrame '{name}. Skipping!'")
+            continue
+
         plot_errorbar(
             plot_item, 
             x=df[xcolumn], 
@@ -63,9 +77,10 @@ def plot_dataframes(
             xerr=df.get(xerrcolumn), 
             yerr=df.get(yerrcolumn), 
             names=df.index, 
-            label=name, 
+            label=f"{name}{suffix}", 
             color=color,
             marker=marker,
+            linestyle=linestyle,
         )
     
     if xlabel is not None:

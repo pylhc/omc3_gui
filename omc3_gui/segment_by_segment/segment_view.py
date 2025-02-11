@@ -4,9 +4,7 @@ Segment View
 
 This module contains the view for the segment dialog.
 """
-from pathlib import Path
-
-from qtpy import QtWidgets
+from __future__ import annotations
 
 from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
 from omc3_gui.utils.dataclass_ui import DataClassDialog, DataClassUI, FieldUIDef
@@ -19,7 +17,7 @@ class SegmentDialog(DataClassDialog):
     WINDOW_TITLE = "Segment Editor"
     DEFAULT_SIZE = (400, -1)
     
-    def __init__(self, parent=None, segment: SegmentDataModel = None):
+    def __init__(self, parent=None, segment: SegmentDataModel | None = None):
         if segment is None:
             segment = SegmentDataModel(name=TO_BE_DEFINED, measurement=None)  # dummy
         

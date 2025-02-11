@@ -4,13 +4,24 @@ Utils: UI Base Classes
 
 This module contains base classes for UI's.
 """
+from __future__ import annotations
+
 import logging
 import re
 import sys
-from qtpy.QtCore import QObject, Slot, QEvent, Qt
-from qtpy.QtWidgets import QApplication, QFileDialog, QMenuBar, QDesktopWidget, QWidgetAction, QStatusBar, QToolTip, QMessageBox
+
 from qtpy import QtGui
+from qtpy.QtCore import QObject, Slot
+from qtpy.QtWidgets import (
+    QApplication,
+    QDesktopWidget,
+    QMenuBar,
+    QStatusBar,
+    QWidgetAction,
+)
+
 from omc3_gui import __version__
+from omc3_gui.utils import colors
 from omc3_gui.utils.log_handler import get_console_formatter
 from omc3_gui.utils.widgets import RunningSpinner, showErrorDialog
 
@@ -24,8 +35,8 @@ except ImportError:  # Standard QT
         app.exec_()
 
 try:  # CERN Console
-    from accwidgets.log_console import LogConsoleFormatter as AccPyLogConsoleFormatter
     from accwidgets.app_frame._about_dialog import AboutDialog
+    from accwidgets.log_console import LogConsoleFormatter as AccPyLogConsoleFormatter
 except ImportError:  # Deactivated
     AccPyLogConsoleFormatter = object
     AboutDialog = None
@@ -132,8 +143,8 @@ class View(ApplicationFrame):
             self.log_console.DockWidgetClosable | self.log_console.DockWidgetMovable
         )
         self.log_console.console.formatter = LogConsoleFormatter(show_date=False)  # see below
-        self.log_console.console._set_color_to_scheme(color=QtGui.QColor("#b6b6b6b"), level=logging.DEBUG)  # default: black
-        # self.log_console.console._set_color_to_scheme(color=QtGui.QColor("#000000"), level=logging.INFO)    # default: green
+        for level, color in colors.LOGGING.items():
+            self.log_console.console._set_color_to_scheme(color=QtGui.QColor(color), level=level)
         self.log_console.console.model.buffer_size = 10_000  # default: 1000
         if sys.flags.debug:
             self.log_console.console.model.visible_levels |=  {logging.DEBUG}

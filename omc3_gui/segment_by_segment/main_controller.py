@@ -17,7 +17,7 @@ from qtpy.QtCore import Slot
 
 from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
 from omc3_gui.segment_by_segment.plotting import plot_segment_data
-from omc3_gui.segment_by_segment.settings import PlotSettings, Settings
+from omc3_gui.segment_by_segment.settings_model import PlotSettings, Settings
 from omc3_gui.segment_by_segment.main_model import SegmentTableModel
 from omc3_gui.segment_by_segment.main_view import SbSWindow
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
@@ -46,9 +46,9 @@ class SbSController(Controller):
     def __init__(self, settings: Settings | None = None):
         super().__init__(SbSWindow())
         self.connect_signals()
-        self.settings = settings or Settings()
+        self.settings: Settings = settings or Settings()
         
-        self._last_selected_optics_path: Path | None = None
+        self._last_selected_optics_path: Path = self.settings.cwd
         self._running_tasks: list[BackgroundThread] = []
 
         self.set_measurement_interaction_buttons_enabled(False)
@@ -121,7 +121,8 @@ class SbSController(Controller):
     @Slot()
     def _show_running_tasks(self):
         """ Show (i.e. log) the list of running tasks. """
-        LOGGER.debug(f"Running tasks: {[task.message for task in self._running_tasks]}")
+        LOGGER.info(f"Running tasks: {[task.message for task in self._running_tasks]}")
+        
     
     # Measurements -------------------------------------------------------------
     def set_measurement_interaction_buttons_enabled(self, enabled: bool = True):
@@ -160,7 +161,7 @@ class SbSController(Controller):
         filenames = OpenDirectoriesDialog(
             parent=view,
             caption="Select Optics Folders", 
-            directory=str(self._last_selected_optics_path) if self._last_selected_optics_path else None,
+            directory=self._last_selected_optics_path,
         ).run_selection_dialog()
 
         loaded_measurements = view.get_measurement_list()
@@ -197,8 +198,9 @@ class SbSController(Controller):
                 return
 
         LOGGER.debug(f"Opening edit dialog for {measurement.display()}.")
+        view: SbSWindow = self._view  
         dialog = OpticsMeasurementDialog(
-            parent=self._view,
+            parent=view,
             optics_measurement=measurement,
         )
         if dialog.exec_() == dialog.Accepted:
@@ -243,6 +245,7 @@ class SbSController(Controller):
         self.set_measurement_interaction_buttons_enabled(True)
         self.set_all_segment_buttons_enabled(True)
 
+        # Group the segments fo the measurements into table-items when they have the same defintion ---
         segment_table_items: list[SegmentItemModel] = []
 
         for measurement in measurements:
@@ -254,8 +257,13 @@ class SbSController(Controller):
                 else:
                     segment_table_items.append(SegmentItemModel.from_segments([segment]))
 
+        # Create the segment Table to show in the GUI ---
         segment_table = SegmentTableModel()
-        segment_table.add_items(segment_table_items)
+        try:
+            segment_table.add_items(segment_table_items)
+        except ValueError as e:
+            LOGGER.debug(str(e))
+            
         view.set_segments(segment_table)
         self.segment_selection_changed()
 
@@ -509,7 +517,7 @@ class SbSController(Controller):
         view: SbSWindow = self._view  
 
         if segments is None:
-            segments = view.get_selected_segments()
+            segments: Sequence[SegmentItemModel] = view.get_selected_segments()
         
         if not segments:
             LOGGER.error("Please select at least one segment to run.")
@@ -521,10 +529,17 @@ class SbSController(Controller):
             LOGGER.error("Please select at least one measurement.")
             return
 
-        segment_parameters = [s.to_input_string() for s in segments if not s.is_element()]
-        element_parameters = [s.to_input_string() for s in segments if s.is_element()] 
-
+        all_selected_segment_data: list[SegmentDataModel] = [sdata for s in segments for sdata in s.segments]
         for measurement in selected_measurements:
+            # Filter segments that are in the measurement and sort into segments/elements
+            selected_segments_in_meas = [s for s in measurement.segments if s in all_selected_segment_data]
+            if not selected_segments_in_meas:
+                LOGGER.debug(f"None of the selected segments found in {measurement.display()}. Skipping.")
+                continue
+
+            segment_parameters = [s.to_input_string() for s in selected_segments_in_meas if not s.is_element()]
+            element_parameters = [s.to_input_string() for s in selected_segments_in_meas if s.is_element()] 
+
             # Create sbs-callable from measurement/inputs
             sbs_function  = partial(
                     segment_by_segment, 
@@ -533,10 +548,16 @@ class SbSController(Controller):
                     elements=element_parameters or None,
                 )
 
+            def clear_all():
+                """ Clear all segment data, so that the GUI loads the new SbS data. """
+                for segment in selected_segments_in_meas:
+                    segment.data.clear()
+
             # Create thread
             measurement_task = BackgroundThread(
                 function=sbs_function,
                 message=f"SbS for {measurement.display()}",
+                on_end_function=clear_all,
             )
             
             # Run task

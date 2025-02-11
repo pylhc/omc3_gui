@@ -38,7 +38,7 @@ FILES_TO_LOOK_FOR: tuple[str, ...] = tuple(f"{name}{plane}" for name in (KICK_NA
 LOGGER = logging.getLogger(__name__)
 
 
-@dataclass
+@dataclass(slots=True)
 class OpticsMeasurement:
     """ Class to load and hold the optics-measurement folder. 
     This class also stores the meta-data for the loaded measurement, 
@@ -143,8 +143,10 @@ class OpticsMeasurement:
         for segment in self.segments:
             if segment.name == name:
                 return segment
-        raise NameError(f"No segment with name {name} in {self.display()}.")
-    
+
+        msg = f"No segment with name {name} in {self.display()}."
+        raise NameError(msg)
+        
     @property
     def segments(self) -> list[SegmentDataModel]:
         return self._segments

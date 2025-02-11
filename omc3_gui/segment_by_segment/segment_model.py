@@ -14,6 +14,7 @@ from omc3.segment_by_segment.segments import SegmentDiffs
 
 from omc3_gui.utils import colors
 from omc3_gui.utils.dataclass_ui import metafield
+from omc3_gui.utils.item_models import Item
 
 if TYPE_CHECKING:
     from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
@@ -23,11 +24,12 @@ NO = f"<font color=\"{colors.RED_DARK}\">✗</font>"
 # OK = "✓"
 # NO = "✗"
 
+
 def not_empty(value):
     return value != ""
 
 
-@dataclass
+@dataclass(slots=True)
 class SegmentDataModel:
     """" Container for the segment data, which is also used in the Segment creation dialog. """
 
@@ -67,7 +69,7 @@ class SegmentDataModel:
         return SegmentDataModel(measurement=self.measurement, name=self.name, start=self.start, end=self.end)
 
 
-class SegmentItemModel:
+class SegmentItemModel(Item):
     """ Model for a segment item in the Segment-Table of the Segment-by-Segment application. 
     Each item has name, start and end and attached a list of actual segment-obejcts
     """
@@ -139,11 +141,8 @@ class SegmentItemModel:
 
     @property
     def id(self) -> str:
-        """ Unique identifier for the segment. 
-        Use `name` here, as this determines the output filename and we do not want to 
-        overwrite files with the same name.
-        """
-        return self.name
+        """ Unique identifier for the segment. """
+        return self.name + self.start + self.end
     
     def tooltip(self) -> str:
         """ Returns a string with information about the segment, 
@@ -171,16 +170,18 @@ class SegmentItemModel:
 
 # Segment functions ---
 
-def compare_segments(a: SegmentDataModel | SegmentItemModel, b: SegmentDataModel | SegmentItemModel):
+def compare_segments(a: SegmentDataModel | SegmentItemModel, b: SegmentDataModel | SegmentItemModel) -> bool:
+    """ Checks if two Segments have the same definition. """
     return a.name == b.name and a.start == b.start and a.end == b.end
 
 
-# Common functions -------------------------------------------------------------
-
-def is_element(segment: SegmentItemModel | SegmentDataModel):
+def is_element(segment: SegmentItemModel | SegmentDataModel) -> bool:
+    """ Checks if the segment is an element-segment. """
     return segment.start is None or segment.end is None
 
-def to_input_string(segment: SegmentItemModel | SegmentDataModel):
+
+def to_input_string(segment: SegmentItemModel | SegmentDataModel) -> str:
+    """ Convert the segment to the string representation as used in inputs. """
     if is_element(segment):
         return segment.name
     return f"{segment.name},{segment.start},{segment.end}"
