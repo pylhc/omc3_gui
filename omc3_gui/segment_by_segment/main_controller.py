@@ -28,9 +28,11 @@ from omc3_gui.segment_by_segment.segment_model import (
     compare_segments,
 )
 from omc3_gui.segment_by_segment.segment_view import SegmentDialog
-from omc3_gui.utils.file_dialogs import OpenDirectoriesDialog
-from omc3_gui.utils.threads import BackgroundThread
-from omc3_gui.utils.ui_base_classes import Controller
+from omc3_gui.ui_components.file_dialogs import OpenAnySingleDialog, OpenDirectoriesDialog
+from omc3_gui.ui_components.message_boxes import show_confirmation_dialog
+from omc3_gui.ui_components.text_editor import TextEditorDialog
+from omc3_gui.ui_components.threads import BackgroundThread
+from omc3_gui.ui_components.base_classes_cvm import Controller
 from omc3_gui.plotting.classes import DualPlot
 
 if TYPE_CHECKING:
@@ -286,21 +288,92 @@ class SbSController(Controller):
     def run_matcher(self) -> None:
         """ Run the matcher. """
         view: SbSWindow = self._view
-
-        # TODO:
-        msg = "The Segment-by-Segment Matcher is not implemented yet."
-        LOGGER.error(msg)
-        view.showErrorDialog("Error: Not Implemented", msg)
+        view.showErrorDialog("Error: Not Implemented", "The Segment-by-Segment Matcher is not implemented yet.")
+        # TODO!
     
     @ Slot()
     def edit_corrections(self) -> None:
-        """ Edit the corrections file. """
+        """ Edit the corrections file. 
+        
+        The following logic is applied to the selected measurements:
+        
+        - Check if a measurement is selected:
+        - If not show error.
+
+        - Check if multiple measurements are selected, if so: 
+            a) they all have the same correction file: open TextEditor, 
+            c) they have different correction files: show error
+            b) some have the same correction file, all others have none: ask if the others should also get this one
+            d) they have no correction file: ask for path and then open TextEditor with that file
+        - If only a single measurement is s
+        """
         view: SbSWindow = self._view
 
-        # TODO:
-        msg = "Not implemented yet."
-        LOGGER.error(msg)
-        view.showErrorDialog("Error: Not Implemented", msg)
+        selected_measurements: tuple[OpticsMeasurement] = view.get_selected_measurements()
+        if not selected_measurements:
+            LOGGER.error("Please select at least one measurement.")
+            return
+        
+        correction_files = {measurement.corrections for measurement in selected_measurements if measurement.corrections}
+        if len(correction_files) > 1:
+            view.showErrorDialog(
+                title="Error: Multiple correction files", 
+                message="Please select only measurements using the same correction file."
+            )
+            return
+        
+        # Only one or none correction file within the selection measurements from here ---
+        if len(correction_files) == 0:  # If there is none, ask user to provide one
+            LOGGER.debug("No correction file selected. Asking.")
+            directory = self.settings.cwd
+            if len(selected_measurements) == 1:
+                directory = selected_measurements[0].measurement_dir
+
+            dialog = OpenAnySingleDialog(
+                caption="Select a new or existing correction file for the selected measurement(s).",
+                existing=False,  # can be a new file
+                parent=view,
+                directory=directory
+            )
+            correction_file = dialog.run_selection_dialog()
+            if correction_file is None:
+                LOGGER.error("No correction file to edit selected.")
+                return
+
+        else:  # There is only one. Maybe use it for all selected measurements
+            correction_file = correction_files.pop()
+
+            has_no_corrections = [m for m in selected_measurements if not m.corrections]
+            if has_no_corrections:
+                measurements_string = '\n'.join([m.display() for m in has_no_corrections])
+                use_for_all = show_confirmation_dialog(
+                    question=(
+                        f"The measurements\n\n{measurements_string}\n\n"
+                        "have no correction file assigned.\n"
+                        f"Do you want to use\n\n{correction_file}\n\n"
+                        "also for these measurements?"
+                    ),
+                    title="There are unset correction files",
+                )
+                if not use_for_all:
+                    LOGGER.error(
+                        "User does not want to use the same correction file for all selected measurements."
+                        "Select a correction file for each measurement manually."
+                    )
+                    return
+                
+        # Use the correction file for all selected measurements ---
+        # We could simply assign the correction file to all (as the other have the same file),
+        # but this way we can log the changes (if even any).
+        for measurement in selected_measurements:
+            if not measurement.corrections:
+                LOGGER.debug(f"Setting {correction_file} for {measurement.display()}")
+                measurement.corrections = correction_file
+
+        # Open the TextEditor for the selected correction file ---
+        LOGGER.debug(f"Opening TextEditor for correction file: {correction_file}.")
+        edit_dialog = TextEditorDialog(correction_file)
+        edit_dialog.exec_()
 
     
     # Segments -----------------------------------------------------------------

@@ -1,6 +1,6 @@
 """ 
-Item Classes
-------------
+UI: Item Models
+---------------
 
 Classes that makes it easier to handle unique items in UI models.
 """

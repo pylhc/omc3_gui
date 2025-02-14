@@ -8,7 +8,7 @@ from dataclasses import fields
 from pathlib import Path
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
-from omc3_gui.utils.dataclass_ui import DataClassDialog, FieldUIDef, DataClassUI
+from omc3_gui.ui_components.dataclass_ui import DataClassDialog, FieldUIDef, DataClassUI
 
 TO_BE_DEFINED = Path("to_be_defined")
 

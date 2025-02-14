@@ -9,7 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 from dataclasses import dataclass, field
 
-from omc3_gui.utils.dataclass_ui import metafield
+from omc3_gui.ui_components.dataclass_ui import metafield
 
 
 @dataclass(slots=True)

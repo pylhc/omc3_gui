@@ -22,16 +22,14 @@ from omc3.optics_measurements.constants import (
 )
 from tfs.reader import read_headers
 
-from omc3_gui.utils.dataclass_ui import choices_validator as choices
-from omc3_gui.utils.dataclass_ui import metafield
+from omc3_gui.ui_components.dataclass_ui import choices_validator as choices
+from omc3_gui.ui_components.dataclass_ui import metafield
 
 if TYPE_CHECKING:
     from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
 
 SEQUENCE: str = "SEQUENCE"
 DATE: str = "DATE"
-
-LHC_MODEL_YEARS: tuple[str, ...] = ("2012", "2015", "2016", "2017", "2018", "2022", "2023", "2024", "2025", "2026")  # TODO: get from omc3
 
 FILES_TO_LOOK_FOR: tuple[str, ...] = tuple(f"{name}{plane}" for name in (KICK_NAME, PHASE_NAME, BETA_NAME) for plane in ("x", "y"))
 
@@ -50,7 +48,7 @@ class OpticsMeasurement:
     accel: str =            metafield("Accelerator",        "Name of the accelerator",         default=None)
     output_dir: Path =      metafield("Output",             "Path to the sbs-output folder",   default=None) 
     corrections: Path =     metafield("Corrections",        "Path to the corrections file",    default=None)
-    year: str =             metafield("Year",               "Year of the measurement (model)", default=None, validate=choices(*LHC_MODEL_YEARS))
+    year: str =             metafield("Year",               "Year of the measurement (model)", default=None)
     ring: int =             metafield("Ring",               "Ring of the accelerator",         default=None, validate=choices(1, 2, 3, 4))
     beam: int =             metafield("Beam",               "Beam of the accelerator",         default=None, validate=choices(1, 2)) 
     # List of segments. Using a list here, so the name and start/end can be changed
@@ -248,7 +246,7 @@ def _parse_info_from_model_dir(model_dir: Path) -> dict[str, Any]:
         if "lhc" in sequence:
             result['accel'] = "lhc"
             result['beam'] = int(sequence[-1])
-            result['year'] = _get_lhc_model_year(headers.get(DATE))
+            result['year'] = _get_year_from_header(headers)
         elif "psb" in sequence:
             result['accel'] = "psb"
             result['ring'] = int(sequence[-1])
@@ -258,26 +256,14 @@ def _parse_info_from_model_dir(model_dir: Path) -> dict[str, Any]:
     return result
 
 
-def _get_lhc_model_year(date: str | None) -> str | None:
-    """ Parses the year from the date in the LHC twiss.dat file 
-    and tries to find the closest model-year."""
+def _get_year_from_header(headers: dict) -> str | None:
+    """ Parses the year from the date in the LHC twiss.dat file."""
+    date = headers.get(DATE)
+    
     if date is None:
         return None
-    try:
-        found_year = int(f"20{date.split('/')[-1]}")
-    except ValueError:
-        LOGGER.debug(f"Could not parse year from '{date}'!")
-        return None
 
-    for lhc_year in sorted(LHC_MODEL_YEARS, reverse=True):
-        try:
-            year = int(lhc_year)
-        except ValueError:
-            continue
-
-        if year <= found_year:
-            LOGGER.debug(f"Assume model year {year!s} from '{date}'!")
-            return str(year)
+    year = f"20{date.split('/')[-1]}"
+    LOGGER.debug(f"Assume model year {year!s} from '{date}'!")
+    return year
     
-    LOGGER.debug(f"Could not parse year from '{date}'!")
-    return None

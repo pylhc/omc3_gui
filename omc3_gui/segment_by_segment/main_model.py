@@ -14,8 +14,7 @@ from qtpy.QtCore import Qt
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
-from omc3_gui.utils.widgets import showErrorDialog
-from omc3_gui.utils.item_models import UniqueItemListModel
+from omc3_gui.ui_components.item_models import UniqueItemListModel
 
 LOGGER = logging.getLogger(__name__)
 

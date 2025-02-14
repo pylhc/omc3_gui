@@ -12,9 +12,9 @@ from typing import TYPE_CHECKING
 
 from omc3.segment_by_segment.segments import SegmentDiffs
 
-from omc3_gui.utils import colors
-from omc3_gui.utils.dataclass_ui import metafield
-from omc3_gui.utils.item_models import Item
+from omc3_gui.ui_components import colors
+from omc3_gui.ui_components.dataclass_ui import metafield
+from omc3_gui.ui_components.item_models import Item
 
 if TYPE_CHECKING:
     from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement

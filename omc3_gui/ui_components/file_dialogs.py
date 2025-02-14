@@ -1,6 +1,6 @@
 """
-Utils: File Dialogs
--------------------
+UI: File Dialogs
+----------------
 
 Helper functions to open files.
 """
@@ -34,26 +34,26 @@ class OpenFilesDialog(QFileDialog):
 class OpenFileDialog(OpenFilesDialog):
     """ Open a single file. """
 
-    def __init__(self, caption = "Select File", **kwargs) -> None:
+    def __init__(self, caption: str = "Select File", **kwargs) -> None:
         super().__init__(caption=caption, **kwargs)  # parent, directory, filter, options
-        self.setFileMode(QFileDialog.ExistingFile)
+        self.setFileMode(QFileDialog.FileModeExistingFile)
     
     def run_selection_dialog(self) -> Path:
         selected = super().run_selection_dialog()
         if selected:
             return selected[0]
         return None
-    
+
 
 class OpenDirectoriesDialog(OpenFilesDialog):
     """ Open multiple directories. """
 
-    def __init__(self, caption = "Select Folders", **kwargs) -> None:
+    def __init__(self, caption: str = "Select Folders", **kwargs) -> None:
         super().__init__(caption=caption, **kwargs)  # parent, directory, filter, options
         icon = QApplication.style().standardIcon(QStyle.SP_DirIcon)
         self.setWindowIcon(icon)
         self.setOption(QFileDialog.Option.ShowDirsOnly, True)
-        self.setFileMode(QFileDialog.ExistingFiles) 
+        self.setFileMode(QFileDialog.FileMode.ExistingFiles) 
 
     def accept(self):
         """This function is called when the user clicks on "Open".
@@ -71,9 +71,9 @@ class OpenDirectoriesDialog(OpenFilesDialog):
 class OpenDirectoryDialog(OpenDirectoriesDialog):
     """ Open a single directory. """
 
-    def __init__(self, caption = "Select Folder", **kwargs) -> None:
+    def __init__(self, caption: str = "Select Folder", **kwargs) -> None:
         super().__init__(caption=caption, **kwargs)  # parent, directory, filter, options
-        self.setFileMode(QFileDialog.DirectoryOnly)
+        self.setFileMode(QFileDialog.FileMode.Directory)
     
     def run_selection_dialog(self) -> Path:
         selected = super().run_selection_dialog()
@@ -85,14 +85,16 @@ class OpenDirectoryDialog(OpenDirectoriesDialog):
 class OpenAnyMultiDialog(OpenFilesDialog):
     """ Open multiple files/folders. """
 
-    def __init__(self, caption = "Select Files", **kwargs) -> None:
+    def __init__(self, caption: str = "Select Files", existing: bool = True, **kwargs) -> None:
         super().__init__(caption=caption, **kwargs)  # parent, directory, filter, options
-        self.setFileMode(QFileDialog.ExistingFiles)
+        if existing:
+            self.setFileMode(QFileDialog.FileMode.ExistingFiles)
     
     def accept(self):
         """This function is called when the user clicks on "Open".
         Normally, when selecting a directories, the first directory is followed/opened inside the dialog, 
-        i.e. its content is shown. Overwrite super().accept() to prevent that and close the dialog instead.
+        i.e. its content is shown. 
+        Overwrite super().accept() to prevent that and close the dialog instead.
         """
         if not self.selectedFiles():
             LOGGER.warning("Nothing selected. Try again or cancel.")
@@ -104,9 +106,11 @@ class OpenAnyMultiDialog(OpenFilesDialog):
 class OpenAnySingleDialog(OpenAnyMultiDialog):
     """ Open a single file/folder. """
 
-    def __init__(self, caption = "Select File", **kwargs) -> None:
+    def __init__(self, caption: str = "Select Single", **kwargs) -> None:
+        existing = kwargs.get("existing", True)
         super().__init__(caption=caption, **kwargs)  # parent, directory, filter, options
-        self.setFileMode(QFileDialog.ExistingFile)
+        if existing:
+            self.setFileMode(QFileDialog.FileMode.ExistingFile)
     
     def run_selection_dialog(self) -> Path:
         selected = super().run_selection_dialog()

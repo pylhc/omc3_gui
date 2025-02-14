@@ -1,6 +1,6 @@
 """ 
-Utils: Threads
---------------
+UI: Threads
+-----------
 
 Helper functions for threads.
 """

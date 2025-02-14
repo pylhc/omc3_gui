@@ -1,6 +1,6 @@
 """ 
-Utils: DataClass UI
--------------------
+UI: DataClasses
+---------------
 
 This module allows to generate a simple UI's for dataclasses,
 which allows to edit the values of a dataclass.
@@ -18,8 +18,9 @@ from typing import Any, get_type_hints
 
 from qtpy import QtWidgets
 
-from omc3_gui.utils import colors, file_dialogs
-from omc3_gui.utils.widgets import HorizontalSeparator
+from omc3_gui.ui_components import file_dialogs
+from omc3_gui.ui_components import colors
+from omc3_gui.ui_components.widgets import HorizontalSeparator
 
 LOGGER = logging.getLogger(__name__)
 

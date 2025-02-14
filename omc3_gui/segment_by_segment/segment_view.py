@@ -7,7 +7,7 @@ This module contains the view for the segment dialog.
 from __future__ import annotations
 
 from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
-from omc3_gui.utils.dataclass_ui import DataClassDialog, DataClassUI, FieldUIDef
+from omc3_gui.ui_components.dataclass_ui import DataClassDialog, DataClassUI, FieldUIDef
 
 
 TO_BE_DEFINED = "to_be_defined"

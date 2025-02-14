@@ -1,10 +1,10 @@
 """ 
-Utils: Styles
--------------
+UI: Styles
+----------
 
 Helper functions to style UI elements and plots.
 """
-from omc3_gui.utils import colors
+from omc3_gui.ui_components import colors
 
 MONOSPACED_TOOLTIP = f"""
     QToolTip {{

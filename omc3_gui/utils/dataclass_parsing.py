@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 from dataclasses import fields, is_dataclass
 
-from omc3_gui.utils.dataclass_ui import get_dataclass_types
+from omc3_gui.ui_components.dataclass_ui import get_dataclass_types
 
 
 

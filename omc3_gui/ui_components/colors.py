@@ -1,6 +1,6 @@
 """ 
-Utils: Colors
--------------
+UI: Colors
+----------
 
 This module contains the color definitions for the application.
 All colors should be defined here for consistency and the elements

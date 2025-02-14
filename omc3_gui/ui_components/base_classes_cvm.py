@@ -1,8 +1,9 @@
 """ 
-Utils: UI Base Classes
-----------------------
+UI: Base Classes for CVM
+------------------------
 
-This module contains base classes for UI's.
+This module contains base classes for UI's
+that use the Controller-View-Model pattern.
 """
 from __future__ import annotations
 
@@ -21,9 +22,10 @@ from qtpy.QtWidgets import (
 )
 
 from omc3_gui import __version__
-from omc3_gui.utils import colors
+from omc3_gui.ui_components import colors
 from omc3_gui.utils.log_handler import get_console_formatter
-from omc3_gui.utils.widgets import RunningSpinner, showErrorDialog
+from omc3_gui.ui_components.widgets import RunningSpinner
+from omc3_gui.ui_components.message_boxes import show_error_dialog
 
 try:  # CERN Application Frame
     from accwidgets.app_frame import ApplicationFrame
@@ -40,6 +42,8 @@ try:  # CERN Console
 except ImportError:  # Deactivated
     AccPyLogConsoleFormatter = object
     AboutDialog = None
+
+LOGGER = logging.getLogger(__name__)
 
 
 class Controller(QObject):
@@ -187,7 +191,8 @@ class View(ApplicationFrame):
             title (str): Dialog title.
             message (str): Dialog message.
         """
-        showErrorDialog(title, message, parent=self)
+        LOGGER.error(message)
+        show_error_dialog(message, title, parent=self)
 
 
 class LogConsoleFormatter(AccPyLogConsoleFormatter):

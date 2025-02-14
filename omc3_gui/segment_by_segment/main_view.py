@@ -34,12 +34,12 @@ from omc3_gui.segment_by_segment.main_model import (
 )
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
-from omc3_gui.utils import colors
+from omc3_gui.ui_components import colors
 from omc3_gui.utils.counter import HorizontalGridLayoutFiller
 from omc3_gui.utils.iteration_classes import IterClass
-from omc3_gui.utils.styles import MONOSPACED_TOOLTIP
-from omc3_gui.utils.ui_base_classes import View
-from omc3_gui.utils.widgets import (
+from omc3_gui.ui_components.styles import MONOSPACED_TOOLTIP
+from omc3_gui.ui_components.base_classes_cvm import View
+from omc3_gui.ui_components.widgets import (
     DefaultButton,
     EditButton,
     OpenButton,
