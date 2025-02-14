@@ -60,6 +60,9 @@ class SbSController(Controller):
         """ Connect the signals from the GUI components (view) to the slots (controller). """
         view: SbSWindow = self._view  # for shorthand and type hinting
 
+        # Menu Bar -------------------------------------------------------------
+        view.sig_menu_settings.connect(self.show_settings)
+
         # Measurements -------------------------------------------------------------
         view.button_load_measurement.clicked.connect(self.open_measurements)
         view.button_edit_measurement.clicked.connect(self.edit_measurement)
@@ -666,9 +669,13 @@ class SbSController(Controller):
             settings=settings,
         )
 
-
     def clear_plots(self):
         """ Clear the plots. """
         view: SbSWindow = self._view
         widget: DualPlot = view.get_current_tab()[1]
         widget.clear()
+
+# Other ------------------------------------------------------------------------
+    @Slot()
+    def show_settings(self):
+        LOGGER.debug("Showing settings.")

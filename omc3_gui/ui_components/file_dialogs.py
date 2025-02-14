@@ -50,7 +50,7 @@ class OpenDirectoriesDialog(OpenFilesDialog):
 
     def __init__(self, caption: str = "Select Folders", **kwargs) -> None:
         super().__init__(caption=caption, **kwargs)  # parent, directory, filter, options
-        icon = QApplication.style().standardIcon(QStyle.SP_DirIcon)
+        icon = QApplication.style().standardIcon(QStyle.StandardPixmap.SP_DirIcon)
         self.setWindowIcon(icon)
         self.setOption(QFileDialog.Option.ShowDirsOnly, True)
         self.setFileMode(QFileDialog.FileMode.ExistingFiles) 

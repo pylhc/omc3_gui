@@ -61,6 +61,9 @@ class SbSWindow(View):
     sig_list_measurements_selected = Signal(tuple)  # Tuple[OpticsMeasurement]
     sig_table_segments_selected = Signal(tuple)
     sig_thread_spinner_double_clicked = Signal()
+
+    # Menu Signals ---
+    sig_menu_settings = Signal()
     
     def __init__(self, parent=None):
         
@@ -89,17 +92,19 @@ class SbSWindow(View):
         self.button_save_segments: QtWidgets.QPushButton = None
         self.button_load_segments: QtWidgets.QPushButton = None
 
-        # Build GUI and connect Signals ---        
+        # Build GUI and connect Signals ---     
+        self._add_menus()
         self._build_gui()
         self._connect_signals()
 
     def _connect_signals(self):
+        """ Connect signals with slots. 
+            Here only the basic signals are connected, the ones requireing more complex logic
+            or calling different views are connected in the controller. 
+        """
         # Optics Measurements ---
         self._list_view_measurements.doubleClicked.connect(self._handle_list_measurements_double_clicked)
         self._list_view_measurements.selectionModel().selectionChanged.connect(self._handle_list_measurements_selected)
-
-        # Segments ---
-        # Set in set_segments, as this needs to be reset after each model setting.
 
     # Slots --------------------------------------------------------------------
     @Slot(QModelIndex)
@@ -120,6 +125,19 @@ class SbSWindow(View):
         self.sig_table_segments_selected.emit(selected_segments)
 
     # GUI-Elements -------------------------------------------------------------
+    def _add_menus(self):
+        file_menu: QtWidgets.QMenu = self.get_action_by_title("File")  # defined in View-class
+        file_menu.setTitle("SbS-GUI")
+
+        menu_settings = QtWidgets.QAction("Settings", self)
+        menu_settings.setIcon(
+            QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_ComputerIcon)
+        )
+        menu_settings.triggered.connect(self.sig_menu_settings.emit)
+
+        # insert before the last entry (which is "Exit")
+        file_menu.insertAction(file_menu.actions()[-1], menu_settings)
+
     def _build_gui(self):
         self._central = QtWidgets.QSplitter(Qt.Horizontal)
 
@@ -170,7 +188,6 @@ class SbSWindow(View):
                 layout.addLayout(build_measurement_buttons())
                 return nav_top
             navigation_widget.addWidget(build_navigation_top())
-
 
             def build_navigation_bottom():
                 nav_bottom = QtWidgets.QWidget()

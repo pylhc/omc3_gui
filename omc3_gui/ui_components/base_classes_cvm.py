@@ -14,10 +14,13 @@ import sys
 from qtpy import QtGui
 from qtpy.QtCore import QObject, Slot
 from qtpy.QtWidgets import (
+    QAction,
     QApplication,
     QDesktopWidget,
+    QDockWidget,
     QMenuBar,
     QStatusBar,
+    QStyle,
     QWidgetAction,
 )
 
@@ -98,20 +101,61 @@ class View(ApplicationFrame):
         # File menu ---
         file = self._menu_bar.addMenu("File")
         quit = file.addAction("Exit", self.close)
+        quit.setIcon(QApplication.style().standardIcon(QStyle.StandardPixmap.SP_DialogCloseButton))
         quit.setMenuRole(QWidgetAction.QuitRole)
 
         # View menu ---
-        view = self._menu_bar.addMenu("View")
+        # needs to be called "View" to be found by ApplicationFrame,
+        # which adds some additional actions if needed.
+        view = self._menu_bar.addMenu("View") 
+
+        # Fullscreen -
         toggle_fullscreen = view.addAction("Full Screen", self.toggleFullScreen)
         toggle_fullscreen.setCheckable(True)
 
+        # Log Console -
+        # Add the log-console checkbox here, so Application Frame doesn't give it 
+        # the wrong title ("Toggle Log Console"), is horrible for a checkbox (jdilly, 2025)
+        log_console: QDockWidget = getattr(self, "log_console", None)
+        if log_console:
+            log_console_action = log_console.toggleViewAction()
+            log_console_action.setText("Log Console")
+            # hide the setText function, as otherwise ApplicationFrame overwrites the title
+            log_console_action._setText = log_console_action.setText
+            log_console_action.setText = lambda text: None  
+            view.addAction(log_console_action) 
+
         # Help menu ---
         help = self._menu_bar.addMenu("Help")
+
+        # About -
         about = help.addAction("About", self.showAboutDialog)
+        about.setIcon(self.windowIcon())
         about.setMenuRole(QWidgetAction.AboutRole)
 
         # Set menu bar ---
         self.setMenuBar(self._menu_bar)
+    
+    def get_action_by_title(self, title: str, parent: QMenuBar | None = None) -> QAction:
+        """ Retrieve a menu action by its title. 
+        
+        Args:
+            title (str): Action title.
+            parent (QMenuBar): Parent menu bar to search, if `None` the main menu bar is used.
+        """
+        if parent is None:
+            parent: QMenuBar | None = self._menu_bar
+
+        if parent is None:
+            LOGGER.debug("Menu bar does not seem to have been build yet.")
+            return None
+
+        for action in parent.actions():
+            if action.text() == title:
+                return action.menu()
+
+        LOGGER.debug(f"Unable to find action with title: {title} in {parent!r}")
+        return None
 
     def build_status_bar(self):
         status_bar: QStatusBar = self.statusBar()
