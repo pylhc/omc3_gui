@@ -56,8 +56,7 @@ def plot_dataframes(
     """
     plot_item: pg.PlotItem = plot.plotItem
     
-    if legend:
-        plot_item.addLegend(offset=(0, 0))
+    plot_item.addLegend(offset=(0, 0))
     
     for idx, (name, df) in enumerate(dataframes.items()):
         color = pg.Color(get_mpl_color(idx))
@@ -88,6 +87,8 @@ def plot_dataframes(
 
     if ylabel is not None:
         plot_item.setLabel("left", ylabel)
+    
+    plot_item.legend.setVisible(legend)
         
 def plot_errorbar(
     plot: pg.PlotItem,

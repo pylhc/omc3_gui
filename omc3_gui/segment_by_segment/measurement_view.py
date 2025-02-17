@@ -23,14 +23,13 @@ class OpticsMeasurementDialog(DataClassDialog):
             optics_measurement = OpticsMeasurement(measurement_dir=TO_BE_DEFINED, output_dir=TO_BE_DEFINED)
 
         non_editable = ("measurement_dir", )  # set by program not by user
-        dataclass_ui = DataClassUI.build_dataclass_ui(
+        dataclass_ui = DataClassUI(
             field_definitions=[
                 FieldUIDef(field.name, editable=field.name not in non_editable) 
                 for field in fields(OpticsMeasurement) if field.name[0] != "_"
             ],
-            dclass=OpticsMeasurement,
+            dclass=optics_measurement,
         )
-        dataclass_ui.model = optics_measurement
         super().__init__(dataclass_ui=dataclass_ui, parent=parent)
 
     @property

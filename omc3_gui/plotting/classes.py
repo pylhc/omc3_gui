@@ -4,7 +4,6 @@ Plotting: Classes
 
 Containers for figures, plots, etc.
 """
-from dataclasses import dataclass
 import pyqtgraph as pg
 from accwidgets.graph import StaticPlotWidget
 from accwidgets.graph.widgets.plotitem import ExViewBox

@@ -9,7 +9,7 @@ from typing import Any
 
 from omc3.definitions.optics import ColumnsAndLabels, S_COLUMN
 from omc3_gui.plotting.classes import DualPlot
-from omc3_gui.segment_by_segment.settings_model import PlotSettings
+from omc3_gui.segment_by_segment.settings import PlotSettings
 from omc3_gui.plotting.latex_to_html import latex_to_html_converter
 from omc3_gui.plotting.tfs_plotter import plot_dataframes
 from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
@@ -40,6 +40,9 @@ def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: 
         column_def = PropagableColumns(plane_def.column, plane="")  # `.column` already contains plane
 
         for direction in ("forward", "backward"):
+            if not getattr(settings, direction):
+                continue
+
             for expected in (None, settings.expected):
                 # note: don't really like the way the following settings are handled, 
                 # but lack a better idea (jdilly, 2025) 

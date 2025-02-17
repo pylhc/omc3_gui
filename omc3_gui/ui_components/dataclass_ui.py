@@ -2,11 +2,12 @@
 UI: DataClasses
 ---------------
 
-This module allows to generate a simple UI's for dataclasses,
-which allows to edit the values of a dataclass.
+This module provides classes to generate simple UI's for dataclasses,
+which allow to edit the values of dataclasses in a simple way.
 """
 from __future__ import annotations
 
+import dataclasses as dc
 import inspect
 import logging
 import re
@@ -14,12 +15,11 @@ from collections.abc import Callable, Sequence
 from dataclasses import MISSING, Field, dataclass, field, fields
 from functools import partial
 from pathlib import Path
-from typing import Any, get_type_hints
+from typing import Any, Protocol, get_type_hints
 
 from qtpy import QtWidgets
 
-from omc3_gui.ui_components import file_dialogs
-from omc3_gui.ui_components import colors
+from omc3_gui.ui_components import colors, file_dialogs
 from omc3_gui.ui_components.widgets import HorizontalSeparator
 
 LOGGER = logging.getLogger(__name__)
@@ -106,10 +106,14 @@ class FieldUI:
 
     def __post_init__(self):
         """ Connects the widget to the label and sets the text-color. """
-        try:
-            self.widget.textChanged.connect(self.has_changed)
-        except AttributeError:
-            self.widget.valueChanged.connect(self.has_changed)
+        for main_attribute in ["text", "value", "state"]:
+            try:
+                signal = getattr(self.widget, f"{main_attribute}Changed")
+            except AttributeError:
+                pass
+            else:
+                signal.connect(self.has_changed)
+                break
         self.widget.setStyleSheet(f"color: {self.text_color};")
         self.label.setStyleSheet(f"QLabel {{color: {self.text_color}}};") 
 
@@ -130,101 +134,31 @@ class FieldUI:
         self.label.setFont(font)
 
 
-@dataclass()
 class DataClassUI:
     """ Controller for the UI representation of a dataclass. 
     It contains a grid-layout that can be added to any QWidget/QLayout.   
     """
-    layout: QtWidgets.QGridLayout   # final layout of the UI for dataclass
-    model: object = None            # dataclass instance
-    fields: dict[str, FieldUI] = field(default_factory=dict) # stored field UI-elements
 
-    def reset_labels(self):
-        """ Resets all labels to indicate that the field shows the currently set value in the dataclass."""
-        for name in self.fields.keys():
-            self.fields[name].reset()
-    
-    def update_widget_from_model(self, name: str):
-        """ Updates the edit-widget of the given field from the dataclass values. 
-        
-        Args:
-            name (str): name of the field in the dataclass
-        """
-        value = getattr(self.model, name)
-        if value is not None:
-            self.fields[name].set_value(value)
-    
-    def update_model_from_widget(self, name: str):
-        """ Updates the dataclass value of the given field from the edit-widget. 
-        
-        Args:
-            name (str): name of the field in the dataclass
-        """
-        field: FieldUI = self.fields[name]
-
-        if not field.modified:  # avoid replacing 'None' with widget defaults
-            LOGGER.debug(f"Field {name} was not modified.")
-            return 
-
-        value = field.get_value()
-        setattr(self.model, name, value)
-
-    def update_ui(self):
-        """ Updates all edit-widgets from the dataclass values. """
-        for name in self.fields.keys():
-            self.update_widget_from_model(name)
-
-    def update_model(self):
-        """ Updates all dataclass fields from the current edit-widget values. """
-        for name in self.fields.keys():
-            self.update_model_from_widget(name)
-
-    def validate(self, only_modified: bool = False):
-        """ Checks all edit-widgets for valid choices. 
-        
-        The validation function NEED to return a truthy value, if 
-        the choice is valid. If it is invalid, they can either return a falsy
-        value or raise an exception. In the latter case, this exception will be
-        printed instead of the default message.
-        """
-        invalid_fields_str = []
-        for name in self.fields.keys():
-            field = self.model.__dataclass_fields__[name]
-            field_ui = self.fields[field.name]
-            if only_modified and not field_ui.modified:
-                continue
-            
-            validate_function = field.metadata.get("validate")
-            if validate_function is not None:
-                value = self.fields[field.name].get_value()
-
-                validation_result = False
-                try: 
-                    validation_result = validate_function(value)
-                except ValueError as e:
-                    invalid_fields_str.append(f"{field_ui.label.text()}: {str(e)}")
-                else: 
-                    if not validation_result:
-                        invalid_fields_str.append(f"{field_ui.label.text()}: {value} is not a valid choice.")
-
-        if invalid_fields_str:
-            full_str = "\n".join(invalid_fields_str)
-            raise ValueError(f'The following fields contain wrong values:\n{full_str}')
-
-    @classmethod
-    def build_dataclass_ui(cls, 
-        field_definitions: Sequence[FieldUIDef | str], dclass: type | object) -> 'DataClassUI':
+    def __init__(self, field_definitions: Sequence[FieldUIDef], dclass: type | object, layout: QtWidgets.QLayout | None = None):
         """ Builds a DataClassUI from a list of field definitions.
-        NOTE: `dclass` is not automatically attached to the resulting class,
-        as this function works with classes and instances, but the attached object needs to be the instance.
+        NOTE: `dclass` is not automatically attached to the resulting class, unless it is an already an instance.
+        This function works with classes and instances, but the attached object needs to be the instance.
         
         Args:
             field_def (Sequence[FieldUIDef | str]): list of field definitions
             dclass (type | object): DataClass type or instance.
+            layout (QtWidgets.QLayout | None): Layout to add the UI to. If None, a new grid-layout is created.
 
         Returns:
-            DataClassUI: A grid-layout containing edit-widgets and labels.
+            DataClassUI: An instances with a grid-layout containing edit-widgets and labels.
         """
+        if layout is None:
+            layout = QtWidgets.QGridLayout()
+        
+        self.model: object = None if isinstance(dclass, type) else dclass  # dataclass instance 
+        self.layout: QtWidgets.QGridLayout = layout  # final layout of the UI for dataclass
+        self.fields: dict[str, FieldUI] = {} # stored field UI-elements
+
         field_instances: dict[str, Field] = {field.name: field for field in fields(dclass)}
         field_types = get_dataclass_types(
             dclass, 
@@ -234,21 +168,19 @@ class DataClassUI:
              ]
         )
         # 
-
-        layout = QtWidgets.QGridLayout()
-        dataclass_ui = cls(layout)
         
         for idx_row, field_def in enumerate(field_definitions):
-            if field_def is None:
+            if field_def is None:  # Separator ---
                 layout.addWidget(HorizontalSeparator(), idx_row, 0, 1, 3)
                 continue
 
-            if isinstance(field_def, str):
+            if isinstance(field_def, str):  # Label only ---
                 layout.addWidget(QtWidgets.QLabel(field_def), idx_row, 0)
                 continue
             
             if field_def.name not in field_instances:
                 raise ValueError(f"Field {field_def.name} not found in dataclass {dclass}")
+
             field_inst = field_instances[field_def.name]
             
             # Label ---
@@ -270,9 +202,8 @@ class DataClassUI:
             except AttributeError:
                 widget.setEnabled(field_def.editable)
 
-
             get_value, set_value = build_getter_setter(widget, field_type)
-            dataclass_ui.fields[field_def.name] = FieldUI(
+            self.fields[field_def.name] = FieldUI(
                 widget=widget, 
                 label=qlabel,
                 set_value=set_value,
@@ -304,10 +235,183 @@ class DataClassUI:
                     set_value=set_value))
                 layout.addWidget(button, idx_row, 2)
 
-        return dataclass_ui
+        if self.model is not None:
+            self.update_ui()  # fill with values from the instance
+
+    def reset_labels(self):
+        """ Resets all labels to indicate that the field shows the currently set value in the dataclass."""
+        for name in self.fields.keys():
+            self.fields[name].reset()
+    
+    def update_widget_from_model(self, name: str):
+        """ Updates the edit-widget of the given field from the dataclass values. 
+        
+        Args:
+            name (str): name of the field in the dataclass
+        """
+        if self.model is None:
+            raise ValueError("No dataclass instance attached to the UI.")
+
+        value = getattr(self.model, name)
+        if value is not None:
+            self.fields[name].set_value(value)
+    
+    def update_model_from_widget(self, name: str):
+        """ Updates the dataclass value of the given field from the edit-widget. 
+        
+        Args:
+            name (str): name of the field in the dataclass
+        """
+        if self.model is None:
+            raise ValueError("No dataclass instance attached to the UI.")
+
+        field: FieldUI = self.fields[name]
+
+        if not field.modified:  # avoid replacing 'None' with widget defaults
+            LOGGER.debug(f"Field {name} was not modified.")
+            return 
+
+        value = field.get_value()
+        setattr(self.model, name, value)
+
+    def update_ui(self):
+        """ Updates all edit-widgets from the dataclass values. """
+        for name in self.fields.keys():
+            self.update_widget_from_model(name)
+
+    def update_model(self):
+        """ Updates all dataclass fields from the current edit-widget values. """
+        for name in self.fields.keys():
+            self.update_model_from_widget(name)
+
+    def validate(self, only_modified: bool = False):
+        """ Checks all edit-widgets for valid choices. 
+        
+        The validation function NEED to return a truthy value, if 
+        the choice is valid. If it is invalid, they can either return a falsy
+        value or raise an exception. In the latter case, this exception will be
+        printed instead of the default message.
+        """
+        if self.model is None:
+            raise ValueError("No dataclass instance attached to the UI.")
+
+        invalid_fields_str = []
+        for name in self.fields.keys():
+            field = self.model.__dataclass_fields__[name]
+            field_ui = self.fields[field.name]
+            if only_modified and not field_ui.modified:
+                continue
+            
+            validate_function = field.metadata.get("validate")
+            if validate_function is not None:
+                value = self.fields[field.name].get_value()
+
+                validation_result = False
+                try: 
+                    validation_result = validate_function(value)
+                except ValueError as e:
+                    invalid_fields_str.append(f"{field_ui.label.text()}: {str(e)}")
+                else: 
+                    if not validation_result:
+                        invalid_fields_str.append(f"{field_ui.label.text()}: {value} is not a valid choice.")
+
+        if invalid_fields_str:
+            full_str = "\n".join(invalid_fields_str)
+            raise ValueError(f'The following fields contain wrong values:\n{full_str}')
+
+
+class DataClassTabbedUI():
+    """ Controller for the UI representation of a dataclass, containing other dataclasses as fields. 
+    It contains a tabbed layout that can be added to any QWidget.   
+    """
+
+    def __init__(self, 
+                dclass: object | type, 
+                layout: QtWidgets.QLayout  | None = None, 
+                widget: QtWidgets.QTabWidget | None = None
+        ):
+        """ Builds a DataClassTabbedUI from a dataclass, using DataClassUIs as widgets in the tabs.
+        NOTE: As with the DataClassUI, the dataclass (`dclass`) is not automatically
+              attached to the resulting class, 
+        
+        Args:
+            dclass (object | type): dataclass instance or class. 
+                                    Needs to contain dataclasses as fields, which will converted to tabs.
+            layout (QtWidgets.QLayout | None): Layout to add the UI widget to. 
+                                               If None, a new QVBoxLayout is created.
+            widget (QtWidgets.QTabWidget | None): TabWidget to add the UI tabs to.
+                                                  If None, a new QTabWidget is created.
+                                                  The widget is always added to the layout.
+        """
+        self.layout: QtWidgets.QLayout = layout or QtWidgets.QVBoxLayout()
+        self.widget: QtWidgets.QTabWidget = widget or QtWidgets.QTabWidget()
+        self._dataclass_uis: dict[str, DataClassUI] = {}
+
+        self.layout.addWidget(self.widget)
+
+        fields = [field.name for field in dc.fields(dclass) if field.name[0] != "_"]
+        for field_name in fields:
+            sub_dclass = getattr(dclass, field_name)
+            dataclass_ui = DataClassUI(
+                field_definitions=[FieldUIDef(field.name) for field in dc.fields(sub_dclass) if field.name[0] != "_"],
+                dclass=sub_dclass,
+            )
+            ui_widget = QtWidgets.QWidget()
+            ui_widget.setLayout(dataclass_ui.layout)
+            self.widget.addTab(ui_widget, field_name.capitalize())
+            self._dataclass_uis[field_name] = dataclass_ui
+        
+        self._model: object = None
+        if not isinstance(dclass, type):
+            self.model = dclass  # also updates ui with values
+        
+    @property
+    def model(self):
+        return self._model
+    
+    @model.setter
+    def model(self, model: object):
+        """ Sets the model and updates the dataclass_uis. 
+        This does not add new dataclass_uis to the layout and throws errors 
+        if fields in the model are missing. """
+        self._model = model
+        for name, dataclass_ui in self._dataclass_uis.items():
+            dataclass_ui.model = getattr(model, name)
+            dataclass_ui.update_ui()
+
+    # Function to pass on to dataclass_uis ---
+    def update_ui(self):
+        for dataclass_ui in self._dataclass_uis.values():
+            dataclass_ui.update_ui()
+
+    def update_model(self):
+        for dataclass_ui in self._dataclass_uis.values():
+            dataclass_ui.update_model()
+    
+    def validate(self, only_modified: bool = False):
+        for dataclass_ui in self._dataclass_uis.values():
+            dataclass_ui.validate(only_modified=only_modified)
+    
+    def reset_labels(self):
+        for dataclass_ui in self._dataclass_uis.values():
+            dataclass_ui.reset_labels()
 
 
 # View -------------------------------------------------------------------------
+
+class DataClassInterface(Protocol):
+    """ Protocol for the DataClassDialog. 
+    Observed by DataClassUI and DataClassTabbedUI which can hence be used with
+    the dialog.
+    """
+    layout: QtWidgets.QLayout
+    model: object
+
+    def update_ui(self): ...
+    def update_model(self): ...
+    def validate(self, only_modified: bool = False): ...
+    def reset_labels(self): ...
+
 
 class DataClassDialog(QtWidgets.QDialog):
     """ Simple dialog window to display the DataClassUI layout. 
@@ -318,11 +422,11 @@ class DataClassDialog(QtWidgets.QDialog):
     WINDOW_TITLE = "Edit DataClass"
     DEFAULT_SIZE = (800, 600)  # width, height, use -1 for auto
     
-    def __init__(self, dataclass_ui: DataClassUI, parent=None):
+    def __init__(self, dataclass_ui: DataClassInterface, parent = None):
         super().__init__(parent)
         self._button_box: QtWidgets.QDialogButtonBox = None
         
-        self._dataclass_ui: DataClassUI = dataclass_ui
+        self._dataclass_ui: DataClassInterface = dataclass_ui
         self._build_gui()
         self._connect_signals()
         self._set_size(width=self.DEFAULT_SIZE[0], height=self.DEFAULT_SIZE[1])
@@ -381,6 +485,21 @@ class DataClassDialog(QtWidgets.QDialog):
         super().accept() 
 
 
+class SettingsDialog(DataClassDialog):
+    """ Slight modification of the DataClassDialog to be used for Tabbed-Settings. """
+
+    WINDOW_TITLE = "Settings"
+    DEFAULT_SIZE = (800, -1)
+    
+    def __init__(self, settings: object, parent=None):
+        dataclass_tabbed_ui = DataClassTabbedUI(dclass=settings)       
+        super().__init__(dataclass_ui=dataclass_tabbed_ui, parent=parent)
+
+    @property
+    def settings(self) -> object:
+        return self._dataclass_ui.model
+
+
 # Type-to-Widget Helpers ----------------------------------------------------------------
 
 class QFullIntSpinBox(QtWidgets.QSpinBox):
@@ -414,7 +533,7 @@ def build_getter_setter(widget: QtWidgets.QWidget, field_type: type) -> tuple[Ca
         def set_value(value: bool):
             widget.setChecked(value)
     
-    if isinstance(widget, QtWidgets.QSpinBox):
+    elif isinstance(widget, QtWidgets.QSpinBox):
         def get_value():
             return field_type(widget.value())
 
@@ -472,7 +591,6 @@ def get_field_inline_comments(dclass: type) -> dict[str, str]:
             found_fields[match.group('field')] = match.group('comment')
 
     return found_fields
-
 
 
 def get_dataclass_types(dclass: type | object, names: Sequence[str]):

@@ -17,7 +17,7 @@ from qtpy.QtCore import Slot
 
 from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
 from omc3_gui.segment_by_segment.plotting import plot_segment_data
-from omc3_gui.segment_by_segment.settings_model import PlotSettings, Settings
+from omc3_gui.segment_by_segment.settings import PlotSettings, Settings
 from omc3_gui.segment_by_segment.main_model import SegmentTableModel
 from omc3_gui.segment_by_segment.main_view import SbSWindow
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
@@ -28,6 +28,7 @@ from omc3_gui.segment_by_segment.segment_model import (
     compare_segments,
 )
 from omc3_gui.segment_by_segment.segment_view import SegmentDialog
+from omc3_gui.ui_components.dataclass_ui import SettingsDialog
 from omc3_gui.ui_components.file_dialogs import OpenAnySingleDialog, OpenDirectoriesDialog
 from omc3_gui.ui_components.message_boxes import show_confirmation_dialog
 from omc3_gui.ui_components.text_editor import TextEditorDialog
@@ -50,7 +51,7 @@ class SbSController(Controller):
         self.connect_signals()
         self.settings: Settings = settings or Settings()
         
-        self._last_selected_optics_path: Path = self.settings.cwd
+        self._last_selected_optics_path: Path = self.settings.main.cwd
         self._running_tasks: list[BackgroundThread] = []
 
         self.set_measurement_interaction_buttons_enabled(False)
@@ -328,7 +329,7 @@ class SbSController(Controller):
         # Only one or none correction file within the selection measurements from here ---
         if len(correction_files) == 0:  # If there is none, ask user to provide one
             LOGGER.debug("No correction file selected. Asking.")
-            directory = self.settings.cwd
+            directory = self.settings.main.cwd
             if len(selected_measurements) == 1:
                 directory = selected_measurements[0].measurement_dir
 
@@ -650,7 +651,7 @@ class SbSController(Controller):
         """ Trigger a plot update with the currently selected segments. """
         view: SbSWindow = self._view
         settings: PlotSettings = self.settings.plotting
-        
+
         segments = view.get_selected_segments()
         if len(segments) != 1:
             LOGGER.error("Please select exactly one segment to plot.")
@@ -660,6 +661,8 @@ class SbSController(Controller):
             LOGGER.error("Please enable at least one propagation method to show.")
             return
 
+        self.clear_plots()
+        
         segments_data: list[SegmentDataModel] = segments[0].segments
         definition, widget = view.get_current_tab()
         plot_segment_data(
@@ -679,3 +682,7 @@ class SbSController(Controller):
     @Slot()
     def show_settings(self):
         LOGGER.debug("Showing settings.")
+        settings_dialog = SettingsDialog(settings=self.settings)
+        if settings_dialog.exec_():
+            self.plot()
+        
