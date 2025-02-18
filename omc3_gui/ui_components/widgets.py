@@ -51,12 +51,10 @@ class RemoveButton(QtWidgets.QPushButton):
             f":disabled {{ background-color: {colors.RED_GREY}; color: {colors.GREYED_OUT_TEXT_DARK}; }}"
             )
 
-class EditButton(QtWidgets.QPushButton):
+class ChangeButton(QtWidgets.QPushButton):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not args and "text" not in kwargs:
-            self.setText("Edit")
 
         self.setStyleSheet(
             f":enabled {{ background-color: {colors.BLUE_DARK}; color: {colors.TEXT_LIGHT}; }}"

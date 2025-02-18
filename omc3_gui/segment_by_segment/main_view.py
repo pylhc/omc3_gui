@@ -5,16 +5,7 @@ Segment-by-Segment View
 This is the main view for the Segment-by-Segment application.
 
 TODO: 
-
-To be implemented:
- - Editor for the correction file (select file if there is none).
- 
-
-Missing
- - tickboxes for plotting forward/backward propagation
- - tickbox for legend?
- - History on double-click
- - 
+ - Going back through plot history on double-click
 
 """
 # from omc3_gui.segment_by_segment.segment_by_segment_ui import Ui_main_window
@@ -41,7 +32,7 @@ from omc3_gui.ui_components.styles import MONOSPACED_TOOLTIP
 from omc3_gui.ui_components.base_classes_cvm import View
 from omc3_gui.ui_components.widgets import (
     DefaultButton,
-    EditButton,
+    ChangeButton,
     OpenButton,
     RemoveButton,
     RunButton,
@@ -163,7 +154,7 @@ class SbSWindow(View):
                     grid_buttons_filler.add(load)
                     self.button_load_measurement = load
                     
-                    edit = EditButton()
+                    edit = DefaultButton("Edit")
                     edit.setToolTip("Edit the settings of the currently selected measurement.")
                     grid_buttons_filler.add(edit)
                     self.button_edit_measurement = edit
@@ -178,7 +169,7 @@ class SbSWindow(View):
                     grid_buttons_filler.add(matcher, col_span=2)
                     self.button_run_matcher = matcher
                     
-                    edit_corrections = DefaultButton("Corrections")
+                    edit_corrections = ChangeButton("Corrections")
                     edit_corrections.setToolTip("Edit the corrections file of the currently selected measurement.")
                     grid_buttons_filler.add(edit_corrections)
                     self.button_edit_corrections = edit_corrections
@@ -214,7 +205,7 @@ class SbSWindow(View):
                     grid_buttons_filler.add(new)
                     self.button_new_segment = new
                     
-                    default = EditButton("Add Defaults")
+                    default = ChangeButton("Add Defaults")
                     default.setToolTip(
                         "Add default segments for the currently selected measurements (if not already present)."
                     )

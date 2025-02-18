@@ -36,7 +36,7 @@ class OpenFileDialog(OpenFilesDialog):
 
     def __init__(self, caption: str = "Select File", **kwargs) -> None:
         super().__init__(caption=caption, **kwargs)  # parent, directory, filter, options
-        self.setFileMode(QFileDialog.FileModeExistingFile)
+        self.setFileMode(QFileDialog.FileMode.ExistingFile)
     
     def run_selection_dialog(self) -> Path:
         selected = super().run_selection_dialog()
