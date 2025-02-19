@@ -7,7 +7,7 @@ Global Settings for the Segment-by-Segment application.
 from __future__ import annotations
 
 from pathlib import Path
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 
 from omc3_gui.ui_components.dataclass_ui import metafield
 
@@ -25,7 +25,6 @@ class PlotSettings:
     forward: bool = metafield("Forward Propagation", "Show forward propagation.", default=True)
     backward: bool = metafield("Backward Propagation", "Show backward propagation.", default=True)
     expected: bool = metafield("Expectation", "Show expected value after correction instead of correction itself.", default=False)
-
 
 @dataclass(slots=True)
 class Settings:

@@ -48,12 +48,11 @@ class SbSController(Controller):
 
     def __init__(self, settings: Settings | None = None):
         super().__init__(SbSWindow())
-        self.connect_signals()
         self.settings: Settings = settings or Settings()
-        
         self._last_selected_optics_path: Path = self.settings.main.cwd
         self._running_tasks: list[BackgroundThread] = []
 
+        self.connect_signals()
         self.set_measurement_interaction_buttons_enabled(False)
         self.set_all_segment_buttons_enabled(False)
 
@@ -63,6 +62,12 @@ class SbSController(Controller):
 
         # Menu Bar -------------------------------------------------------------
         view.sig_menu_settings.connect(self.show_settings)
+
+        view.add_settings_to_menu(
+            menu="View",
+            settings=self.settings.plotting,
+            hook=partial(self.plot, weak=True),
+        )
 
         # Measurements -------------------------------------------------------------
         view.button_load_measurement.clicked.connect(self.open_measurements)
@@ -607,7 +612,7 @@ class SbSController(Controller):
             return
 
         all_selected_segment_data: list[SegmentDataModel] = [sdata for s in segments for sdata in s.segments]
-        for measurement in selected_measurements:
+        for idx, measurement in enumerate(selected_measurements):
             # Filter segments that are in the measurement and sort into segments/elements
             selected_segments_in_meas = [s for s in measurement.segments if s in all_selected_segment_data]
             if not selected_segments_in_meas:
@@ -626,9 +631,13 @@ class SbSController(Controller):
                 )
 
             def clear_all():
-                """ Clear all segment data, so that the GUI loads the new SbS data. """
+                """ Clear all chached segment data, so that the GUI loads the new SbS data. """
                 for segment in selected_segments_in_meas:
                     segment.data.clear()
+
+                # At the very end, update plots.
+                if idx == len(selected_measurements) - 1:
+                    self.plot()
 
             # Create thread
             measurement_task = BackgroundThread(
@@ -637,28 +646,30 @@ class SbSController(Controller):
                 on_end_function=clear_all,
             )
             
-            # Run task
-            LOGGER.info(f"Starting {measurement_task.message}")
-            self._add_running_task(task=measurement_task)
-            measurement_task.start()
-            
+            # For Real Use: Run Task ---
+            # LOGGER.info(f"Starting {measurement_task.message}")
+            # self._add_running_task(task=measurement_task)
+            # measurement_task.start()
+
             # For Debugging: Start sbs directly ---
-            # sbs_function()
+            sbs_function()
+            clear_all()
             # -------------------------------------
 
 # Plotting ---------------------------------------------------------------------
-    def plot(self):
+    def plot(self, weak: bool = False):
         """ Trigger a plot update with the currently selected segments. """
         view: SbSWindow = self._view
         settings: PlotSettings = self.settings.plotting
-
-        segments = view.get_selected_segments()
-        if len(segments) != 1:
-            LOGGER.error("Please select exactly one segment to plot.")
-            return
         
         if not settings.forward and not settings.backward:
             LOGGER.error("Please enable at least one propagation method to show.")
+            return
+
+        segments = view.get_selected_segments()
+        if len(segments) != 1:
+            if not weak:
+                LOGGER.error("Please select exactly one segment to plot.")
             return
 
         self.clear_plots()
@@ -684,5 +695,10 @@ class SbSController(Controller):
         LOGGER.debug("Showing settings.")
         settings_dialog = SettingsDialog(settings=self.settings)
         if settings_dialog.exec_():
-            self.plot()
+            view: SbSWindow = self._view
+            view.update_menu_settings(
+                menu="View",
+                settings=self.settings.plotting,
+            )
+            self.plot(weak=True)
         

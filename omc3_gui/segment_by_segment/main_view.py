@@ -3,14 +3,12 @@ Segment-by-Segment View
 -----------------------
 
 This is the main view for the Segment-by-Segment application.
-
-TODO: 
- - Going back through plot history on double-click
-
 """
 # from omc3_gui.segment_by_segment.segment_by_segment_ui import Ui_main_window
 from __future__ import annotations
 
+from dataclasses import fields
+from functools import partial
 import logging
 from collections.abc import Sequence
 
@@ -128,6 +126,59 @@ class SbSWindow(View):
 
         # insert before the last entry (which is "Exit")
         file_menu.insertAction(file_menu.actions()[-1], menu_settings)
+
+    def add_settings_to_menu(self, menu: str, settings: object, names: Sequence[str] | None = None, hook: callable = None):
+        """ Add quick-access checkboxes to the menu which are connected to the respective attributes in settings.
+        
+        Args:
+            menu (str): Main menu name to add the settings to.
+            settings (object): Settings to connect with the menu. Assumes dataclasses.
+            names (Sequence[str] | None): Which fields to connect. All fields need to be boolean.
+            hook (callable | None): Function to call after the settings have been updated.
+
+        """
+        qmenu: QtWidgets.QMenu = self.get_action_by_title(menu)
+        
+        def update_settings(value: bool, name: str):
+            setattr(settings, name, value)
+            if hook is not None:
+                hook()
+
+        for field in fields(settings): 
+            if names is not None and field.name not in names:
+                continue
+
+            if field.name.startswith("_"):
+                continue
+            label = field.metadata.get("label", field.name)
+            entry = QtWidgets.QAction(label, self)
+            entry.setCheckable(True)
+            entry.setChecked(getattr(settings, field.name))
+
+            entry.toggled.connect(partial(update_settings, name=field.name))
+            qmenu.addAction(entry)
+
+    def update_menu_settings(self, menu: str, settings: object, names: Sequence[str] | None = None):
+        """ Update the menu settings. 
+        See :func:`add_settings_to_menu`.
+        
+        Args:
+            menu (str): Main menu name where the settings are located.
+            settings (object): Settings to connected with the menu. Assumes dataclasses.
+            names (Sequence[str] | None): Which fields to connect. All fields need to be boolean.
+        """
+        qmenu: QtWidgets.QMenu = self.get_action_by_title(menu)
+
+        for field in fields(settings): 
+            if names is not None and field.name not in names:
+                continue
+
+            if field.name.startswith("_"):
+                continue
+
+            label = field.metadata.get("label", field.name)
+            entry: QtWidgets.QAction = self.get_action_by_title(label, parent=qmenu)
+            entry.setChecked(getattr(settings, field.name))
 
     def _build_gui(self):
         self._central = QtWidgets.QSplitter(Qt.Horizontal)

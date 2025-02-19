@@ -66,7 +66,7 @@ def plot_dataframes(
         try:
             df[ycolumn]
         except KeyError:
-            LOGGER.debug(f"Could not find column '{ycolumn}' in DataFrame '{name}. Skipping!'")
+            LOGGER.debug(f"Could not find column '{ycolumn}' in DataFrame for '{name}'. Skipping!")
             continue
 
         plot_errorbar(
@@ -101,7 +101,7 @@ def plot_errorbar(
     label: str | None = None,
     color: str | pg.Color | None = None,
     marker: str = 'o', 
-    markersize: int = 10,
+    markersize: int = 6,
     linestyle: PenStyle = PenStyle.SolidLine,
     linewidth: float = 2,
     ) -> tuple[pg.PlotDataItem, pg.ErrorBarItem]:

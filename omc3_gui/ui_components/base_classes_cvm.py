@@ -18,6 +18,7 @@ from qtpy.QtWidgets import (
     QApplication,
     QDesktopWidget,
     QDockWidget,
+    QMenu,
     QMenuBar,
     QStatusBar,
     QStyle,
@@ -136,7 +137,7 @@ class View(ApplicationFrame):
         # Set menu bar ---
         self.setMenuBar(self._menu_bar)
     
-    def get_action_by_title(self, title: str, parent: QMenuBar | None = None) -> QAction:
+    def get_action_by_title(self, title: str, parent: QMenuBar | QMenu | None = None) -> QAction | QMenu:
         """ Retrieve a menu action by its title. 
         
         Args:
@@ -152,7 +153,10 @@ class View(ApplicationFrame):
 
         for action in parent.actions():
             if action.text() == title:
-                return action.menu()
+                menu = action.menu()
+                if menu is not None:  # action is a menu (submenu)
+                    return menu
+                return action  # action is an entry (leaf)
 
         LOGGER.debug(f"Unable to find action with title: {title} in {parent!r}")
         return None
