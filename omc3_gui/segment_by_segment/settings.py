@@ -14,7 +14,8 @@ from omc3_gui.ui_components.dataclass_ui import metafield
 @dataclass(slots=True)
 class MainSettings:
     cwd: Path = metafield("Working Directory", "Current working directory. Used for default path when opening file selection dialogs.", default=Path.cwd())
-    # autoload_segments: bool = metafield("Autoload Segments", "Automatically try to load existing segments when loading a measurement.", default=True)  # TODO
+    autoload_segments: bool = metafield("Autoload Segments", "Automatically try to load existing segments when loading a measurement.", default=True) 
+    autodefault_segments: bool = metafield("Auto-Add Default Segments", "Automatically add default segments when loading a measurement.", default=False) 
 
 
 @dataclass(slots=True)
@@ -25,6 +26,7 @@ class PlotSettings:
     forward: bool = metafield("Forward Propagation", "Show forward propagation.", default=True)
     backward: bool = metafield("Backward Propagation", "Show backward propagation.", default=True)
     expected: bool = metafield("Expectation", "Show expected value after correction instead of correction itself.", default=False)
+
 
 @dataclass(slots=True)
 class Settings:

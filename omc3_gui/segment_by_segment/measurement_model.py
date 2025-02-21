@@ -246,7 +246,7 @@ def _parse_info_from_model_dir(model_dir: Path) -> dict[str, Any]:
         if "lhc" in sequence:
             result['accel'] = "lhc"
             result['beam'] = int(sequence[-1])
-            result['year'] = _get_year_from_header(headers)
+            result['year'] = map_lhc_year(_get_year_from_header(headers))
         elif "psb" in sequence:
             result['accel'] = "psb"
             result['ring'] = int(sequence[-1])
@@ -257,13 +257,39 @@ def _parse_info_from_model_dir(model_dir: Path) -> dict[str, Any]:
 
 
 def _get_year_from_header(headers: dict) -> str | None:
-    """ Parses the year from the date in the LHC twiss.dat file."""
+    """ Parses the year from the date in the twiss.dat file.
+    
+    TODO: Will not work for hl-lhc models. These should return the hl-version.
+    """
     date = headers.get(DATE)
     
     if date is None:
         return None
 
     year = f"20{date.split('/')[-1]}"
-    LOGGER.debug(f"Assume model year {year!s} from '{date}'!")
+    LOGGER.debug(f"Assuming model year {year!s} from '{date}'!")
+    return year
+
+
+def map_lhc_year(year: str | None) -> str:
+    """ Maps the input year to the corresponding available model year. """
+    if year is None:
+        return None
+    
+    try:
+        int_year = int(year)
+    except ValueError:
+        return year
+    
+    # no new models (see omc/model/accelerators/lhc)
+    if 2012 < int_year < 2015:  
+        LOGGER.info(f"Mapping year {year} to LHC model 2012!")
+        return "2012"
+    
+    # no new models (there was a 2021 in acc-models, but we were not using it then)
+    if 2018 < int_year < 2022:  
+        LOGGER.info(f"Mapping year {year} to LHC model 2018!")
+        return "2018"
+    
     return year
     

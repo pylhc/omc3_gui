@@ -13,6 +13,7 @@ from omc3.plotting.utils.colors import get_mpl_color
 import logging
 
 from qtpy.QtCore import Qt
+from qtpy.QtGui import QColor
 
 from omc3_gui.plotting.classes import ObservablePlotDataItem
 
@@ -136,8 +137,12 @@ def plot_errorbar(
     xerr = safe_convert_to_numpy(xerr)
     yerr = safe_convert_to_numpy(yerr)
     names = safe_convert_to_numpy(names)
+
+    hex_color = None
+    if color is not None:
+        hex_color = curvePen.color().name(QColor.NameFormat.HexRgb)
     
-    tooltips = create_tooltips(x, y, xerr, yerr, names, label)
+    tooltips = create_tooltips(x, y, xerr, yerr, names, label, hex_color)
     curve = ObservablePlotDataItem(
         x=x, y=y, data=tooltips,
         name=label,
@@ -167,7 +172,7 @@ def plot_errorbar(
     return curve, errorbar
 
 
-def create_tooltips(x, y, xerr, yerr, names, label) -> list[str]:
+def create_tooltips(x, y, xerr, yerr, names, label, color) -> list[str]:
     """
     Create a list of tooltips for a given errorbar.
 
@@ -177,27 +182,36 @@ def create_tooltips(x, y, xerr, yerr, names, label) -> list[str]:
         xerr (Sequence): The xerr values of the errorbar.
         yerr (Sequence): The yerr values of the errorbar.
         names (Sequence): The names of the entries in the data sequence.
-        label (str | None, optional): The label of the errorbar. Defaults to None.
+        label (str | None, optional): The label of the errorbar
+        color (str | None, optional): The color of the tooltip background
     """
     tooltips = [""] * len(x)
 
      
     for index in range(len(x)):
-        tooltip_text = ""
+        tooltip_text = "<html>"
+
+        if color is not None:
+            tooltip_text +=  "" # TODO
+
         if label is not None:
-            tooltip_text += f"{label}\n"
+            tooltip_text += f"{label}<br>"
 
         tooltip_text += f"x: {x[index]:.2e}"
         if xerr is not None:
             tooltip_text += f" ± {xerr[index]:.2e}"
         
-        tooltip_text += f"\ny: {y[index]:.2e}"
+        tooltip_text += f"<br>y: {y[index]:.2e}"
         if yerr is not None:
             tooltip_text += f" ± {yerr[index]:.2e}"
         
         if names is not None:
-            tooltip_text += f"\n{names[index]}"
-
+            tooltip_text += f"<br>{names[index]}"
+        
+        if color is not None:
+            tooltip_text += ""
+            
+        tooltip_text += "</html>"
 
         tooltips[index] = tooltip_text
     return tooltips

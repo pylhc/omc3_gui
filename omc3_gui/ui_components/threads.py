@@ -49,6 +49,9 @@ class BackgroundThread(QThread):
         except Exception as e:
             LOGGER.exception(str(e))
             self.on_exception.emit(str(e))
+            return 
+            
+        LOGGER.info(f"Finished {self.message!s} successfully!")
 
     def start(self):
         """

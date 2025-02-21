@@ -7,10 +7,15 @@ in the Segment-by-Segment application.
 """
 from __future__ import annotations
 
+from collections import namedtuple
 from dataclasses import dataclass
+from pathlib import Path
+import re
 from typing import TYPE_CHECKING
 
-from omc3.segment_by_segment.segments import SegmentDiffs
+from omc3.segment_by_segment.segments import SegmentDiffs, EXT
+from omc3.optics_measurements.constants import NAME
+import tfs
 
 from omc3_gui.ui_components import colors
 from omc3_gui.ui_components.dataclass_ui import metafield
@@ -27,6 +32,9 @@ NO = f"<font color=\"{colors.RED_DARK}\">✗</font>"
 
 def not_empty(value):
     return value != ""
+
+
+SegmentTuple = namedtuple('Segment', ['name', 'start', 'end'])  # the simplest way to store a segment definition
 
 
 @dataclass(slots=True)
@@ -185,3 +193,26 @@ def to_input_string(segment: SegmentItemModel | SegmentDataModel) -> str:
     if is_element(segment):
         return segment.name
     return f"{segment.name},{segment.start},{segment.end}"
+
+
+# Other ---
+
+def get_segments_from_directory(directory: Path) -> list[SegmentTuple]:
+    """ Parse segments from a directory. 
+    
+    This function needs to be kept synchronized with :class:`omc3.segment_by_segment.segments.SegmentDiffs`.
+    """
+    pattern = fr"{SegmentDiffs.PREFIX}.+?_[xy]_(.+)\{EXT}"  # keep in sync, hint: '.' in EXT
+    segments: list[SegmentTuple] = []
+    names: set[str] = set()
+    for file in directory.glob(f"{SegmentDiffs.PREFIX}*{EXT}"):
+        file_match = re.match(pattern, file.name)
+        if file_match is None:
+            continue
+
+        name = file_match.group(1)
+        if name not in names:
+            names.add(name)
+            df = tfs.read(file, index=NAME)
+            segments.append(SegmentTuple(name, df.index[0], df.index[-1]))
+    return segments

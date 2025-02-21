@@ -26,6 +26,7 @@ from omc3_gui.segment_by_segment.segment_model import (
     SegmentDataModel,
     SegmentItemModel,
     compare_segments,
+    get_segments_from_directory,
 )
 from omc3_gui.segment_by_segment.segment_view import SegmentDialog
 from omc3_gui.ui_components.dataclass_ui import SettingsDialog
@@ -46,15 +47,18 @@ class SbSController(Controller):
     settings: Settings
     _view: SbSWindow
 
-    def __init__(self, settings: Settings | None = None):
+    def __init__(self, measurements: list[Path | str] | None = None, settings: Settings | None = None):
         super().__init__(SbSWindow())
         self.settings: Settings = settings or Settings()
-        self._last_selected_optics_path: Path = self.settings.main.cwd
+        self._last_selected_measurement_path: Path = self.settings.main.cwd
         self._running_tasks: list[BackgroundThread] = []
 
         self.connect_signals()
         self.set_measurement_interaction_buttons_enabled(False)
         self.set_all_segment_buttons_enabled(False)
+        
+        if measurements is not None:
+            self.open_measurements_from_paths(measurements)        
 
     def connect_signals(self):
         """ Connect the signals from the GUI components (view) to the slots (controller). """
@@ -153,7 +157,6 @@ class SbSController(Controller):
         for button in measurement_interaction_buttons:
             button.setEnabled(enabled)
 
-
     def add_measurement(self, measurement: OpticsMeasurement):
         """ Add a measurement to the GUI. 
         
@@ -172,7 +175,7 @@ class SbSController(Controller):
         filenames = OpenDirectoriesDialog(
             parent=view,
             caption="Select Optics Folders", 
-            directory=self._last_selected_optics_path,
+            directory=self._last_selected_measurement_path,
         ).run_selection_dialog()
 
         loaded_measurements = view.get_measurement_list()
@@ -180,8 +183,15 @@ class SbSController(Controller):
 
         LOGGER.debug(f"User selected {len(filenames)} files.")
         for filename in filenames:
-            LOGGER.debug(f"adding: {filename!s}")
+            LOGGER.debug(f"Adding: {filename!s}")
             optics_measurement = OpticsMeasurement.from_path(filename)
+
+            if self.settings.main.autoload_segments:
+                self.load_segments_for_measurement(optics_measurement)
+
+            if self.settings.main.autodefault_segments:
+                self.add_default_segments(optics_measurement)
+
             try:
                 loaded_measurements.add_item(optics_measurement)
             except ValueError as e:
@@ -189,9 +199,38 @@ class SbSController(Controller):
             else:
                 measurement_indices.append(loaded_measurements.get_index(optics_measurement))
 
-            self._last_selected_optics_path = filename.parent
+            self._last_selected_measurement_path = filename.parent
 
         view.set_selected_measurements(measurement_indices)
+    
+    def open_measurements_from_paths(self, paths: Sequence[Path | str]):
+        """ Open the given paths as measurements on start. """
+        if not len(paths):
+            LOGGER.debug("No measurement paths to load.")
+            return
+
+        view: SbSWindow = self._view
+        loaded_measurements = view.get_measurement_list()
+
+        LOGGER.debug(f"Loading {len(paths)} measurements.")
+        for directory in paths:
+            directory = Path(directory)
+
+            LOGGER.debug(f"Adding: {directory!s}")
+            optics_measurement = OpticsMeasurement.from_path(directory)
+
+            if self.settings.main.autoload_segments:
+                self.load_segments_for_measurement(optics_measurement)
+
+            if self.settings.main.autodefault_segments:
+                self.add_default_segments(optics_measurement)
+
+            try:
+                loaded_measurements.add_item(optics_measurement)
+            except ValueError as e:
+                LOGGER.error(str(e))
+
+        view.set_selected_measurements()
     
     @Slot()
     def edit_measurement(self, measurement: OpticsMeasurement | None = None):
@@ -256,7 +295,7 @@ class SbSController(Controller):
         self.set_measurement_interaction_buttons_enabled(True)
         self.set_all_segment_buttons_enabled(True)
 
-        # Group the segments fo the measurements into table-items when they have the same defintion ---
+        # Group the segments for the measurements into table-items when they have the same defintion ---
         segment_table_items: list[SegmentItemModel] = []
 
         for measurement in measurements:
@@ -463,18 +502,27 @@ class SbSController(Controller):
             return
 
         for measurement in selected_measurements:
-            beam = measurement.beam
-            if beam is None:
-                LOGGER.error(f"No beam found in measurement {measurement.display()}. Cannot add default segments.")
-                continue
-
-            for segment_tuple in DEFAULT_SEGMENTS:
-                segment = SegmentDataModel(measurement, *segment_tuple)
-                segment.start = f"{segment.start}.B{beam}"
-                segment.end = f"{segment.end}.B{beam}"
-                measurement.try_add_segment(segment)
+            self.add_default_segements_to_measurement(measurement)
 
         self.measurement_selection_changed(selected_measurements)
+    
+    def add_default_segements_to_measurement(self, measurement: OpticsMeasurement): 
+        """ Add default segments to the given measurement. 
+        These segments are defined in :data:`omc3_gui.segment_by_segment.defaults.DEFAULT_SEGMENTS`. 
+
+        Args:
+            measurement (OpticsMeasurement): The measurement to add segments to.
+        """
+        if measurement.beam is not None:  # LHC
+            for segment_tuple in DEFAULT_SEGMENTS:
+                segment = SegmentDataModel(measurement, *segment_tuple)
+                segment.start = f"{segment.start}.B{measurement.beam}"
+                segment.end = f"{segment.end}.B{measurement.beam}"
+                measurement.try_add_segment(segment)
+        
+        # TODO: Implement for other accelerators
+        LOGGER.error(f"No beam found in measurement {measurement.display()}. Cannot add default segments.")
+
 
     @Slot()
     def new_segment(self):
@@ -578,13 +626,44 @@ class SbSController(Controller):
 
     @Slot()
     def load_segments(self):
-        LOGGER.debug("Loading segments from file/folder.")
-        # TODO
-        # Either parse a folder to find the segements therein, or load from a json file.
+        self.load_segments_for_selected_measurements()
+        # LOGGER.debug("Loading segments from file/folder.")
+        # TODO: implement file saving and loading and ask user which one to do.
+    
+    def load_segments_for_selected_measurements(self):
+        """ Load segments for the currently selected measurements. """
+        LOGGER.debug("Loading segments for selected measurements.")
+        view: SbSWindow = self._view
+
+        selected_measurements = view.get_selected_measurements()
+        if not selected_measurements:
+            LOGGER.error("Please select at least one measurement.")
+            return
+
+        for measurement in selected_measurements:
+            self.load_segments_for_measurement(measurement)
+
+        # Update the view
+        self.measurement_selection_changed(selected_measurements)
+
+    def load_segments_for_measurement(self, measurement: OpticsMeasurement):
+        """ Load segments for the given measurement. """
+        LOGGER.debug(f"Loading segments for {measurement.display()}.")
+        
+        segments = get_segments_from_directory(measurement.output_dir)
+        if not segments:
+            LOGGER.debug(f"No segments found in {measurement.output_dir}.")
+            return
+
+        for segment_tuple in segments:
+            segment = SegmentDataModel(measurement, *segment_tuple)
+            measurement.try_add_segment(segment)
         
     @Slot()
     def save_segments(self):
         LOGGER.debug("Saving segments to a file.")
+        view: SbSWindow = self._view
+        view.showErrorDialog("Error: Not Implemented", "The save segments function is not implemented yet.")
         # TODO
         # Save current segements to a json file
 
@@ -654,6 +733,7 @@ class SbSController(Controller):
             # For Debugging: Start sbs directly ---
             sbs_function()
             clear_all()
+            LOGGER.info(f"Finished {measurement_task.message}")
             # -------------------------------------
 
 # Plotting ---------------------------------------------------------------------
