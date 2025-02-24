@@ -376,6 +376,8 @@ def build_getter_setter(widget: QtWidgets.QWidget, field_type: type) -> tuple[Ca
         
     else:   # Any kind of widget should be able to handle strings.      
         def get_value():
+            if not widget.text():
+                return None
             return field_type(widget.text())
 
         def set_value(value):

@@ -26,6 +26,7 @@ def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: 
     Plot the given segments with the given definition. 
     """
     s_column = S_COLUMN
+    
     for plane, plot in zip("xy", [widget.top, widget.bottom]): 
         data_name = f"{definition.text_label}_{plane}"  # coincides with the name in TfsCollection
 

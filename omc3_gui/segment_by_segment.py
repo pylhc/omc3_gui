@@ -10,7 +10,6 @@ TODO:
  GUI:
  - Load segments from file or folder (check sbs/sbs_ files)
  - Save segments to file
- - Autoload segments when opening measurement folder
  - Pass measurement folders via cli args.
 
 Settings:
@@ -22,7 +21,6 @@ Plotting:
  - Going back through plot history on double-click
 
 """
-
 import sys
 from omc3_gui.segment_by_segment.main_controller import SbSController
 from omc3_gui.utils.log_handler import init_logging
@@ -34,4 +32,5 @@ from omc3_gui.utils.log_handler import init_logging
 
 if __name__ == "__main__":
     init_logging()
-    sys.exit(SbSController.run_application(measurements=["/mnt/volume/jdilly/projects/omc3_gui/tst_SBStest_wACD/measured_optics"]))
+    # sys.exit(SbSController.run_application(measurements=["/mnt/volume/jdilly/projects/omc3_gui/tst_SBStest_wACD/measured_optics", "/afs/cern.ch/work/j/josch/temp.bbgui_output/2025-02-19/LHCB1/Results/omc3_B1_30cm_with_old_local_corrections/"]))
+    sys.exit(SbSController.run_application())

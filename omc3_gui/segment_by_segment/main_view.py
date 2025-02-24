@@ -144,6 +144,7 @@ class SbSWindow(View):
             if hook is not None:
                 hook()
 
+        qmenu.addSeparator()
         for field in fields(settings): 
             if names is not None and field.name not in names:
                 continue
@@ -154,9 +155,9 @@ class SbSWindow(View):
             entry = QtWidgets.QAction(label, self)
             entry.setCheckable(True)
             entry.setChecked(getattr(settings, field.name))
-
             entry.toggled.connect(partial(update_settings, name=field.name))
             qmenu.addAction(entry)
+        qmenu.addSeparator()
 
     def update_menu_settings(self, menu: str, settings: object, names: Sequence[str] | None = None):
         """ Update the menu settings. 

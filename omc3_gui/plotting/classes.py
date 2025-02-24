@@ -7,6 +7,7 @@ Containers for figures, plots, etc.
 import pyqtgraph as pg
 from accwidgets.graph import StaticPlotWidget
 from accwidgets.graph.widgets.plotitem import ExViewBox
+from accwidgets.graph.widgets.plotwidget import GridOrientationOptions
 from qtpy.QtCore import Signal
 
 
@@ -39,17 +40,23 @@ class DualPlot(pg.LayoutWidget):
     def plots(self) -> tuple[pg.PlotWidget, pg.PlotWidget]:
         return (self.top, self.bottom)
 
-    
     def clear(self) -> None:    
         for plot in self.plots:
             plot.clear()
     
+    def set_connect_x(self, connect: bool) -> None:
+        if connect:
+            self.top.setXLink(self.bottom)
+        else:
+            self.top.setXLink(None)
+            self.bottom.setXLink(None)
 
-    def connect_x(self) -> None:
-        pass
-
-    def connect_y(self) -> None:
-        pass
+    def set_connect_y(self, connect: bool) -> None:
+        if connect:
+            self.top.setYLink(self.bottom)
+        else:
+            self.top.setYLink(None)
+            self.bottom.setYLink(None)
 
 
 class PlotWidget(StaticPlotWidget):
@@ -57,7 +64,7 @@ class PlotWidget(StaticPlotWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())  # requires accwidgets >= 3.0.11
         self.setBackground("w")
-
+        self._set_show_grid(GridOrientationOptions.Both)
 
 class ZoomingViewBox(ExViewBox):
     """ ViewBox that imitates the bahavior of the Java-GUI a bit closer. 
@@ -67,6 +74,11 @@ class ZoomingViewBox(ExViewBox):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.setMouseMode(ZoomingViewBox.RectMode)  # mode that makes zooming rectangles
+
+    def suggestPadding(self, axis):
+        if axis == 0:
+            return 0.0  # disable padding for x axis
+        return super().suggestPadding(axis)
 
     # def mouseDragEvent(self, ev):
 

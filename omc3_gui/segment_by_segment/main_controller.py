@@ -12,10 +12,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from omc3.sbs_propagation import segment_by_segment
+from omc3.segment_by_segment.constants import corrections_madx
 from qtpy import QtWidgets
 from qtpy.QtCore import Slot
 
-from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS
+from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS, get_default_correctors
 from omc3_gui.segment_by_segment.plotting import plot_segment_data
 from omc3_gui.segment_by_segment.settings import PlotSettings, Settings
 from omc3_gui.segment_by_segment.main_model import SegmentTableModel
@@ -70,7 +71,7 @@ class SbSController(Controller):
         view.add_settings_to_menu(
             menu="View",
             settings=self.settings.plotting,
-            hook=partial(self.plot, weak=True),
+            hook=partial(self.plot, weak=True),  # update plots if possible
         )
 
         # Measurements -------------------------------------------------------------
@@ -421,6 +422,11 @@ class SbSController(Controller):
         # Open the TextEditor for the selected correction file ---
         LOGGER.debug(f"Opening TextEditor for correction file: {correction_file}.")
         edit_dialog = TextEditorDialog(correction_file)
+
+        if not correction_file.exists() and self.settings.main.suggest_correctors:
+            text = get_default_correctors(selected_measurements[0])  # bit hacky but ok for now?
+            edit_dialog.text_edit.setPlainText(text)
+
         edit_dialog.exec_()
 
     
@@ -659,6 +665,12 @@ class SbSController(Controller):
             segment = SegmentDataModel(measurement, *segment_tuple)
             measurement.try_add_segment(segment)
         
+        for segment in measurement.segments:
+            corrections = measurement.output_dir / corrections_madx.format(segment.name)
+            if corrections.exists():
+                measurement.corrections = corrections
+                break  # for now they should all be the same corrections
+        
     @Slot()
     def save_segments(self):
         LOGGER.debug("Saving segments to a file.")
@@ -726,14 +738,14 @@ class SbSController(Controller):
             )
             
             # For Real Use: Run Task ---
-            # LOGGER.info(f"Starting {measurement_task.message}")
-            # self._add_running_task(task=measurement_task)
-            # measurement_task.start()
+            LOGGER.info(f"Starting {measurement_task.message}")
+            self._add_running_task(task=measurement_task)
+            measurement_task.start()
 
             # For Debugging: Start sbs directly ---
-            sbs_function()
-            clear_all()
-            LOGGER.info(f"Finished {measurement_task.message}")
+            # sbs_function()
+            # clear_all()
+            # LOGGER.info(f"Finished {measurement_task.message}")
             # -------------------------------------
 
 # Plotting ---------------------------------------------------------------------
@@ -741,10 +753,14 @@ class SbSController(Controller):
         """ Trigger a plot update with the currently selected segments. """
         view: SbSWindow = self._view
         settings: PlotSettings = self.settings.plotting
+        definition, widget = view.get_current_tab()
         
         if not settings.forward and not settings.backward:
             LOGGER.error("Please enable at least one propagation method to show.")
             return
+
+        widget.set_connect_x(settings.connect_x)
+        widget.set_connect_y(settings.connect_y)
 
         segments = view.get_selected_segments()
         if len(segments) != 1:
@@ -755,7 +771,6 @@ class SbSController(Controller):
         self.clear_plots()
         
         segments_data: list[SegmentDataModel] = segments[0].segments
-        definition, widget = view.get_current_tab()
         plot_segment_data(
             widget=widget, 
             definition=definition, 
