@@ -91,7 +91,7 @@ class UniqueItemListModel:
     
     def clear(self):
         """ Removes all items from the model. """
-        self.items = []
+        self._items = []
         self.try_emit_change()
 
     def remove_item_at(self, index: int):

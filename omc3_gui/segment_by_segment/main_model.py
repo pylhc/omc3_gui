@@ -16,12 +16,14 @@ from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
 from omc3_gui.ui_components.item_models import UniqueItemListModel
 
-LOGGER = logging.getLogger(__name__)
+ItemDataRole = Qt.ItemDataRole
+ItemFlag = Qt.ItemFlag
 
+LOGGER = logging.getLogger(__name__)
 
 class MeasurementListModel(QtCore.QAbstractListModel, UniqueItemListModel):
 
-    _items: dict[str, OpticsMeasurement]  # only for the IDE
+    _items: list[OpticsMeasurement]  # only for the IDE
     
     class ColorIDs(enum.IntEnum):
         NONE = 0
@@ -46,24 +48,28 @@ class MeasurementListModel(QtCore.QAbstractListModel, UniqueItemListModel):
         super(QtCore.QAbstractListModel, self).__init__(*args, **kwargs)
         super(UniqueItemListModel, self).__init__()
 
-    def data(self, index: QtCore.QModelIndex, role: int = Qt.DisplayRole):
+    def data(self, index: QtCore.QModelIndex, role: int = ItemDataRole.DisplayRole):
 
         meas: OpticsMeasurement = self.get_item_at(index.row())
         # https://doc.qt.io/qt-5/qt.html#ItemDataRole-enum
-        if role == Qt.DisplayRole:  
+        if role == ItemDataRole.DisplayRole:  
             return meas.display()
 
-        if role == Qt.ToolTipRole:
+        if role == ItemDataRole.ToolTipRole:
             return meas.tooltip()
 
         if role == Qt.TextColorRole:
             return self.ColorIDs.get_color(meas)
 
-        if role == Qt.UserRole:
+        if role == ItemDataRole.UserRole:
             return meas
 
     def rowCount(self, index: QtCore.QModelIndex = None):
         return len(self._items)
+
+    @property
+    def items(self):
+        return self._items
 
 
 class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
@@ -81,10 +87,10 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
         super(QtCore.QAbstractTableModel, self).__init__(*args, **kwargs)
         super(UniqueItemListModel, self).__init__()  # Items need to be unique
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
+    def headerData(self, section, orientation, role=ItemDataRole.DisplayRole):
         """ Sets the header of the table. """
         # When we are displaying the header, use the display column names
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if orientation == QtCore.Qt.Horizontal and role == ItemDataRole.DisplayRole:
             return self._COLUMNS[section]
 
         # Otherwise whatever the default is    
@@ -98,19 +104,19 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
         """ Returns the number of columns in the model. """
         return len(self._COLUMNS) 
 
-    def data(self, index: QtCore.QModelIndex, role=QtCore.Qt.DisplayRole):
+    def data(self, index: QtCore.QModelIndex, role=ItemDataRole.DisplayRole):
         """ Return the data, depending on index and role. """
         i = index.row()
         j = index.column()
         segment: SegmentItemModel = self.get_item_at(i)
         
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if role == ItemDataRole.DisplayRole or role == ItemDataRole.EditRole:
             return str(getattr(segment, self._ATTRIBUTES[j]))
         
-        if role == Qt.ToolTipRole:
+        if role == ItemDataRole.ToolTipRole:
             return segment.tooltip()
 
-        if role == Qt.UserRole:
+        if role == ItemDataRole.UserRole:
             return segment
         
     def setData(self, index, value, role):
@@ -119,7 +125,7 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
         j = index.column()
         segment: SegmentItemModel = self.get_item_at(i)
 
-        if role == Qt.EditRole:
+        if role == ItemDataRole.EditRole:
             if value is None or value == "":
                 return False
             
@@ -132,4 +138,4 @@ class SegmentTableModel(QtCore.QAbstractTableModel, UniqueItemListModel):
     def flags(self, index):
         """ Set the flags for the given index. 
         At the moment: all elements are editable and selectable. """
-        return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
+        return ItemFlag.ItemIsEnabled | ItemFlag.ItemIsEditable | ItemFlag.ItemIsSelectable

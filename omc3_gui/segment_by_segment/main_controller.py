@@ -72,8 +72,10 @@ class SbSController(Controller):
         view.add_settings_to_menu(
             menu="View",
             settings=self.settings.plotting,
-            hook=partial(self.plot, fail_ok=True),  # update plots if possible
+            hook=self.plot,
         )
+
+        view.sig_menu_clear_all.connect(self.clear_all_data)
 
         # Measurements -------------------------------------------------------------
         view.button_load_measurement.clicked.connect(self.open_measurements)
@@ -130,17 +132,18 @@ class SbSController(Controller):
         self._update_tasks_status()
 
     @Slot()
-    def _remove_running_task(self, task):
+    def _remove_running_task(self, task: BackgroundThread):
         """ Remove a task from the list of running tasks. """
         self._running_tasks.remove(task)
         self._update_tasks_status()
+        if not self._running_tasks:
+            self.clear_all_data() # last task finished, update plots
 
     @Slot()
     def _show_running_tasks(self):
         """ Show (i.e. log) the list of running tasks. """
         LOGGER.info(f"Running tasks: {[task.message for task in self._running_tasks]}")
         
-    
     # Measurements -------------------------------------------------------------
     def set_measurement_interaction_buttons_enabled(self, enabled: bool = True):
         """ Enable/disable the buttons that interact with measurements. 
@@ -289,7 +292,7 @@ class SbSController(Controller):
 
         if not len(measurements):
             self.set_measurement_interaction_buttons_enabled(False)
-            view.set_segments(SegmentTableModel())
+            view.set_segments_table(SegmentTableModel())
             self.segment_selection_changed()
             self.set_all_segment_buttons_enabled(False)
             return
@@ -316,7 +319,7 @@ class SbSController(Controller):
         except ValueError as e:
             LOGGER.debug(str(e))
             
-        view.set_segments(segment_table)
+        view.set_segments_table(segment_table)
         self.segment_selection_changed()
 
     def get_single_measurement(self) -> OpticsMeasurement:
@@ -697,15 +700,15 @@ class SbSController(Controller):
         if not selected_measurements:
             LOGGER.error("Please select at least one measurement.")
             return
-
+        
         all_selected_segment_data: list[SegmentDataModel] = [sdata for s in segments for sdata in s.segments]
-        for idx, measurement in enumerate(selected_measurements):
-            # Filter segments that are in the measurement and sort into segments/elements
-            selected_segments_in_meas = [s for s in measurement.segments if s in all_selected_segment_data]
-            if not selected_segments_in_meas:
-                LOGGER.debug(f"None of the selected segments found in {measurement.display()}. Skipping.")
-                continue
+        measurements_to_run: list[OpticsMeasurement] = [
+            meas for meas in selected_measurements if any(s in meas.segments for s in all_selected_segment_data)
+        ]
 
+        for idx, measurement in enumerate(measurements_to_run):
+            # Filter segments that are in the measurement and sort into segments/elements
+            selected_segments_in_meas = [s for s in  all_selected_segment_data if s in measurement.segments]
             segment_parameters = [s.to_input_string() for s in selected_segments_in_meas if not s.is_element()]
             element_parameters = [s.to_input_string() for s in selected_segments_in_meas if s.is_element()] 
 
@@ -717,20 +720,10 @@ class SbSController(Controller):
                     elements=element_parameters or None,
                 )
 
-            def clear_all():
-                """ Clear all chached segment data, so that the GUI loads the new SbS data. """
-                for segment in selected_segments_in_meas:
-                    segment.data.clear()
-
-                # At the very end, update plots.
-                if idx == len(selected_measurements) - 1:
-                    self.plot()
-
             # Create thread
             measurement_task = BackgroundThread(
                 function=sbs_function,
                 message=f"SbS for {measurement.display()}",
-                on_end_function=clear_all,
             )
             
             # For Real Use: Run Task ---
@@ -740,17 +733,38 @@ class SbSController(Controller):
 
             # For Debugging: Start sbs directly ---
             # sbs_function()
-            # clear_all()
+            # self.clear_all_data()
             # LOGGER.info(f"Finished {measurement_task.message}")
             # -------------------------------------
+    
+    @Slot()
+    def clear_all_data(self):
+        """ Clear all segment data on all measurements. """
+        view: SbSWindow = self._view
+        measurements = view.get_all_measurements()
+        for meas in measurements:
+            clear_segments(meas.segments)
+        self.plot()  # update plots -> reads needed data new
 
 # Plotting ---------------------------------------------------------------------
-    def plot(self, fail_ok: bool = False):
-        """ Trigger a plot update with the currently selected segments. """
+    def plot(self, fail_ok: bool = True):
+        """ Trigger a plot update with the currently selected segments. 
+        
+        This function is called when the user changes the selected segments or the settings.
+        As a segment selection change is often triggered, i.e. when the user clicks on a segment in the table,
+        e.g. to actually run this segment, one should not consider that the plot NEEDS to be updated.
+        Hence in the default settings with ``fail_ok=True``, this function will mostly log to debug.
+
+        This function is also called after the plotting settings are changed 
+        (either in the settings dialog or in the menu), hence this is also a good place to warn the user
+        if he did some mistakes there.
+        """
+        log_function = LOGGER.debug if fail_ok else LOGGER.error
+
         view: SbSWindow = self._view
         settings: PlotSettings = self.settings.plotting
         definition, widget = view.get_current_tab()
-        
+
         if not settings.forward and not settings.backward:
             LOGGER.error("Please enable at least one propagation method to show.")
             return
@@ -760,26 +774,21 @@ class SbSController(Controller):
 
         segments = view.get_selected_segments()
         if not len(segments):
-            if not fail_ok:
-                LOGGER.error("Please select exactly one segment to plot.")
+            log_function("Not plotting, no segments selected.")
             return
-
 
         segments_data: list[SegmentDataModel] = [s_data for s in segments for s_data in s.segments if s_data.has_run()]
         if not len(segments_data):
-            if not fail_ok:
-                LOGGER.error("Please run at least one segment before plotting.")
+            log_function("Not plotting, no segments have been run.")
             return
 
         if settings.same_start:
             starts = {re.sub(r"\.B[12]$", "", s.start, flags=re.IGNORECASE) for s in segments_data}
             if len(starts) > 1:
-                if not fail_ok:
-                    LOGGER.error("Please select segments with the same starting element.")
+                log_function("Not plotting, segments have different start BPMs (see 'Same Start' in settings).")
                 return
         
         self.clear_plots()
-
         plot_segment_data(
             widget=widget, 
             definition=definition, 
@@ -804,5 +813,12 @@ class SbSController(Controller):
                 menu="View",
                 settings=self.settings.plotting,
             )
-            self.plot(fail_ok=True)
+            self.plot()
         
+
+# Helper Functions ------------------------------------------------------------
+
+def clear_segments(segments: Sequence[SegmentDataModel]):
+    """ Clear all chached segment data, so that the GUI loads the new SbS data. """
+    for segment in segments:
+        segment.data.clear()

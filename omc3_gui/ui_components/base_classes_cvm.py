@@ -226,7 +226,7 @@ class View(ApplicationFrame):
 
         dialog = AboutDialog(
             app_name=name,
-            version=self.appVersion,
+            version=self.app_version,
             icon=self.windowIcon(),
             parent=self,
         )

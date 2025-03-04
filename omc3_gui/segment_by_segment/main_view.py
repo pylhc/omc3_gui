@@ -36,6 +36,7 @@ from omc3_gui.ui_components.widgets import (
     RunButton,
 )
 
+ItemDataRole = Qt.ItemDataRole
 LOGGER = logging.getLogger(__name__)
 
 class Tabs(IterClass):
@@ -53,6 +54,7 @@ class SbSWindow(View):
 
     # Menu Signals ---
     sig_menu_settings = Signal()
+    sig_menu_clear_all = Signal()
     
     def __init__(self, parent=None):
         
@@ -115,9 +117,11 @@ class SbSWindow(View):
 
     # GUI-Elements -------------------------------------------------------------
     def _add_menus(self):
+        # File ---
         file_menu: QtWidgets.QMenu = self.get_action_by_title("File")  # defined in View-class
         file_menu.setTitle("SbS-GUI")
 
+        # Settings ---
         menu_settings = QtWidgets.QAction("Settings", self)
         menu_settings.setIcon(
             QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_ComputerIcon)
@@ -126,6 +130,15 @@ class SbSWindow(View):
 
         # insert before the last entry (which is "Exit")
         file_menu.insertAction(file_menu.actions()[-1], menu_settings)
+        
+        # Clear All ---
+        help_menu: QtWidgets.QMenu = self.get_action_by_title("Help")  # defined in View-class
+        menu_clear_all = QtWidgets.QAction("Reload Data", self)
+        menu_clear_all.setIcon(
+            QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_DialogResetButton)
+        )
+        menu_clear_all.triggered.connect(self.sig_menu_clear_all.emit)
+        help_menu.insertAction(help_menu.actions()[-1], menu_clear_all)
 
     def add_settings_to_menu(self, menu: str, settings: object, names: Sequence[str] | None = None, hook: callable = None):
         """ Add quick-access checkboxes to the menu which are connected to the respective attributes in settings.
@@ -320,7 +333,7 @@ class SbSWindow(View):
         return list(Tabs.values())[index], widget
 
     # Getters and Setters
-    def set_measurements(self, measurement_model: MeasurementListModel):
+    def set_measurements_list(self, measurement_model: MeasurementListModel):
         self._list_view_measurements.setModel(measurement_model)
 
     def get_measurement_list(self) -> MeasurementListModel:
@@ -331,18 +344,24 @@ class SbSWindow(View):
         Hint: Use the Qt.UserRole to retrieve the actual OpticsMeasurement.
         """
         selected = self._list_view_measurements.selectedIndexes()
-        return tuple(s.data(role=Qt.UserRole) for s in selected)
+        return tuple(s.data(role=ItemDataRole.UserRole) for s in selected)
+    
+    def get_all_measurements(self) -> tuple[OpticsMeasurement]:
+        """ Get the currently selected measurements from the GUI. 
+        Hint: Use the Qt.UserRole to retrieve the actual OpticsMeasurement.
+        """
+        return self._list_view_measurements.model().items
 
     def set_selected_measurements(self, indices: Sequence[QModelIndex] = ()):
         self._list_view_measurements.selectionModel().clear()
         for idx in indices:
             self._list_view_measurements.selectionModel().select(idx, QItemSelectionModel.Select)
 
-    def set_segments(self, segment_model: SegmentTableModel):
+    def set_segments_table(self, segment_model: SegmentTableModel):
         self._table_segments.setModel(segment_model)
         self._table_segments.selectionModel().selectionChanged.connect(self._handle_table_segments_selected)
 
-    def get_segments(self) -> SegmentTableModel:
+    def get_segments_table(self) -> SegmentTableModel:
         return self._table_segments.model()
 
     def get_selected_segments(self) -> tuple[SegmentItemModel]:
@@ -350,7 +369,7 @@ class SbSWindow(View):
         Hint: Use the Qt.UserRole to retrieve the actual SegmentItemModel.
         """
         selected: list[QModelIndex] = self._table_segments.selectedIndexes()
-        return tuple(s.data(role=Qt.UserRole) for s in selected if s.column() == 0)  # need only one per row
+        return tuple(s.data(role=ItemDataRole.UserRole) for s in selected if s.column() == 0)  # need only one per row
     
 
 class MeasurementListView(QtWidgets.QListView):
