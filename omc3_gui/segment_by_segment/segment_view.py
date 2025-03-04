@@ -9,9 +9,6 @@ from __future__ import annotations
 from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
 from omc3_gui.ui_components.dataclass_ui import DataClassDialog, DataClassUI, FieldUIDef
 
-
-TO_BE_DEFINED = "to_be_defined"
-
 class SegmentDialog(DataClassDialog):
 
     WINDOW_TITLE = "Segment Editor"
@@ -19,7 +16,7 @@ class SegmentDialog(DataClassDialog):
     
     def __init__(self, parent=None, segment: SegmentDataModel | None = None):
         if segment is None:
-            segment = SegmentDataModel(name=TO_BE_DEFINED, measurement=None)  # dummy
+            segment = SegmentDataModel(measurement=None)  # dummy
         
         dataclass_ui = DataClassUI(
             field_definitions=[

@@ -34,6 +34,7 @@ def plot_dataframes(
     legend: bool = True,
     brightness: int | None = None,
     marker: str = 'o',
+    markersize: float = 6,
     linestyle: PenStyle = PenStyle.SolidLine,
     suffix: str = "",
     ):
@@ -52,6 +53,7 @@ def plot_dataframes(
         legend (bool, optional): Whether to add a legend to the plot. Defaults to True.
         brightness (int, optional): The brightness of the colors to use. Defaults to None.
         marker (str, optional): The marker to use for the data points. Defaults to 'o'.
+        markersize (float, optional): The size of the markers to use for the data points. Defaults to 6.
         linestyle (PenStyle, optional): The linestyle to use for the data points. Defaults to PenStyle.SolidLine.
         suffix (str, optional): The suffix to add to the legend. Defaults to "".
     """
@@ -80,6 +82,7 @@ def plot_dataframes(
             label=f"{name}{suffix}", 
             color=color,
             marker=marker,
+            markersize=markersize,
             linestyle=linestyle,
         )
     
@@ -90,7 +93,8 @@ def plot_dataframes(
         plot_item.setLabel("left", ylabel)
     
     plot_item.legend.setVisible(legend)
-        
+
+
 def plot_errorbar(
     plot: pg.PlotItem,
     *,
@@ -102,7 +106,7 @@ def plot_errorbar(
     label: str | None = None,
     color: str | pg.Color | None = None,
     marker: str = 'o', 
-    markersize: int = 6,
+    markersize: float = 6,
     linestyle: PenStyle = PenStyle.SolidLine,
     linewidth: float = 2,
     ) -> tuple[pg.PlotDataItem, pg.ErrorBarItem]:
@@ -121,8 +125,9 @@ def plot_errorbar(
         label (str | None, optional): The label of the errorbar. Defaults to None.
         color (str | None, optional): The color of the errorbar. Defaults to None.
         marker (str, optional): The marker of the errorbar. Defaults to 'o'.
-        markersize (int, optional): The markersize of the errorbar. Defaults to 10.
+        markersize (float, optional): The markersize of the errorbar. Defaults to 10.
         linestyle (PenStyle, optional): The linestyle of the errorbar. Defaults to PenStyle.SolidLine.
+        linewidth (float, optional): The linewidth of the errorbar. Defaults to 2.
     """
 
     curvePen = pg.mkPen(color=color, width=linewidth, style=linestyle)    

@@ -48,6 +48,7 @@ class DataClassDialog(QtWidgets.QDialog):
         self._connect_signals()
         self._set_size(width=self.DEFAULT_SIZE[0], height=self.DEFAULT_SIZE[1])
         self.update_ui()
+        self.validate_only_modified: bool = True
 
 
     def _set_size(self, width: int = -1, height: int = -1):
@@ -93,7 +94,7 @@ class DataClassDialog(QtWidgets.QDialog):
 
     def accept(self):
         try:
-            self._dataclass_ui.validate(only_modified=True)
+            self._dataclass_ui.validate(only_modified=self.validate_only_modified)
         except ValueError as e:
             QtWidgets.QMessageBox.critical(self, "Error", str(e))
             return

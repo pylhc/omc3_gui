@@ -43,6 +43,7 @@ class DualPlot(pg.LayoutWidget):
     def clear(self) -> None:    
         for plot in self.plots:
             plot.clear()
+            plot.enableAutoRange()
     
     def set_connect_x(self, connect: bool) -> None:
         if connect:

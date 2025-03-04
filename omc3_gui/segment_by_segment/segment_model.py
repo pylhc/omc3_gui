@@ -24,14 +24,16 @@ from omc3_gui.ui_components.item_models import Item
 if TYPE_CHECKING:
     from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 
-OK = f"<font color=\"{colors.GREEN_DARK}\">✓</font>"
-NO = f"<font color=\"{colors.RED_DARK}\">✗</font>"
-# OK = "✓"
-# NO = "✗"
+OK: str = f"<font color=\"{colors.GREEN_DARK}\">✓</font>"
+NO: str = f"<font color=\"{colors.RED_DARK}\">✗</font>"
+TO_BE_DEFINED: str = "to_be_defined"
 
 
-def not_empty(value):
-    return value != ""
+def not_empty(value: str | None) -> bool:
+    if value is None:
+        return False
+    value = value.strip()
+    return value != "" and value != TO_BE_DEFINED
 
 
 SegmentTuple = namedtuple('Segment', ['name', 'start', 'end'])  # the simplest way to store a segment definition
@@ -42,7 +44,7 @@ class SegmentDataModel:
     """" Container for the segment data, which is also used in the Segment creation dialog. """
 
     measurement: OpticsMeasurement
-    name: str =            metafield("Name",  "Name of the Segment", validate=not_empty)
+    name: str =         metafield("Name",  "Name of the Segment", default=TO_BE_DEFINED, validate=not_empty)
     start: str | None = metafield("Start", "Start of the Segment", default=None, validate=not_empty)
     end: str | None =   metafield("End",   "End of the Segment",   default=None, validate=not_empty)
     _data: SegmentDiffs | None = None

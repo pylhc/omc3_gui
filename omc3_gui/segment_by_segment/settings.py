@@ -18,15 +18,17 @@ class MainSettings:
     autodefault_segments: bool = metafield("Auto-Add Default Segments", "Automatically add default segments when loading a measurement.", default=False) 
     suggest_correctors: bool = metafield("Suggest Correctors", "Suggest correctors when editing a new correction file.", default=True)
 
-
 @dataclass(slots=True)
 class PlotSettings:
     show_legend: bool = metafield("Show Legend", "Show legend.", default=True)
+    marker_size: float = metafield("Marker Size", "Size of the markers.", default=8.5)
     expected: bool = metafield("Expectation", "Show expected value after correction instead of correction itself.", default=False)
     forward: bool = metafield("Forward Propagation", "Show forward propagation.", default=True)
     backward: bool = metafield("Backward Propagation", "Show backward propagation.", default=False)
-    connect_x: bool = metafield("Connect X", "Connect X axes.", default=True)
-    connect_y: bool = metafield("Connect Y", "Connect Y axes.", default=False)
+    connect_x: bool = metafield("Connect X", "Connect X axes of the two plots.", default=True)
+    connect_y: bool = metafield("Connect Y", "Connect Y axes of the two plots.", default=False)
+    reset_zoom: bool = metafield("Reset Zoom", "Reset zoom when changing segments.", default=True)
+    same_start: bool = metafield("Same Segment Start", "Plot only if the selected segments all have the same starting BPM.", default=True)
 
 
 @dataclass(slots=True)

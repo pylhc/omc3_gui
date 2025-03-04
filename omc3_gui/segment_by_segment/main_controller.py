@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 from functools import partial
 from pathlib import Path
+import re
 from typing import TYPE_CHECKING
 
 from omc3.sbs_propagation import segment_by_segment
@@ -71,7 +72,7 @@ class SbSController(Controller):
         view.add_settings_to_menu(
             menu="View",
             settings=self.settings.plotting,
-            hook=partial(self.plot, weak=True),  # update plots if possible
+            hook=partial(self.plot, fail_ok=True),  # update plots if possible
         )
 
         # Measurements -------------------------------------------------------------
@@ -488,10 +489,6 @@ class SbSController(Controller):
             return
 
         self.set_segment_interaction_buttons_enabled(True)
-        if len(segments) > 1:
-            LOGGER.debug("More than one segment selected. Clearing Plots.")
-            return
-
         self.plot()
 
     @Slot()
@@ -524,7 +521,8 @@ class SbSController(Controller):
                 segment = SegmentDataModel(measurement, *segment_tuple)
                 segment.start = f"{segment.start}.B{measurement.beam}"
                 segment.end = f"{segment.end}.B{measurement.beam}"
-                measurement.try_add_segment(segment)
+                measurement.try_add_segment(segment, silent=True)
+            return
         
         # TODO: Implement for other accelerators
         LOGGER.error(f"No beam found in measurement {measurement.display()}. Cannot add default segments.")
@@ -543,6 +541,7 @@ class SbSController(Controller):
         
         LOGGER.debug("Opening edit dialog for a new segment.")
         dialog = SegmentDialog(parent=view)
+        dialog.validate_only_modified = False
         if dialog.exec_() == dialog.Rejected:
             LOGGER.debug("Segment dialog cancelled.")
             return
@@ -579,7 +578,7 @@ class SbSController(Controller):
             return
 
         for segment_item in segments:
-            new_segment_name = f"{segment_item.name} - Copy"
+            new_segment_name = f"{segment_item.name}_copy"
             for measurement in selected_measurements:  
                 # Check if copied segment name already exists in one of the measurements
                 try:
@@ -597,6 +596,7 @@ class SbSController(Controller):
                     for segment in segment_item.segments:
                         new_segment = segment.copy()
                         new_segment.name = new_segment_name
+                        new_segment.measurement = measurement
                         measurement.try_add_segment(new_segment)
             
         self.measurement_selection_changed(selected_measurements)
@@ -619,16 +619,12 @@ class SbSController(Controller):
             return
 
         LOGGER.debug(f"Removing {len(segments)} segments.")
-        selected_measurements = view.get_selected_measurements()
-        if not selected_measurements:
-            LOGGER.error("Please select at least one measurement.")
-            return
 
-        for measurement in selected_measurements:
-            for segment_item in segments:
-                measurement.try_remove_segment(segment_item.name)
-
-        self.measurement_selection_changed(selected_measurements)
+        for segment_item in segments:
+            for segment_data in segment_item.segments:
+                segment_data.measurement.remove_segment(segment_data)
+        
+        self.measurement_selection_changed(view.get_selected_measurements())
 
     @Slot()
     def load_segments(self):
@@ -749,7 +745,7 @@ class SbSController(Controller):
             # -------------------------------------
 
 # Plotting ---------------------------------------------------------------------
-    def plot(self, weak: bool = False):
+    def plot(self, fail_ok: bool = False):
         """ Trigger a plot update with the currently selected segments. """
         view: SbSWindow = self._view
         settings: PlotSettings = self.settings.plotting
@@ -763,14 +759,27 @@ class SbSController(Controller):
         widget.set_connect_y(settings.connect_y)
 
         segments = view.get_selected_segments()
-        if len(segments) != 1:
-            if not weak:
+        if not len(segments):
+            if not fail_ok:
                 LOGGER.error("Please select exactly one segment to plot.")
             return
 
-        self.clear_plots()
+
+        segments_data: list[SegmentDataModel] = [s_data for s in segments for s_data in s.segments if s_data.has_run()]
+        if not len(segments_data):
+            if not fail_ok:
+                LOGGER.error("Please run at least one segment before plotting.")
+            return
+
+        if settings.same_start:
+            starts = {re.sub(r"\.B[12]$", "", s.start, flags=re.IGNORECASE) for s in segments_data}
+            if len(starts) > 1:
+                if not fail_ok:
+                    LOGGER.error("Please select segments with the same starting element.")
+                return
         
-        segments_data: list[SegmentDataModel] = segments[0].segments
+        self.clear_plots()
+
         plot_segment_data(
             widget=widget, 
             definition=definition, 
@@ -795,5 +804,5 @@ class SbSController(Controller):
                 menu="View",
                 settings=self.settings.plotting,
             )
-            self.plot(weak=True)
+            self.plot(fail_ok=True)
         

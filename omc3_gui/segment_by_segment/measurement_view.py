@@ -5,12 +5,10 @@ Measurement View
 This module contains the view for the measurement dialog.
 """
 from dataclasses import fields
-from pathlib import Path
 
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.ui_components.dataclass_ui import DataClassDialog, FieldUIDef, DataClassUI
 
-TO_BE_DEFINED = Path("to_be_defined")
 
 
 class OpticsMeasurementDialog(DataClassDialog):
@@ -20,7 +18,7 @@ class OpticsMeasurementDialog(DataClassDialog):
     
     def __init__(self, parent=None, optics_measurement: OpticsMeasurement | None = None):
         if optics_measurement is None:
-            optics_measurement = OpticsMeasurement(measurement_dir=TO_BE_DEFINED, output_dir=TO_BE_DEFINED)
+            optics_measurement = OpticsMeasurement()
 
         non_editable = ("measurement_dir", )  # set by program not by user
         dataclass_ui = DataClassUI(

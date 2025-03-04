@@ -33,11 +33,10 @@ LHC_CORRECTORS = (
     "kq6.{}{}b{}",
     "kq5.{}{}b{}",
     "kq4.{}{}b{}",
-    "kqx.{}{}b{}",
-    "kqsx3.{}{}b{}",
-    "ktqx2.{}{}b{}",
-    "ktqx1.{}{}b{}",
-    "kqx.{}{}b{}",
+    "kqsx3.{}{}",
+    "ktqx2.{}{}",
+    "ktqx1.{}{}",
+    "kqx.{}{}",
 )
 
 def get_default_correctors(measurement: OpticsMeasurement) -> str:

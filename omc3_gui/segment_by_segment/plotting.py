@@ -5,17 +5,21 @@ Sgement-by-Segment Plots
 Plots for segment-by-segment.
 """
 from __future__ import annotations
-from typing import Any
 
-from omc3.definitions.optics import ColumnsAndLabels, S_COLUMN
+import logging
+
+from omc3.definitions.optics import S_COLUMN, ColumnsAndLabels
+from omc3.segment_by_segment.definitions import PropagableColumns
+from qtpy.QtCore import Qt
+
 from omc3_gui.plotting.classes import DualPlot
-from omc3_gui.segment_by_segment.settings import PlotSettings
 from omc3_gui.plotting.latex_to_html import latex_to_html_converter
 from omc3_gui.plotting.tfs_plotter import plot_dataframes
 from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
-from omc3.segment_by_segment.definitions import PropagableColumns
+from omc3_gui.segment_by_segment.settings import PlotSettings
 
-from qtpy.QtCore import Qt
+LOGGER = logging.getLogger(__name__)
+
 
 PenStyle = Qt.PenStyle
 
@@ -24,15 +28,25 @@ PenStyle = Qt.PenStyle
 def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: list[SegmentDataModel], settings: PlotSettings):
     """ 
     Plot the given segments with the given definition. 
+
+    Assumes all segments have been run. Please check beforehand.
     """
     s_column = S_COLUMN
+    
+    # use the segment name as label, if there is more than one segment from the same measurement
+    use_segment_label = len(set(s.measurement.display() for s in segments)) != len(segments)
+    def get_label(segment: SegmentDataModel) -> str:
+        if use_segment_label:
+            return f"{segment.measurement.display()} {segment.name}"
+        return segment.measurement.display()
+
     
     for plane, plot in zip("xy", [widget.top, widget.bottom]): 
         data_name = f"{definition.text_label}_{plane}"  # coincides with the name in TfsCollection
 
         dataframes = {
-            segment.measurement.display(): segment.data[data_name] 
-            for segment in segments if segment.has_run()
+            get_label(segment): segment.data[data_name] 
+            for segment in segments
         }
         
         plane_def = definition.set_plane(plane.upper())
@@ -69,8 +83,12 @@ def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: 
                     xlabel=s_column.label,
                     ylabel=latex_to_html_converter(plane_def.label),
                     legend=settings.show_legend,
-                    marker=marker,  
+                    marker=marker,
+                    markersize=settings.marker_size,
                     brightness=brightness,
                     linestyle=linestyle,
                     suffix=f" ({shorthand}{suffix})",
                 )
+
+        if settings.reset_zoom:
+            plot.enableAutoRange()

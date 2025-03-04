@@ -32,8 +32,13 @@ SEQUENCE: str = "SEQUENCE"
 DATE: str = "DATE"
 
 FILES_TO_LOOK_FOR: tuple[str, ...] = tuple(f"{name}{plane}" for name in (KICK_NAME, PHASE_NAME, BETA_NAME) for plane in ("x", "y"))
+TO_BE_DEFINED: str = "to_be_defined"
 
 LOGGER = logging.getLogger(__name__)
+
+
+def exists(value: Path | None) -> bool:
+    return value is not None and value.exists()
 
 
 @dataclass(slots=True)
@@ -43,8 +48,8 @@ class OpticsMeasurement:
     which can then be passed on to the segment-by-segment.
     The :func:`omc3_gui.utils.dataclass_ui.metafield` is used to provide hints about the fields for the GUI.
     """
-    measurement_dir: DirectoryPath = metafield("Optics Measurement", "Path to the optics-measurement folder")
-    model_dir: DirectoryPath =       metafield("Model",              "Path to the model folder",        default=None)
+    measurement_dir: DirectoryPath = metafield("Optics Measurement", "Path to the optics-measurement folder", default=Path(TO_BE_DEFINED), validate=exists)
+    model_dir: DirectoryPath =       metafield("Model",              "Path to the model folder",        default=Path(TO_BE_DEFINED), validate=exists)
     accel: str =                     metafield("Accelerator",        "Name of the accelerator",         default=None)
     output_dir: DirectoryPath =      metafield("Output",             "Path to the sbs-output folder",   default=None) 
     corrections: FilePath =          metafield("Corrections",        "Path to the corrections file",    default=None)
@@ -114,11 +119,14 @@ class OpticsMeasurement:
 
         self.segments.append(segment)
     
-    def try_add_segment(self, segment: SegmentDataModel) -> bool:
+    def try_add_segment(self, segment: SegmentDataModel, silent: bool = False) -> bool:
         try:
             self.add_segment(segment)
         except NameError as e:
-            LOGGER.error(str(e))
+            if silent:
+                LOGGER.debug(str(e))
+            else: 
+                LOGGER.error(str(e))
             return False
         return True
     

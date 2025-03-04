@@ -151,10 +151,15 @@ class SbSWindow(View):
 
             if field.name.startswith("_"):
                 continue
+            
+            value = getattr(settings, field.name)
+            if not isinstance(value, bool):
+                continue
+
             label = field.metadata.get("label", field.name)
             entry = QtWidgets.QAction(label, self)
             entry.setCheckable(True)
-            entry.setChecked(getattr(settings, field.name))
+            entry.setChecked(value)
             entry.toggled.connect(partial(update_settings, name=field.name))
             qmenu.addAction(entry)
         qmenu.addSeparator()
@@ -179,6 +184,9 @@ class SbSWindow(View):
 
             label = field.metadata.get("label", field.name)
             entry: QtWidgets.QAction = self.get_action_by_title(label, parent=qmenu)
+            if entry is None:
+                continue
+
             entry.setChecked(getattr(settings, field.name))
 
     def _build_gui(self):
