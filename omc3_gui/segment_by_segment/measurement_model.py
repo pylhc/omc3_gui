@@ -100,8 +100,8 @@ class OpticsMeasurement:
             (self.get_label(f.name), getattr(self, f.name)) for f in fields(self) 
             if not f.name.startswith("_")
         ]
-        l = max(len(name) for name, _ in parts)
-        return "\n".join(f"{name:{l}s}: {value}" for name, value in parts if value is not None)
+        size = max(len(name) for name, _ in parts)
+        return "\n".join(f"{name:{size}s}: {value}" for name, value in parts if value is not None)
 
     # Segment Control ----------------------------------------------------------
     def remove_segment(self, segment: SegmentDataModel):

@@ -19,8 +19,7 @@ from qtpy import QtWidgets
 
 from omc3_gui.ui_components import colors, file_dialogs
 from omc3_gui.ui_components.dataclass_ui import view, model
-from omc3_gui.ui_components.dataclass_ui.model import FieldUIDef, FilePath, DirectoryPath  # paths need to be known by `get_dataclass_types`
-from omc3_gui.ui_components.dataclass_ui.model import FieldUIDef
+from omc3_gui.ui_components.dataclass_ui.model import FieldUIDef, FilePath, DirectoryPath  # noqa: F401 paths need to be known by `get_dataclass_types`  
 from omc3_gui.ui_components.widgets import HorizontalSeparator
 from typing import get_type_hints, TYPE_CHECKING
 
