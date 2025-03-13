@@ -81,6 +81,7 @@ class SbSController(Controller):
         view.button_load_measurement.clicked.connect(self.open_measurements)
         view.button_edit_measurement.clicked.connect(self.edit_measurement)
         view.button_remove_measurement.clicked.connect(self.remove_measurement)
+        view.button_copy_measurement.clicked.connect(self.copy_measurement)
 
         view.button_run_matcher.clicked.connect(self.run_matcher)
         view.button_edit_corrections.clicked.connect(self.edit_corrections)
@@ -158,6 +159,7 @@ class SbSController(Controller):
             view.button_edit_measurement,
             view.button_run_matcher,
             view.button_edit_corrections,
+            view.button_copy_measurement,
         )
         for button in measurement_interaction_buttons:
             button.setEnabled(enabled)
@@ -262,6 +264,44 @@ class SbSController(Controller):
             LOGGER.debug("Edit dialog closed. Updating measurement.")
 
     @Slot()
+    def copy_measurement(self, measurement: OpticsMeasurement | None = None):
+        """ Create a copy of the given measurement and add it to the GUI. 
+        If no measurement is given, the currently selected measurement is copied.
+
+        Args:
+            measurement (OpticsMeasurement | None, optional): The measurement to copy. Defaults to None.
+        """
+        if measurement is None:
+            try:
+                measurement = self.get_single_measurement()
+            except ValueError as e:
+                LOGGER.warning(str(e))
+                return
+
+        if measurement.output_dir is None:  # should not be possible, but better to catch
+            LOGGER.error("Cannot copy measurement without output directory.")
+            return
+
+        LOGGER.debug(f"Copying {measurement.display()}.")
+        new_measurement = measurement.copy()
+        
+        # might already have a counter from previous copy
+        name =  re.sub(r"_\d+$", "", measurement.output_dir.name)  
+
+        for count in range(1, 1000):  # limit to avoid infinite loop
+            new_measurement.output_dir = measurement.output_dir.with_name(f"{name}_{count:d}")
+            try:
+                self.add_measurement(new_measurement)
+            except ValueError:
+                continue
+            break
+        else:
+            LOGGER.error(
+                "Could not copy measurement. Counter limit exeeded. Not sure what went wrong."
+            )
+            return
+
+    @Slot()
     def remove_measurement(self, measurements: Sequence[OpticsMeasurement] | None = None):
         """ Remove measurements from the GUI.
         If no measurements are given, the currently selected measurements are removed.        
@@ -298,6 +338,10 @@ class SbSController(Controller):
             return
 
         self.set_measurement_interaction_buttons_enabled(True)
+        if len(measurements) > 1:
+            view.button_edit_measurement.setEnabled(False)
+            view.button_copy_measurement.setEnabled(False)
+
         self.set_all_segment_buttons_enabled(True)
 
         # Group the segments for the measurements into table-items when they have the same defintion ---

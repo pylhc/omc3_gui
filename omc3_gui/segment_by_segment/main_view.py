@@ -72,6 +72,7 @@ class SbSWindow(View):
         self.button_load_measurement: QtWidgets.QPushButton = None
         self.button_remove_measurement: QtWidgets.QPushButton = None
         self.button_edit_measurement: QtWidgets.QPushButton = None
+        self.button_copy_measurement: QtWidgets.QPushButton = None
         self.button_edit_corrections: QtWidgets.QPushButton = None
         self.button_run_matcher: QtWidgets.QPushButton = None
 
@@ -237,9 +238,14 @@ class SbSWindow(View):
                     grid_buttons_filler.add(remove)
                     self.button_remove_measurement = remove
 
+                    copy = DefaultButton("Copy")
+                    copy.setToolTip("Create a virtual copy of the measurement, with a different output dir.")
+                    grid_buttons_filler.add(copy)
+                    self.button_copy_measurement = copy
+
                     matcher = RunButton("Run Matcher")
                     matcher.setToolTip("Run the Segment-by-Segment Matcher.")
-                    grid_buttons_filler.add(matcher, col_span=2)
+                    grid_buttons_filler.add(matcher)
                     self.button_run_matcher = matcher
                     
                     edit_corrections = ChangeButton("Corrections")

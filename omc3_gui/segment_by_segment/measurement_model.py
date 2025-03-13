@@ -8,7 +8,7 @@ in the Segment-by-Segment application.
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field, fields
+from dataclasses import dataclass, field, fields, asdict
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
@@ -175,6 +175,20 @@ class OpticsMeasurement:
         return parameters
 
     # Builder ------------------------------------------------------------------
+    def copy(self) -> OpticsMeasurement:
+        """ Creates a copy of the measurement. """
+        new_measurement = OpticsMeasurement(
+            **{
+                f.name: getattr(self, f.name) for f in fields(self) 
+                if not f.name.startswith("_")
+            },
+        )
+        for segment in self.segments:
+            new_segment = segment.copy()
+            new_segment.measurement = new_measurement
+            new_measurement.add_segment(new_segment)
+        return new_measurement
+
     @classmethod
     def from_path(cls, path: Path) -> OpticsMeasurement:
         """ Creates an OpticsMeasurement from a folder, by trying 
