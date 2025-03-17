@@ -29,6 +29,7 @@ class PlotSettings:
     connect_y: bool = metafield("Connect Y", "Connect Y axes of the two plots.", default=False)
     reset_zoom: bool = metafield("Reset Zoom", "Reset zoom when changing segments.", default=True)
     same_start: bool = metafield("Same Segment Start", "Plot only if the selected segments all have the same starting BPM.", default=True)
+    model_s: bool = metafield("Model Location", "Use the model longitudinal location instead of the segment location.", default=False)
 
 
 @dataclass(slots=True)

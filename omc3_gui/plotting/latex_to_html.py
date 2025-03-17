@@ -2,6 +2,7 @@ import re
 
 # Dictionary to map Greek LaTeX symbols to HTML
 LATEX_TO_HTML_SYMBOLS = {
+    # Greek ---
     r'\alpha': 'α',
     r'\beta': 'β',
     r'\gamma': 'γ',
@@ -25,8 +26,32 @@ LATEX_TO_HTML_SYMBOLS = {
     r'\chi': 'χ',
     r'\psi': 'ψ',
     r'\omega': 'ω',
+    r'\Alpha': 'Α',
+    r'\Beta': 'Β',
+    r'\Gamma': 'Γ',
+    r'\Delta': 'Δ',
+    r'\Epsilon': 'Ε',
+    r'\Zeta': 'Ζ',
+    r'\Eta': 'Η',
+    r'\Theta': 'Θ',
+    r'\Iota': 'Ι',
+    r'\Kappa': 'Κ',
+    r'\Lambda': 'Λ',
+    r'\Mu': 'Μ',
+    r'\Nu': 'Ν',
+    r'\Xi': 'Ξ',
+    r'\Pi': 'Π',
+    r'\Rho': 'Ρ',
+    r'\Sigma': 'Σ',
+    r'\Tau': 'Τ',
+    r'\Upsilon': 'Υ',
+    r'\Phi': 'Φ',
+    r'\Chi': 'Χ',
+    r'\Psi': 'Ψ',
+    r'\Omega': 'Ω',
+    # Spacing ---
     r'\quad': '&ensp;',
-    # You can add more Greek letters as needed
+    r'\;': '&thinsp;',
 }
 
 def latex_to_html_converter(latex_str):

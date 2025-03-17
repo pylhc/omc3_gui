@@ -8,8 +8,13 @@ from __future__ import annotations
 
 import logging
 
-from omc3.definitions.optics import S_COLUMN, ColumnsAndLabels
-from omc3.segment_by_segment.definitions import PropagableColumns
+from omc3.definitions.optics import (
+    S_COLUMN,
+    S_MODEL_COLUMN,
+    ColumnsAndLabels,
+)
+from omc3.optics_measurements.constants import ALPHA_NAME, BETA_NAME, PHASE_NAME
+from omc3.segment_by_segment.propagables import PropagableColumns
 from qtpy.QtCore import Qt
 
 from omc3_gui.plotting.classes import DualPlot
@@ -23,6 +28,11 @@ LOGGER = logging.getLogger(__name__)
 
 PenStyle = Qt.PenStyle
 
+NAME_TO_FILE_MAP = {
+    "alpha": ALPHA_NAME,
+    "beta": BETA_NAME,
+    "phase": PHASE_NAME,
+}
 
 
 def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: list[SegmentDataModel], settings: PlotSettings):
@@ -32,6 +42,8 @@ def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: 
     Assumes all segments have been run. Please check beforehand.
     """
     s_column = S_COLUMN
+    if settings.model_s:
+        s_column = S_MODEL_COLUMN
     
     # use the segment name as label, if there is more than one segment from the same measurement
     use_segment_label = len(set(s.measurement.display() for s in segments)) != len(segments)
@@ -42,7 +54,7 @@ def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: 
 
     
     for plane, plot in zip("xy", [widget.top, widget.bottom]): 
-        data_name = f"{definition.text_label}_{plane}"  # coincides with the name in TfsCollection
+        data_name = f"{NAME_TO_FILE_MAP[definition.text_label]}{plane}"
 
         dataframes = {
             get_label(segment): segment.data[data_name] 
@@ -81,7 +93,7 @@ def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: 
                     ycolumn=getattr(column_def, column_name),
                     yerrcolumn=getattr(column_def, f"error_{column_name}"),
                     xlabel=s_column.label,
-                    ylabel=latex_to_html_converter(plane_def.label),
+                    ylabel=latex_to_html_converter(plane_def.delta_label),
                     legend=settings.show_legend,
                     marker=marker,
                     markersize=settings.marker_size,

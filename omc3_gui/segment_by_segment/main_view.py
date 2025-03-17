@@ -12,7 +12,7 @@ from functools import partial
 import logging
 from collections.abc import Sequence
 
-from omc3.definitions.optics import PHASE_COLUMN, ColumnsAndLabels
+from omc3.definitions.optics import PHASE_COLUMN, BETA_COLUMN, ALPHA_COLUMN, ColumnsAndLabels
 from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
@@ -41,6 +41,8 @@ LOGGER = logging.getLogger(__name__)
 
 class Tabs(IterClass):
     PHASE: ColumnsAndLabels = PHASE_COLUMN
+    BETA: ColumnsAndLabels = BETA_COLUMN 
+    ALPHA: ColumnsAndLabels = ALPHA_COLUMN 
 
 
 class SbSWindow(View):
@@ -51,6 +53,7 @@ class SbSWindow(View):
     sig_list_measurements_selected = Signal(tuple)  # Tuple[OpticsMeasurement]
     sig_table_segments_selected = Signal(tuple)
     sig_thread_spinner_double_clicked = Signal()
+    sig_tab_changed = Signal()
 
     # Menu Signals ---
     sig_menu_settings = Signal()
@@ -97,6 +100,7 @@ class SbSWindow(View):
         # Optics Measurements ---
         self._list_view_measurements.doubleClicked.connect(self._handle_list_measurements_double_clicked)
         self._list_view_measurements.selectionModel().selectionChanged.connect(self._handle_list_measurements_selected)
+        self._tabs_widget.currentChanged.connect(self._handle_tab_changed)
 
     # Slots --------------------------------------------------------------------
     @Slot(QModelIndex)
@@ -115,6 +119,11 @@ class SbSWindow(View):
         LOGGER.debug("Segment Table selection changed.")
         selected_segments = self.get_selected_segments()
         self.sig_table_segments_selected.emit(selected_segments)
+    
+    @Slot()
+    def _handle_tab_changed(self):
+        LOGGER.debug("Tab changed.")
+        self.sig_tab_changed.emit()
 
     # GUI-Elements -------------------------------------------------------------
     def _add_menus(self):

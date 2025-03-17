@@ -66,6 +66,9 @@ class SbSController(Controller):
         """ Connect the signals from the GUI components (view) to the slots (controller). """
         view: SbSWindow = self._view  # for shorthand and type hinting
 
+        # Tabs -----------------------------------------------------------------
+        view.sig_tab_changed.connect(self.plot)
+
         # Menu Bar -------------------------------------------------------------
         view.sig_menu_settings.connect(self.show_settings)
 

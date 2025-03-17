@@ -15,7 +15,7 @@ class IterableAttributeNames(type):
     """ Makes the class itself iterable over its attribute names. """
 
     def __iter__(self) -> Iterator[str]:
-        for attr in dir(self):
+        for attr in self.__dict__.keys():
             if not attr.startswith("__") and attr != EXCLUDED_NAME and attr not in getattr(self, EXCLUDED_NAME, []):
                 yield attr
 
