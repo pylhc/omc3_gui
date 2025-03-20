@@ -7,43 +7,56 @@ This is the main view for the Segment-by-Segment application.
 # from omc3_gui.segment_by_segment.segment_by_segment_ui import Ui_main_window
 from __future__ import annotations
 
-from dataclasses import fields
-from functools import partial
 import logging
 from collections.abc import Sequence
+from dataclasses import fields
+from functools import partial
 
-from omc3.definitions.optics import PHASE_COLUMN, BETA_COLUMN, ALPHA_COLUMN, ColumnsAndLabels
+from omc3.definitions.optics import (
+    ALPHA_COLUMN,
+    BETA_COLUMN,
+    DISPERSION_COLUMN,
+    PHASE_COLUMN,
+)
 from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
-from omc3_gui.plotting.classes import DualPlot
+from omc3_gui.plotting.classes import DualPlotWidget
 from omc3_gui.segment_by_segment.main_model import (
     MeasurementListModel,
     SegmentTableModel,
 )
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
+from omc3_gui.segment_by_segment.plotting import DualPlotDefinition
 from omc3_gui.segment_by_segment.segment_model import SegmentItemModel
 from omc3_gui.ui_components import colors
-from omc3_gui.utils.counter import HorizontalGridLayoutFiller
-from omc3_gui.utils.iteration_classes import IterClass
-from omc3_gui.ui_components.styles import MONOSPACED_TOOLTIP
 from omc3_gui.ui_components.base_classes_cvm import View
+from omc3_gui.ui_components.styles import MONOSPACED_TOOLTIP
 from omc3_gui.ui_components.widgets import (
-    DefaultButton,
     ChangeButton,
+    DefaultButton,
     OpenButton,
     RemoveButton,
     RunButton,
 )
+from omc3_gui.utils.counter import HorizontalGridLayoutFiller
+from omc3_gui.utils.iteration_classes import IterClass
 
 ItemDataRole = Qt.ItemDataRole
 LOGGER = logging.getLogger(__name__)
 
-class Tabs(IterClass):
-    PHASE: ColumnsAndLabels = PHASE_COLUMN
-    BETA: ColumnsAndLabels = BETA_COLUMN 
-    ALPHA: ColumnsAndLabels = ALPHA_COLUMN 
 
+class Tabs(IterClass):
+    """ Define the Tabs and the things to plot in them. """
+    PHASE: DualPlotDefinition = DualPlotDefinition.generate_xy("Phase", "phase", PHASE_COLUMN)
+    BETA: DualPlotDefinition = DualPlotDefinition.generate_xy("Beta", "beta_phase", BETA_COLUMN) 
+    ALPHA: DualPlotDefinition = DualPlotDefinition.generate_xy("Alpha", "alpha_phase", ALPHA_COLUMN) 
+    DISPERSION: DualPlotDefinition = DualPlotDefinition.generate_xy("Dispersion", "dispersion", DISPERSION_COLUMN)
+    F1001AP: DualPlotDefinition = DualPlotDefinition.generate_amplitude_phase("f1001")
+    F1001RI: DualPlotDefinition = DualPlotDefinition.generate_real_imag("f1001")
+    F1010AP: DualPlotDefinition = DualPlotDefinition.generate_amplitude_phase("f1010")
+    F1010RI: DualPlotDefinition = DualPlotDefinition.generate_real_imag("f1010")
+    
 
 class SbSWindow(View):
     WINDOW_TITLE = "OMC Segment-by-Segment"
@@ -125,7 +138,7 @@ class SbSWindow(View):
         LOGGER.debug("Tab changed.")
         self.sig_tab_changed.emit()
 
-    # GUI-Elements -------------------------------------------------------------
+    # Menu ---------------------------------------------------------------------
     def _add_menus(self):
         # File ---
         file_menu: QtWidgets.QMenu = self.get_action_by_title("File")  # defined in View-class
@@ -212,6 +225,7 @@ class SbSWindow(View):
 
             entry.setChecked(getattr(settings, field.name))
 
+    # Build Main UI-------------------------------------------------------------
     def _build_gui(self):
         self._central = QtWidgets.QSplitter(Qt.Horizontal)
 
@@ -331,7 +345,8 @@ class SbSWindow(View):
         def build_tabs_widget():  # --- Right Hand Side
             self._tabs_widget = QtWidgets.QTabWidget()
             for tab in Tabs.values():
-                self._tabs_widget.addTab(DualPlot(), tab.text_label.capitalize())
+                tab: DualPlotDefinition
+                self._tabs_widget.addTab(DualPlotWidget(), tab.name)
             return self._tabs_widget
 
         self._central.addWidget(build_tabs_widget())
@@ -341,8 +356,9 @@ class SbSWindow(View):
         self._central.setStretchFactor(1, 3)
         
         self.setCentralWidget(self._central)
-    
-    def get_current_tab(self) -> tuple[ColumnsAndLabels, DualPlot]:
+
+    # Interactors --------------------------------------------------------------
+    def get_current_tab(self) -> tuple[DualPlotDefinition, DualPlotWidget]:
         widget = self._tabs_widget.currentWidget()
         index = self._tabs_widget.currentIndex()
         return list(Tabs.values())[index], widget
@@ -388,6 +404,7 @@ class SbSWindow(View):
     
 
 class MeasurementListView(QtWidgets.QListView):
+    """ Defines the view for the measurement list (on the top left). """
     
     def __init__(self):
         super().__init__()
@@ -398,6 +415,7 @@ class MeasurementListView(QtWidgets.QListView):
 
 
 class SegmentTableView(QtWidgets.QTableView):
+    """ Defines the view for the segment table (on the bottom left). """
 
     def __init__(self):
         super().__init__()
@@ -425,6 +443,7 @@ class SegmentTableView(QtWidgets.QTableView):
 
 
 class ColoredItemDelegate(QtWidgets.QStyledItemDelegate):
+    """ Defines an ItemDelegate that uses a custom color for the text. """
 
     COLOR_MAP = {
         MeasurementListModel.ColorIDs.NONE: colors.TEXT_DARK,

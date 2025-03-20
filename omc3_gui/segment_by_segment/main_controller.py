@@ -37,7 +37,7 @@ from omc3_gui.ui_components.message_boxes import show_confirmation_dialog
 from omc3_gui.ui_components.text_editor import TextEditorDialog
 from omc3_gui.ui_components.threads import BackgroundThread
 from omc3_gui.ui_components.base_classes_cvm import Controller
-from omc3_gui.plotting.classes import DualPlot
+from omc3_gui.plotting.classes import DualPlotWidget
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -103,7 +103,8 @@ class SbSController(Controller):
 
         view.sig_table_segments_selected.connect(self.segment_selection_changed)
         view.sig_thread_spinner_double_clicked.connect(self._show_running_tasks)
-    
+
+    # Tasks --------------------------------------------------------------------  
     @Slot()
     def _update_tasks_status(self):
         """ Update the status bar with the number of running tasks. """
@@ -811,6 +812,8 @@ class SbSController(Controller):
         view: SbSWindow = self._view
         settings: PlotSettings = self.settings.plotting
         definition, widget = view.get_current_tab()
+        
+        self.clear_plots()
 
         if not settings.forward and not settings.backward:
             LOGGER.error("Please enable at least one propagation method to show.")
@@ -835,10 +838,9 @@ class SbSController(Controller):
                 log_function("Not plotting, segments have different start BPMs (see 'Same Start' in settings).")
                 return
         
-        self.clear_plots()
         plot_segment_data(
             widget=widget, 
-            definition=definition, 
+            definitions=definition, 
             segments=segments_data, 
             settings=settings,
         )
@@ -846,7 +848,7 @@ class SbSController(Controller):
     def clear_plots(self):
         """ Clear the plots. """
         view: SbSWindow = self._view
-        widget: DualPlot = view.get_current_tab()[1]
+        widget: DualPlotWidget = view.get_current_tab()[1]
         widget.clear()
 
 # Other ------------------------------------------------------------------------

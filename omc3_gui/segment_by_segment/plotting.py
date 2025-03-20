@@ -6,18 +6,24 @@ Plots for segment-by-segment.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 import logging
+from typing import NamedTuple
 
 from omc3.definitions.optics import (
     S_COLUMN,
     S_MODEL_COLUMN,
+    RDT_AMPLITUDE_COLUMN, 
+    RDT_PHASE_COLUMN,
+    RDT_REAL_COLUMN,
+    RDT_IMAG_COLUMN,
     ColumnsAndLabels,
 )
 from omc3.optics_measurements.constants import ALPHA_NAME, BETA_NAME, PHASE_NAME
 from omc3.segment_by_segment.propagables import PropagableColumns
 from qtpy.QtCore import Qt
 
-from omc3_gui.plotting.classes import DualPlot
+from omc3_gui.plotting.classes import DualPlotWidget
 from omc3_gui.plotting.latex_to_html import latex_to_html_converter
 from omc3_gui.plotting.tfs_plotter import plot_dataframes
 from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
@@ -28,23 +34,128 @@ LOGGER = logging.getLogger(__name__)
 
 PenStyle = Qt.PenStyle
 
-NAME_TO_FILE_MAP = {
-    "alpha": ALPHA_NAME,
-    "beta": BETA_NAME,
-    "phase": PHASE_NAME,
-}
+@dataclass(frozen=True)
+class PlotDefinition:
+    file_name: str
+    ylabel: str
+    column: str 
+    error_column: str
+    propagable_columns: PropagableColumns
+
+    @classmethod
+    def create(cls, file_name: str, columns: ColumnsAndLabels):
+        return cls(
+                file_name=file_name,
+                ylabel=latex_to_html_converter(columns.delta_label),
+                column=columns.column,
+                error_column=columns.error_column,
+                propagable_columns=PropagableColumns(columns.column, plane="")
+            
+        )
 
 
-def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: list[SegmentDataModel], settings: PlotSettings):
-    """ 
-    Plot the given segments with the given definition. 
+@dataclass(frozen=True)
+class DualPlotDefinition:
+    name: str
+    top: PlotDefinition
+    bottom: PlotDefinition
 
-    Assumes all segments have been run. Please check beforehand.
-    """
-    s_column = S_COLUMN
-    if settings.model_s:
-        s_column = S_MODEL_COLUMN
+    @property
+    def plots(self) -> tuple[PlotDefinition, PlotDefinition]:
+        return (self.top, self.bottom)
+
+    @classmethod
+    def generate_xy(cls, name: str, file_name: str, columns: ColumnsAndLabels):
+        """ Generate a DualPlotDefinition for XY-Planed Plots. """
+        return cls(name, *(
+            PlotDefinition.create(f"{file_name}_{plane}", columns.set_plane(plane.upper())) for plane in "xy"
+        ))
     
+    @classmethod
+    def generate_amplitude_phase(cls, file_name: str):
+        """ Generate a DualPlotDefinition for Amplitude/Phase Plots. """
+        name = f"{file_name} A/φ"
+        amp = RDT_AMPLITUDE_COLUMN.set_label_formatted(file_name)
+        phase = RDT_PHASE_COLUMN.set_label_formatted(file_name)
+        return cls.generate_rdt(name, file_name, amp, phase)
+    
+    @classmethod
+    def generate_real_imag(cls, file_name: str):
+        """ Generate a DualPlotDefinition for Amplitude/Phase Plots. """
+        name = f"{file_name} Re/Im"
+        real = RDT_REAL_COLUMN.set_label_formatted(file_name)
+        imag = RDT_IMAG_COLUMN.set_label_formatted(file_name)
+        return cls.generate_rdt(name, file_name, real, imag)
+
+    @classmethod
+    def generate_rdt(cls, name: str, file_name: str,  columns_top: ColumnsAndLabels, columns_bottom: ColumnsAndLabels):
+        """ Generate a DualPlotDefintion for RDTs, i.e. Amplitude/Phase, Re/Im. """
+        return cls(name, *(
+            PlotDefinition.create(file_name, columns) for columns in (columns_top, columns_bottom)
+        ))
+
+
+class DirectionStyle:
+    """ Helper Class to define the Style based on direction and expected. """
+
+    def __init__(self, direction: str, expected: bool | None):
+        self.direction = direction
+        self.expected = expected
+
+    @property
+    def linestyle(self):
+        if self.expected is None:
+            return PenStyle.SolidLine
+        return PenStyle.DashLine
+
+    @property
+    def brightness(self):
+        return {
+            "forward": None,
+            "backward": 150
+        }[self.direction]
+
+    @property
+    def marker(self):
+        return {
+            "forward": "t2",
+            "backward": "t3"
+        }[self.direction]
+
+    @property
+    def suffix(self):
+        shorthand = {
+            "forward": "fwd",
+            "backward": "bwd"
+        }[self.direction]
+        return {
+            None: shorthand,
+            True: f"{shorthand} expct",
+            False: f"{shorthand} corr"
+        }[self.expected]
+
+    @property
+    def column(self):
+        return {
+            None: self.direction,
+            True: f"{self.direction}_expected",
+            False: f"{self.direction}_correction"
+        }[self.expected]
+
+    @property
+    def error_column(self):
+        return f"error_{self.column}"
+
+
+# Plotting ---------------------------------------------------------------------
+
+def plot_segment_data(
+    widget: DualPlotWidget, 
+    definitions: DualPlotDefinition, 
+    segments: list[SegmentDataModel], 
+    settings: PlotSettings
+    ):
+    """ Plot the given segments with the given definition. """
     # use the segment name as label, if there is more than one segment from the same measurement
     use_segment_label = len(set(s.measurement.display() for s in segments)) != len(segments)
     def get_label(segment: SegmentDataModel) -> str:
@@ -52,55 +163,60 @@ def plot_segment_data(widget: DualPlot, definition: ColumnsAndLabels, segments: 
             return f"{segment.measurement.display()} {segment.name}"
         return segment.measurement.display()
 
+    # wrap loading for better error handling and logging
+    def get_data(segment: SegmentDataModel, file_name: str):
+        try:
+            return segment.data[file_name]
+        except FileNotFoundError:
+            LOGGER.error(f"Segment {segment.name} has no data for {file_name}.")
+            return None
     
-    for plane, plot in zip("xy", [widget.top, widget.bottom]): 
-        data_name = f"{NAME_TO_FILE_MAP[definition.text_label]}{plane}"
+    # set x column 
+    x_column = S_COLUMN
+    if settings.model_s:
+        x_column = S_MODEL_COLUMN
+    
+    
+    # Loop over top/bottom plots ---
+    for definition, plot in zip(definitions.plots, widget.plots):
+        definition: PlotDefinition
 
         dataframes = {
-            get_label(segment): segment.data[data_name] 
+            get_label(segment): get_data(segment, definition.file_name) 
             for segment in segments
         }
-        
-        plane_def = definition.set_plane(plane.upper())
 
-        xcolumn = s_column.column
-        column_def = PropagableColumns(plane_def.column, plane="")  # `.column` already contains plane
+        if any(df is None for df in dataframes.values()):
+            LOGGER.error("Could not find data for all segments, please run these again !?")
+            # continue anyway
+            dataframes = {label: df for label, df in dataframes.items() if df is not None}
 
+        # Loop over forward/backward plots ---
         for direction in ("forward", "backward"):
-            if not getattr(settings, direction):
+            if not getattr(settings, direction):  # user activated
                 continue
-
+            
+            # Loop over propagaed/expected or corrected values --- 
             for expected in (None, settings.expected):
-                # note: don't really like the way the following settings are handled, 
-                # but lack a better idea (jdilly, 2025) 
-                
-                column_name = direction
-                suffix = ""
-                linestyle = PenStyle.SolidLine
-                shorthand = "fwd" if direction == "forward" else "bwd"
-                marker = "t2" if direction == "forward" else "t3"  # triangle forward > or backward <
-                brightness = None if direction == "forward" else 150  # 50% brighter for backwards
+                style = DirectionStyle(direction, expected)
 
-                if expected is not None:
-                    column_name = f"{direction}_{'expected' if expected else 'correction'}"
-                    suffix = " expct" if expected else " corr"
-                    linestyle = PenStyle.DashLine
-
+                # Now put it all together ---
                 plot_dataframes(
                     plot=plot, 
                     dataframes=dataframes, 
-                    xcolumn=xcolumn, 
-                    ycolumn=getattr(column_def, column_name),
-                    yerrcolumn=getattr(column_def, f"error_{column_name}"),
-                    xlabel=s_column.label,
-                    ylabel=latex_to_html_converter(plane_def.delta_label),
+                    xcolumn=x_column.column, 
+                    ycolumn=getattr(definition.propagable_columns, style.column),
+                    yerrcolumn=getattr(definition.propagable_columns, style.error_column),
+                    xlabel=x_column.label,
+                    ylabel=definition.ylabel,
                     legend=settings.show_legend,
-                    marker=marker,
+                    marker=style.marker,
                     markersize=settings.marker_size,
-                    brightness=brightness,
-                    linestyle=linestyle,
-                    suffix=f" ({shorthand}{suffix})",
+                    brightness=style.brightness,
+                    linestyle=style.linestyle,
+                    suffix=style.suffix,
                 )
 
         if settings.reset_zoom:
             plot.enableAutoRange()
+

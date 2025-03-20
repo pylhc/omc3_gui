@@ -49,6 +49,11 @@ LATEX_TO_HTML_SYMBOLS = {
     r'\Chi': 'Χ',
     r'\Psi': 'Ψ',
     r'\Omega': 'Ω',
+    # Symbols ---
+    r'\pm': '&plusmn;',
+    r'\times': '&times;',
+    r'\Re': '&real;',
+    r'\Im': '&image;',
     # Spacing ---
     r'\quad': '&ensp;',
     r'\;': '&thinsp;',
@@ -65,5 +70,6 @@ def latex_to_html_converter(latex_str):
     latex_str = re.sub(r'_(.)', r'<sub>\1</sub>', latex_str)
     latex_str = re.sub(r'\\frac{([^}]*)}{([^}]*)}', r'<sup>\1</sup>/<sub>\2</sub>', latex_str)
     latex_str = re.sub(r'\\left\((.*?)\\right\)', r'(\1)', latex_str)  # Basic parentheses
+    latex_str = re.sub(r'\\left\|(.*?)\\right\|', r'|\1|', latex_str)  # Absolute values
     
     return latex_str
