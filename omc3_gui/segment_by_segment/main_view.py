@@ -251,26 +251,26 @@ class SbSWindow(View):
                     grid_buttons_filler.add(load)
                     self.button_load_measurement = load
                     
-                    edit = DefaultButton("Edit")
-                    edit.setToolTip("Edit the settings of the currently selected measurement.")
-                    grid_buttons_filler.add(edit)
-                    self.button_edit_measurement = edit
+                    copy = DefaultButton("Copy")
+                    copy.setToolTip("Create a virtual copy of the measurement, with a different output dir.")
+                    grid_buttons_filler.add(copy)
+                    self.button_copy_measurement = copy
 
                     remove = RemoveButton()
                     remove.setToolTip("Remove the currently selected measurement(s).")
                     grid_buttons_filler.add(remove)
                     self.button_remove_measurement = remove
 
-                    copy = DefaultButton("Copy")
-                    copy.setToolTip("Create a virtual copy of the measurement, with a different output dir.")
-                    grid_buttons_filler.add(copy)
-                    self.button_copy_measurement = copy
-
                     matcher = RunButton("Run Matcher")
                     matcher.setToolTip("Run the Segment-by-Segment Matcher.")
                     grid_buttons_filler.add(matcher)
                     self.button_run_matcher = matcher
                     
+                    edit = DefaultButton("Edit")
+                    edit.setToolTip("Edit the settings of the currently selected measurement.")
+                    grid_buttons_filler.add(edit)
+                    self.button_edit_measurement = edit
+
                     edit_corrections = ChangeButton("Corrections")
                     edit_corrections.setToolTip("Edit the corrections file of the currently selected measurement.")
                     grid_buttons_filler.add(edit_corrections)
