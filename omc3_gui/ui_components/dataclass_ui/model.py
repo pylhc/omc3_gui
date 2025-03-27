@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 from dataclasses import MISSING, Field, dataclass, field
-from pathlib import Path, PurePath
+from pathlib import Path
 from typing import Any
 
 LOGGER = logging.getLogger(__name__)

@@ -7,8 +7,9 @@ in the Segment-by-Segment application.
 """
 from __future__ import annotations
 
+import json
 import logging
-from dataclasses import dataclass, field, fields, asdict
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
@@ -22,8 +23,13 @@ from omc3.optics_measurements.constants import (
 )
 from tfs.reader import read_headers
 
+from omc3_gui.ui_components.dataclass_ui import DirectoryPath, FilePath, metafield
 from omc3_gui.ui_components.dataclass_ui import choices_validator as choices
-from omc3_gui.ui_components.dataclass_ui import metafield, DirectoryPath, FilePath
+from omc3_gui.ui_components.dataclass_ui.tools import (
+    load_dataclass_from_json,
+    save_dataclass_to_json,
+    update_dataclass_from_json,
+)
 
 if TYPE_CHECKING:
     from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
@@ -33,6 +39,7 @@ DATE: str = "DATE"
 
 FILES_TO_LOOK_FOR: tuple[str, ...] = tuple(f"{name}{plane}" for name in (KICK_NAME, PHASE_NAME, BETA_NAME) for plane in ("x", "y"))
 TO_BE_DEFINED: str = "to_be_defined"
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -61,6 +68,7 @@ class OpticsMeasurement:
     _segments: list[SegmentDataModel] = field(default_factory=list)
 
     DEFAULT_OUTPUT_DIR: ClassVar[str] = "sbs"
+    JSON_FILENAME: ClassVar[str] = "sbs_measurement.json"
 
     def __post_init__(self):
         if self.output_dir is None:
@@ -200,6 +208,26 @@ class OpticsMeasurement:
         Returns:
             OpticsMeasurement: OpticsMeasurement instance. 
         """
+        # Try to load from json first ---
+        json_path = None
+        default_json_path = path / cls.JSON_FILENAME
+        default_output_json_path = path / cls.DEFAULT_OUTPUT_DIR / cls.JSON_FILENAME
+        measurement_path = None
+        if (default_json_path).is_file():
+            json_path = default_json_path
+            if any((path / f).is_file() for f in FILES_TO_LOOK_FOR):
+                measurement_path = path  # otherwise probably an output dir
+        elif(default_output_json_path).is_file():
+            json_path = default_output_json_path
+            measurement_path = path
+        
+        if json_path is not None:
+            try:
+                return cls.from_json(json_path, measurement_path)
+            except json.decoder.JSONDecodeError as e:
+                LOGGER.error(f"JSON errror: {e!s}\nTrying to load as optics-measurement folder.")
+
+        # Try to load from optics-measurement folder ---
         model_dir = None
         info = {}
         try:
@@ -209,15 +237,50 @@ class OpticsMeasurement:
         else:
             info = _parse_info_from_model_dir(model_dir)
         
-        meas = cls(measurement_dir=path, model_dir=model_dir, **info)
-        if (
-            any(getattr(meas, name) is None for name in ("model_dir", "accel", "output_dir")) 
-            or (meas.accel == 'lhc' and (meas.year is None or meas.beam is None))
-            or (meas.accel == 'psb' and meas.ring is None)
-        ):
-            LOGGER.error(f"Info parsed from measurement folder '{path!s}' is incomplete. Adjust manually!!") 
-            # TODO: Popup error message as well?
-        return meas
+        return cls(measurement_dir=path, model_dir=model_dir, **info)
+    
+    @classmethod
+    def from_json(cls, path: Path, measurement_dir: Path | None = None) -> OpticsMeasurement:
+        """ Creates an OpticsMeasurement from a folder, by trying 
+        to parse information from the data in the folder.
+
+        Args:
+            path (Path): Path to the folder.
+
+        Returns:
+            OpticsMeasurement: OpticsMeasurement instance. 
+        """
+        if measurement_dir is not None:
+            meas: OpticsMeasurement = cls(measurement_dir=measurement_dir)
+            meas = update_dataclass_from_json(meas, path)
+            meas.measurement_dir = measurement_dir  # in case the folder name/path changed since the json was written
+            return meas
+        return load_dataclass_from_json(cls, path)
+
+    def to_json(self, path: Path | None = None) -> None:
+        if path is None:
+            if self.output_dir is not None:
+                self.output_dir.mkdir(parents=True, exist_ok=True)
+                path = self.output_dir / self.JSON_FILENAME
+            else:
+                if self.measurement_dir is None or self.measurement_dir == TO_BE_DEFINED:
+                    raise ValueError("Measurement dir is still to be defined.")
+                path = self.measurement_dir / self.JSON_FILENAME
+        save_dataclass_to_json(self, path)
+    
+    def quick_check(self) -> None:
+        """ Tests for completeness of the definition (e.g. after loading). """
+        if self.measurement_dir is None or self.measurement_dir == TO_BE_DEFINED:
+            raise NameError("Measurement dir is still to be defined.")  # BAD
+
+        if any(getattr(self, name) is None for name in ("model_dir", "accel", "output_dir")) or self.model_dir == TO_BE_DEFINED:
+            raise ValueError(f"Current definition of '{self.measurement_dir!s}' is incomplete. Adjust manually!!")
+
+        if self.accel == 'lhc' and (self.year is None or self.beam is None):
+            raise ValueError(f"Current definition of '{self.measurement_dir!s}' for LHC is incomplete. Adjust manually!!")        
+        
+        if self.accel == 'psb' and self.ring is None:
+            raise ValueError(f"Current definition of '{self.measurement_dir!s}' for PSB is incomplete. Adjust manually!!")
 
 
 def _parse_model_dir_from_optics_measurement(measurement_path: Path) -> Path:

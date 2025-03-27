@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import logging
-from typing import NamedTuple
 
 from omc3.definitions.optics import (
     S_COLUMN,
@@ -19,7 +18,6 @@ from omc3.definitions.optics import (
     RDT_IMAG_COLUMN,
     ColumnsAndLabels,
 )
-from omc3.optics_measurements.constants import ALPHA_NAME, BETA_NAME, PHASE_NAME
 from omc3.segment_by_segment.propagables import PropagableColumns
 from qtpy.QtCore import Qt
 
@@ -125,8 +123,8 @@ class DirectionStyle:
     @property
     def suffix(self):
         shorthand = {
-            "forward": "fwd",
-            "backward": "bwd"
+            "forward": " fwd",
+            "backward": " bwd"
         }[self.direction]
         return {
             None: shorthand,

@@ -165,10 +165,8 @@ class DataClassUI:
                 
                 if field_type is model.FilePath:
                     dialog = file_dialogs.OpenFileDialog
-
                 elif field_type is model.DirectoryPath:
                     dialog = file_dialogs.OpenDirectoryDialog 
-
                 else:
                     dialog = file_dialogs.OpenAnySingleDialog
 
@@ -393,7 +391,12 @@ def run_dialog(dialog: file_dialogs.OpenFilesDialog, get_value: Callable, set_va
         get_value (Callable): The function to get the last value, e.g. from a widget.
         set_value (Callable): The function to set the value returned from the dialog.
     """
-    path = dialog(directory=get_value().parent).run_selection_dialog()
+    old_path: Path = get_value()
+    if old_path is not None:
+        old_path.parent 
+    else:
+        old_path = Path() 
+    path = dialog(directory=old_path).run_selection_dialog()
     if path is not None:
         set_value(path)
 

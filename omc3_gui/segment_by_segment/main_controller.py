@@ -7,9 +7,9 @@ This is the main controller for the Segment-by-Segment application.
 from __future__ import annotations
 
 import logging
+import re
 from functools import partial
 from pathlib import Path
-import re
 from typing import TYPE_CHECKING
 
 from omc3.sbs_propagation import segment_by_segment
@@ -17,13 +17,16 @@ from omc3.segment_by_segment.constants import corrections_madx
 from qtpy import QtWidgets
 from qtpy.QtCore import Slot
 
-from omc3_gui.segment_by_segment.defaults import DEFAULT_SEGMENTS, get_default_correctors
-from omc3_gui.segment_by_segment.plotting import plot_segment_data
-from omc3_gui.segment_by_segment.settings import PlotSettings, Settings
+from omc3_gui.plotting.classes import DualPlotWidget
+from omc3_gui.segment_by_segment.defaults import (
+    DEFAULT_SEGMENTS,
+    get_default_correctors,
+)
 from omc3_gui.segment_by_segment.main_model import SegmentTableModel
 from omc3_gui.segment_by_segment.main_view import SbSWindow
 from omc3_gui.segment_by_segment.measurement_model import OpticsMeasurement
 from omc3_gui.segment_by_segment.measurement_view import OpticsMeasurementDialog
+from omc3_gui.segment_by_segment.plotting import plot_segment_data
 from omc3_gui.segment_by_segment.segment_model import (
     SegmentDataModel,
     SegmentItemModel,
@@ -31,13 +34,13 @@ from omc3_gui.segment_by_segment.segment_model import (
     get_segments_from_directory,
 )
 from omc3_gui.segment_by_segment.segment_view import SegmentDialog
+from omc3_gui.segment_by_segment.settings import PlotSettings, Settings
+from omc3_gui.ui_components.base_classes_cvm import Controller
 from omc3_gui.ui_components.dataclass_ui import SettingsDialog
-from omc3_gui.ui_components.file_dialogs import OpenAnySingleDialog, OpenDirectoriesDialog
+from omc3_gui.ui_components.file_dialogs import OpenAnyMultiDialog, OpenAnySingleDialog
 from omc3_gui.ui_components.message_boxes import show_confirmation_dialog
 from omc3_gui.ui_components.text_editor import TextEditorDialog
 from omc3_gui.ui_components.threads import BackgroundThread
-from omc3_gui.ui_components.base_classes_cvm import Controller
-from omc3_gui.plotting.classes import DualPlotWidget
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -182,20 +185,42 @@ class SbSController(Controller):
         """ Open the file dialog for optics measurements. """
         view: SbSWindow = self._view  
 
-        LOGGER.debug("Opening new optics measurement. Asking for folder paths.")
-        filenames = OpenDirectoriesDialog(
+        LOGGER.debug("Opening new optics measurement. Asking for paths.")
+        filenames = OpenAnyMultiDialog(
             parent=view,
-            caption="Select Optics Folders", 
+            caption="Select Optics Folders/SbS Folders/SbS json", 
             directory=self._last_selected_measurement_path,
         ).run_selection_dialog()
 
+        self.open_measurements_from_paths(filenames, select=True)
+
+    def open_measurements_from_paths(self, paths: Sequence[Path | str], select: bool = False):
+        """ Open the given paths as measurements. """
+        if not len(paths):
+            LOGGER.debug("No measurement paths to load.")
+            return
+
+        view: SbSWindow = self._view
         loaded_measurements = view.get_measurement_list()
         measurement_indices = []
 
-        LOGGER.debug(f"User selected {len(filenames)} files.")
-        for filename in filenames:
+        for filename in paths:
             LOGGER.debug(f"Adding: {filename!s}")
-            optics_measurement = OpticsMeasurement.from_path(filename)
+            if filename.is_dir():
+                optics_measurement = OpticsMeasurement.from_path(filename)
+            elif filename.is_file() and filename.suffix == ".json":
+                optics_measurement = OpticsMeasurement.from_json(filename)
+            else:
+                LOGGER.error(f"Invalid file: {filename}")
+                continue
+
+            try:
+                optics_measurement.quick_check()
+            except ValueError as e:
+                LOGGER.warning(str(e))  # Maybe even popup?
+            except NameError as e:
+                LOGGER.error(f"{e!s} ({filename})")
+                continue
 
             if self.settings.main.autoload_segments:
                 self.load_segments_for_measurement(optics_measurement)
@@ -208,40 +233,12 @@ class SbSController(Controller):
             except ValueError as e:
                 LOGGER.error(str(e))
             else:
-                measurement_indices.append(loaded_measurements.get_index(optics_measurement))
+                if select: 
+                    measurement_indices.append(loaded_measurements.get_index(optics_measurement))
 
             self._last_selected_measurement_path = filename.parent
 
         view.set_selected_measurements(measurement_indices)
-    
-    def open_measurements_from_paths(self, paths: Sequence[Path | str]):
-        """ Open the given paths as measurements on start. """
-        if not len(paths):
-            LOGGER.debug("No measurement paths to load.")
-            return
-
-        view: SbSWindow = self._view
-        loaded_measurements = view.get_measurement_list()
-
-        LOGGER.debug(f"Loading {len(paths)} measurements.")
-        for directory in paths:
-            directory = Path(directory)
-
-            LOGGER.debug(f"Adding: {directory!s}")
-            optics_measurement = OpticsMeasurement.from_path(directory)
-
-            if self.settings.main.autoload_segments:
-                self.load_segments_for_measurement(optics_measurement)
-
-            if self.settings.main.autodefault_segments:
-                self.add_default_segments(optics_measurement)
-
-            try:
-                loaded_measurements.add_item(optics_measurement)
-            except ValueError as e:
-                LOGGER.error(str(e))
-
-        view.set_selected_measurements()
     
     @Slot()
     def edit_measurement(self, measurement: OpticsMeasurement | None = None):
@@ -266,6 +263,20 @@ class SbSController(Controller):
         )
         if dialog.exec_() == dialog.Accepted:
             LOGGER.debug("Edit dialog closed. Updating measurement.")
+
+        try:
+            measurement.quick_check()
+        except ValueError as e:
+            LOGGER.warning(str(e))  # Maybe even popup?
+        except NameError as e:
+            LOGGER.error(str(e))
+            return
+        
+        try:
+            measurement.to_json()
+        except IOError as e:
+            LOGGER.warning(str(e))
+
 
     @Slot()
     def copy_measurement(self, measurement: OpticsMeasurement | None = None):
