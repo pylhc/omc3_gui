@@ -77,9 +77,8 @@ def show_help_dialog():
     <i>Double-Click</i> : Edit the Measurement.<br>
 
     <br> 
-
+    
     """
-
     msg_box = QMessageBox(icon=QMessageBox.Information)
     msg_box.setWindowTitle("Help")
     msg_box.setTextFormat(Qt.TextFormat.RichText)
