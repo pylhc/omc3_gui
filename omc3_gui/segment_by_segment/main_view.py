@@ -22,6 +22,7 @@ from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import QItemSelectionModel, QModelIndex, Qt, Signal, Slot
 
 from omc3_gui.plotting.classes import DualPlotWidget
+from omc3_gui.segment_by_segment.help_view import show_help_dialog
 from omc3_gui.segment_by_segment.main_model import (
     MeasurementListModel,
     SegmentTableModel,
@@ -153,15 +154,24 @@ class SbSWindow(View):
 
         # insert before the last entry (which is "Exit")
         file_menu.insertAction(file_menu.actions()[-1], menu_settings)
-        
-        # Clear All ---
+
+        # Help --- 
         help_menu: QtWidgets.QMenu = self.get_action_by_title("Help")  # defined in View-class
+
+        # Clear All -
         menu_clear_all = QtWidgets.QAction("Reload Data", self)
         menu_clear_all.setIcon(
             QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_DialogResetButton)
         )
         menu_clear_all.triggered.connect(self.sig_menu_clear_all.emit)
         help_menu.insertAction(help_menu.actions()[-1], menu_clear_all)
+
+        menu_show_help = QtWidgets.QAction("Show Help", self)
+        menu_show_help.setIcon(
+            QtWidgets.QApplication.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_MessageBoxQuestion)
+        )
+        menu_show_help.triggered.connect(show_help_dialog)  # more of a controller thing, but OK for this one
+        help_menu.insertAction(help_menu.actions()[-1], menu_show_help)
 
     def add_settings_to_menu(self, menu: str, settings: object, names: Sequence[str] | None = None, hook: callable = None):
         """ Add quick-access checkboxes to the menu which are connected to the respective attributes in settings.
@@ -433,13 +443,6 @@ class SegmentTableView(QtWidgets.QTableView):
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.setShowGrid(True)
         self.setStyleSheet(MONOSPACED_TOOLTIP)
-    
-    # def mousePressEvent(self, e: QtGui.QMouseEvent) -> None:
-    #     idx = self.indexAt(e.pos())
-    #     if e.button() == Qt.RightButton:
-    #         self.model().toggle_row(idx)  # rather a controller thing?
-    #         return 
-    #     super().mousePressEvent(e)
 
 
 class ColoredItemDelegate(QtWidgets.QStyledItemDelegate):

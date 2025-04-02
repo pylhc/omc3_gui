@@ -21,6 +21,7 @@ from omc3.optics_measurements.constants import (
     MODEL_DIRECTORY,
     PHASE_NAME,
 )
+from omc3.segment_by_segment.constants import corrections_madx
 from tfs.reader import read_headers
 
 from omc3_gui.ui_components.dataclass_ui import DirectoryPath, FilePath, metafield
@@ -228,7 +229,6 @@ class OpticsMeasurement:
                 LOGGER.error(f"JSON errror: {e!s}\nTrying to load as optics-measurement folder.")
 
         # Try to load from optics-measurement folder ---
-        model_dir = None
         info = {}
         try:
             model_dir = _parse_model_dir_from_optics_measurement(path)
@@ -236,8 +236,12 @@ class OpticsMeasurement:
             LOGGER.error(str(e))
         else:
             info = _parse_info_from_model_dir(model_dir)
+            info["model_dir"] = model_dir
         
-        return cls(measurement_dir=path, model_dir=model_dir, **info)
+        if (path / corrections_madx).is_file():
+            info["corrections"] = path / corrections_madx
+        
+        return cls(measurement_dir=path, **info)
     
     @classmethod
     def from_json(cls, path: Path, measurement_dir: Path | None = None) -> OpticsMeasurement:

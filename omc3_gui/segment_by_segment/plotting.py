@@ -7,7 +7,9 @@ Plots for segment-by-segment.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cache
 import logging
+from pathlib import Path
 
 from omc3.definitions.optics import (
     S_COLUMN,
@@ -19,9 +21,13 @@ from omc3.definitions.optics import (
     ColumnsAndLabels,
 )
 from omc3.segment_by_segment.propagables import PropagableColumns
+from omc3.model.constants import TWISS_ELEMENTS_DAT
+from omc3.optics_measurements.constants import NAME
 from qtpy.QtCore import Qt
+import tfs
 
 from omc3_gui.plotting.classes import DualPlotWidget
+from omc3_gui.plotting.element_lines import plot_element_lines
 from omc3_gui.plotting.latex_to_html import latex_to_html_converter
 from omc3_gui.plotting.tfs_plotter import plot_dataframes
 from omc3_gui.segment_by_segment.segment_model import SegmentDataModel
@@ -173,8 +179,7 @@ def plot_segment_data(
     x_column = S_COLUMN
     if settings.model_s:
         x_column = S_MODEL_COLUMN
-    
-    
+
     # Loop over top/bottom plots ---
     for definition, plot in zip(definitions.plots, widget.plots):
         definition: PlotDefinition
@@ -188,6 +193,17 @@ def plot_segment_data(
             LOGGER.error("Could not find data for all segments, please run these again !?")
             # continue anyway
             dataframes = {label: df for label, df in dataframes.items() if df is not None}
+
+        # Plot Model Elements ---
+        if settings.show_model:
+            model_dir = segments[0].measurement.model_dir
+            bpm_ranges = [(s.start, s.end) for s in segments]
+            plot_element_lines(
+                plot=plot,
+                data_frame=load_twiss_elements(model_dir),
+                ranges=bpm_ranges,
+                start_zero=not settings.model_s,
+            )
 
         # Loop over forward/backward plots ---
         for direction in ("forward", "backward"):
@@ -218,3 +234,12 @@ def plot_segment_data(
         if settings.reset_zoom:
             plot.enableAutoRange()
 
+
+@cache
+def load_twiss_elements(model_dir: Path) -> tfs.TfsDataFrame:
+    """ Load the twiss elements from the model directory. 
+    Cache here, because that might take a moment, so better to keep the DataFrame in memory.
+    """
+    df = tfs.read_tfs(model_dir / TWISS_ELEMENTS_DAT, index=NAME)
+    df = df.loc[df.index.str.match(r"^(?!DRIFT).*"), [S_COLUMN.column]]  # we actually only need the s column and headers
+    return df

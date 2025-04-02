@@ -20,6 +20,7 @@ class MainSettings:
 
 @dataclass(slots=True)
 class PlotSettings:
+    show_model: bool = metafield("Show Model", "Show markers for the elements of the Model.", default=False)
     show_legend: bool = metafield("Show Legend", "Show legend.", default=True)
     marker_size: float = metafield("Marker Size", "Size of the markers.", default=8.5)
     expected: bool = metafield("Expectation", "Show expected value after correction instead of correction itself.", default=False)

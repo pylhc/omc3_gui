@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from omc3.sbs_propagation import segment_by_segment
-from omc3.segment_by_segment.constants import corrections_madx
 from qtpy import QtWidgets
 from qtpy.QtCore import Slot
 
@@ -723,12 +722,6 @@ class SbSController(Controller):
             segment = SegmentDataModel(measurement, *segment_tuple)
             measurement.try_add_segment(segment)
         
-        for segment in measurement.segments:
-            corrections = measurement.output_dir / corrections_madx.format(segment.name)
-            if corrections.exists():
-                measurement.corrections = corrections
-                break  # for now they should all be the same corrections
-        
     @Slot()
     def save_segments(self):
         LOGGER.debug("Saving segments to a file.")
@@ -844,7 +837,7 @@ class SbSController(Controller):
             log_function("Not plotting, no segments have been run.")
             return
 
-        if settings.same_start:
+        if settings.same_start and not settings.model_s:  # only an issue if they all start at 0
             starts = {re.sub(r"\.B[12]$", "", s.start, flags=re.IGNORECASE) for s in segments_data}
             if len(starts) > 1:
                 log_function("Not plotting, segments have different start BPMs (see 'Same Start' in settings).")
