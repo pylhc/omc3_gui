@@ -12,12 +12,13 @@ import pyqtgraph as pg
 from accwidgets.graph import StaticPlotWidget
 from accwidgets.graph.widgets.plotitem import ExViewBox
 from accwidgets.graph.widgets.plotwidget import GridOrientationOptions
-from qtpy.QtCore import Signal, Qt, QRectF, QEvent
+from qtpy.QtCore import Signal, Qt
 
 if TYPE_CHECKING:
+    from pyqtgraph.GraphicsScene import mouseEvents
     from qtpy.QtWidgets import QGraphicsSceneMouseEvent
 
-
+YAXES_WIDTH: int = 60
 
 class ObservablePlotDataItem(pg.PlotDataItem):
     """A PlotDataItem that emits a signal when visibility changes."""
@@ -41,8 +42,10 @@ class DualPlotWidget(pg.LayoutWidget):
         self.addWidget(self.top, row=0, col=0)
         self.addWidget(self.bottom, row=1, col=0)
 
-        # self.top.setMouseMode(pg.ViewBox.RectMode)
-        # self.bottom.setMouseMode(pg.ViewBox.PanMode)
+        # set margins, so the axes line up
+        for plot in (self.top, self.bottom):
+            plot.setContentsMargins(0, 0, 0, 0)
+            plot.plotItem.getAxis("left").setWidth(YAXES_WIDTH)  # keep constant
 
     @property
     def plots(self) -> tuple[pg.PlotWidget, pg.PlotWidget]:
@@ -81,15 +84,17 @@ class ZoomingViewBox(ExViewBox):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.setMouseMode(ZoomingViewBox.RectMode)  # mode that makes zooming rectangles
-        self._zoom_history: list[QRectF] = []
 
     def suggestPadding(self, axis):
+        """ Suggests padding (between the data and the axis) for the autoRange function. 
+        For our purposes, we do not want any padding on the x-axis. """
         if axis == 0:
             return 0.0  # disable padding for x axis
         return super().suggestPadding(axis)
 
     def set_y_range_to_n_sigma(self, n_sigma):
-        """ Set the y-range to a number of standard deviations of the containing data. """
+        """ Set the y-range to a number of standard deviations,
+        assuming the data is taken from a normal distribution. """
         # Get the data from all curves in the viewbox
         all_data = []
         for item in self.allChildren():
@@ -110,37 +115,52 @@ class ZoomingViewBox(ExViewBox):
 
         self.setYRange(y_min, y_max, padding=0)
 
-    def mouseClickEvent(self, ev: QGraphicsSceneMouseEvent):
+    def mouseClickEvent(self, ev: mouseEvents.MouseClickEvent):
         if ev.button() == Qt.MouseButton.MiddleButton:
-            self._zoom_history.append(self.viewRect())
-            for nsigma in (6, 4, 2):
-                self.set_y_range_to_n_sigma(nsigma)
-                self._zoom_history.append(self.viewRect())
             ev.accept()
+            self.auto_zoom()
             return 
-        
+
+        if ev.button() == Qt.MouseButton.RightButton:
+            ev.accept()
+            if ev.modifiers() == Qt.KeyboardModifier.AltModifier:
+                self.raiseContextMenu(ev)
+                return
+
+            self.undo_zoom(reset=ev.modifiers() == Qt.KeyboardModifier.ShiftModifier)
+            return
+
         super().mouseClickEvent(ev)
         
     def mouseDoubleClickEvent(self, ev: QGraphicsSceneMouseEvent):
         if ev.button() == Qt.MouseButton.LeftButton:
-            # Undo zoom history ---
-            if not len(self._zoom_history):
-                self.autoRange()
-                self._zoom_history.append(self.viewRect())
-                ev.accept()
-                return  
-
-            if ev.modifiers() == Qt.KeyboardModifier.ShiftModifier:  
-                # go all the way back to the start
-                self.setRange(self._zoom_history[0])
-                self._zoom_history = []
-            else:
-                # go one step back
-                self.setRange(self._zoom_history.pop())
             ev.accept()
-            return 
+            self.undo_zoom(reset=ev.modifiers() == Qt.KeyboardModifier.ShiftModifier)
+            return
 
         super().mouseDoubleClickEvent(ev)
-        
 
+    def undo_zoom(self, reset: bool = False):
+        """ Go back in zoom history. """
+        if self.axHistoryPointer == 0:
+            self.enableAutoRange()
+            self.axHistoryPointer = -1
+            self.save_view()
+            return
 
+        if reset:
+            # Go back to the first zoom
+            self.scaleHistory(-len(self.axHistory))
+            return
+
+        # go one step back
+        self.scaleHistory(-1)
+
+    def auto_zoom(self):
+        for nsigma in (6, 4, 2):
+            self.set_y_range_to_n_sigma(nsigma)
+            self.save_view()
+
+    def save_view(self):
+        self.axHistoryPointer += 1
+        self.axHistory = self.axHistory[:self.axHistoryPointer] + [self.viewRect()]

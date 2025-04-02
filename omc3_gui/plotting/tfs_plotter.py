@@ -15,7 +15,7 @@ import logging
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QColor
 
-from omc3_gui.plotting.classes import ObservablePlotDataItem
+from omc3_gui.plotting.classes import ObservablePlotDataItem, YAXES_WIDTH
 
 PenStyle = Qt.PenStyle
 
@@ -91,7 +91,8 @@ def plot_dataframes(
 
     if ylabel is not None:
         plot_item.setLabel("left", ylabel)
-    
+        
+    plot_item.getAxis("left").setWidth(YAXES_WIDTH)  # keep constant
     plot_item.legend.setVisible(legend)
 
 
