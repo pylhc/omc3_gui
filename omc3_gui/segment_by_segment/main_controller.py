@@ -779,15 +779,15 @@ class SbSController(Controller):
             )
             
             # For Real Use: Run Task ---
-            # LOGGER.info(f"Starting {measurement_task.message}")
-            # self._add_running_task(task=measurement_task)
-            # measurement_task.start()
+            LOGGER.info(f"Starting {measurement_task.message}")
+            self._add_running_task(task=measurement_task)
+            measurement_task.start()
             # -------------------------------------
 
             # For Debugging: Start sbs directly ---
-            sbs_function()
-            self.clear_all_data()
-            LOGGER.info(f"Finished {measurement_task.message}")
+            # sbs_function()
+            # self.clear_all_data()
+            # LOGGER.info(f"Finished {measurement_task.message}")
             # -------------------------------------
     
     @Slot()
