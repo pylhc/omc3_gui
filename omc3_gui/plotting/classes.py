@@ -1,6 +1,6 @@
 """ 
-Plotting: Classes
------------------
+Classes
+-------
 
 Containers for figures, plots, etc.
 """

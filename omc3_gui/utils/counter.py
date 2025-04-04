@@ -1,6 +1,6 @@
 """ 
-Utils: Counter
---------------
+Counter
+-------
 
 Classes to do some automatic counting and filling. 
 """

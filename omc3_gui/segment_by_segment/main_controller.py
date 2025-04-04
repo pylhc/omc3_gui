@@ -1,6 +1,6 @@
 """ 
-Segment-by-Segment Controller
------------------------------
+Main Controller
+---------------
 
 This is the main controller for the Segment-by-Segment application.
 """

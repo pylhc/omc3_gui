@@ -1,6 +1,6 @@
 """ 
-Segment-by-Segment Defaults
----------------------------
+Defaults
+--------
 
 Defaults for segment by segment.
 """

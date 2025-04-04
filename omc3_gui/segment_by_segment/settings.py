@@ -1,6 +1,6 @@
-""" 
-Segment-by-Segment: Settings
-----------------------------
+"""
+Settings
+--------
 
 Global Settings for the Segment-by-Segment application.
 """

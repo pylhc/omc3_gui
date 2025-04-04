@@ -1,6 +1,6 @@
 """ 
-Segment-by-Segment Model
-------------------------
+Main Model
+----------
 
 This is the main model for the Segment-by-Segment application.
 """

@@ -1,6 +1,6 @@
 """ 
-Segment-by-Segment View
------------------------
+Main View
+---------
 
 This is the main view for the Segment-by-Segment application.
 """

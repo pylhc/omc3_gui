@@ -1,6 +1,6 @@
 """ 
-Utils: Iterable Classes
------------------------
+Iterable Classes
+----------------
 
 This module contains classes that are or make other classes iterable over their attributes.
 """

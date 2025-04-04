@@ -1,6 +1,6 @@
 """ 
-Utils: Logging
---------------
+Logging
+-------
 
 Helper functions for logging.
 """

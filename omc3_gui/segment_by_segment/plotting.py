@@ -1,6 +1,6 @@
 """ 
-Sgement-by-Segment Plots
-------------------------
+Plotting
+--------
 
 Plots for segment-by-segment.
 """

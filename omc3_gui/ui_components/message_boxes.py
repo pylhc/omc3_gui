@@ -1,6 +1,6 @@
 """ 
 UI: Message Boxes
-----------------
+-----------------
 
 Helper functions to display message boxes.
 """
