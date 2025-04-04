@@ -2,16 +2,19 @@
 Help Dialogs
 ------------
 """
+from __future__ import annotations
 
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QMessageBox
 
 def show_help_dialog():
+    """ Displays the help dialog for the segment-by-segment GUI. """
+
     help_text = """
     <h3> Frequently Asked Questions </h3><br>
     
     <br>
-    <b> How do I open a Measurement ?</b><br>
+    <b> How do I open a Measurement?</b><br>
     
     One way to open measurements automatically, is to give them as command line
     arguments when starting the sbs_gui, either <i> -m </i> or <i> --measurements </i>.<br>
@@ -23,7 +26,7 @@ def show_help_dialog():
 
     <br>
     
-    <b> Do I have to invert my corrections when using them in the machine? </b><br>
+    <b> Do I have to invert my corrections when using them in the machine?</b><br>
 
     YES! <i>(but it depends)</i><br>
     The "corrections" here are actually used to match the model opttics to the 
@@ -34,7 +37,7 @@ def show_help_dialog():
 
     <br>
 
-    <b> What is the solid line ?</b><br>
+    <b> What is the solid line?</b><br>
 
     The solid line is the difference between the Measurement and 
     the propagated model, i.e. the Measurement at the start (or end) of the segment 
@@ -44,7 +47,7 @@ def show_help_dialog():
 
     <br>   
     
-    <b> What is the dashed line that says "corr" ?</b><br>
+    <b> What is the dashed line that says "corr"?</b><br>
 
     This is the difference between the <i>"corrected"</i> propagated model and the 
     nominal propagated model.<br>
@@ -54,7 +57,7 @@ def show_help_dialog():
 
     <br>
     
-    <b> What is the dashed line that says "expct" ?</b><br>
+    <b> What is the dashed line that says "expct"?</b><br>
 
     This is the difference between the Measurement and the "corrected" propagated model
     and is therefore the <i>expected</i> measured difference to the nominal model after 
@@ -63,7 +66,7 @@ def show_help_dialog():
 
     <br>
 
-    <b> Shortcuts </b><br>
+    <b>Shortcuts</b><br>
 
     In Graph:<br>
     <i>Double-Click</i> : Zoom history back one step. <br>

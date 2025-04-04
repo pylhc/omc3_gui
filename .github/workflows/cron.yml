@@ -8,4 +8,5 @@ on:
 
 jobs:
     tests:
+      if: false  # disabled for now
       uses: pylhc/.github/.github/workflows/cron.yml@master

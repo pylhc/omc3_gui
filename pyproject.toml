@@ -45,7 +45,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "omc3[optional]>= 0.22.0",
+    "omc3[optional]>= 0.24.0",
     "qtpy >= 2.3.1",  # runs with either PySide2/6 or PyQt5/6
     "pyqtgraph",
 ]
@@ -89,3 +89,36 @@ markers = [
 # Helpful for pytest-debugging (leave commented out on commit):
 #log_cli = true
 #log_cli_level = "DEBUG"
+
+
+# ----- Dev Tools Configuration ----- #
+
+[tool.ruff]
+exclude = [
+  ".eggs",
+  ".git",
+  ".mypy_cache",
+  ".venv",
+  "_build",
+  "build",
+  "dist",
+]
+
+# Assume Python 3.10+
+target-version = "py310"
+
+line-length = 100
+indent-width = 4
+
+[tool.ruff.lint]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+ignore = [
+  "FBT001",  # boolean-type-hint-positional-argument
+  "FBT002",  # boolean-default-value-positional-argument
+  "PT019",  # pytest-fixture-param-without-value (but suggested solution fails)
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []

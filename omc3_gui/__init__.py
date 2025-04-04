@@ -10,7 +10,7 @@ omc3-gui provides graphical user interfaces for the ``omc3`` package for the opt
 __title__ = "omc3-gui"
 __description__ = "QT Graphical User Interface wrapper of the ``omc3`` package"
 __url__ = "https://github.com/pylhc/omc3_gui"
-__version__ = "1.0.0a"
+__version__ = "1.0.0"
 __author__ = "pylhc"
 __author_email__ = "pylhc@github.com"
 

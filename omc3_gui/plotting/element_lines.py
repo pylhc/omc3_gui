@@ -5,7 +5,6 @@ Element Line Plotter
 This module contains functions to plot element lines with pyqtgraph.
 """
 import numpy as np
-import pandas as pd
 import tfs
 import pyqtgraph as pg
 import logging

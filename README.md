@@ -40,9 +40,9 @@ Codes can then be run with either `python -m omc3_gui.SCRIPT --FLAG ARGUMENT` or
 #### Main Scripts
 
 Main scripts to be executed lie in the [`/omc3_gui`](omc3_gui) directory. These include:
-- `.py` Nothing here yet.
+- `sbs_gui.py` GUI for Segment-by-Segment analysis.
 
 
 ## License
 
-This project is licensed under the `GNU GENERAL PUBLIC LICENSE v3 License` - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the `MIT License` - see the [LICENSE](LICENSE) file for details.

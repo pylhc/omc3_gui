@@ -1,3 +1,13 @@
+""" 
+Latex to HTML converter
+-----------------------
+
+Converts LaTeX commands for Greek letters and other symbols to HTML.
+Needed to be able to re-use matplotlib-labels - which understand Latex - 
+in pyqtgraph, which does not understand Latex.
+"""
+from __future__ import annotations
+
 import re
 
 # Dictionary to map Greek LaTeX symbols to HTML
@@ -59,17 +69,26 @@ LATEX_TO_HTML_SYMBOLS = {
     r'\;': '&thinsp;',
 }
 
-def latex_to_html_converter(latex_str):
+def latex_to_html_converter(latex_str: str) -> str:
+    """ 
+    Converts LaTeX commands for Greek letters and other symbols to HTML.
+
+    Args:
+        latex_str (str): LaTeX string to convert.
+    
+    Returns:
+        str: HTML string
+    """
     # Convert LaTeX commands for Greek letters to HTML
-    latex_str = latex_str.replace("$", "")
+    html_str = latex_str.replace("$", "")
     for latex, html in LATEX_TO_HTML_SYMBOLS.items():
-        latex_str = latex_str.replace(latex, html)
+        html_str = html_str.replace(latex, html)
     
     # Other HTML formatting like superscript/subscript, fractions, etc.
-    latex_str = re.sub(r'_{([^}]*)}', r'<sub>\1</sub>', latex_str)
-    latex_str = re.sub(r'_(.)', r'<sub>\1</sub>', latex_str)
-    latex_str = re.sub(r'\\frac{([^}]*)}{([^}]*)}', r'<sup>\1</sup>/<sub>\2</sub>', latex_str)
-    latex_str = re.sub(r'\\left\((.*?)\\right\)', r'(\1)', latex_str)  # Basic parentheses
-    latex_str = re.sub(r'\\left\|(.*?)\\right\|', r'|\1|', latex_str)  # Absolute values
+    html_str = re.sub(r'_{([^}]*)}', r'<sub>\1</sub>', html_str)
+    html_str = re.sub(r'_(.)', r'<sub>\1</sub>', html_str)
+    html_str = re.sub(r'\\frac{([^}]*)}{([^}]*)}', r'<sup>\1</sup>/<sub>\2</sub>', html_str)
+    html_str = re.sub(r'\\left\((.*?)\\right\)', r'(\1)', html_str)  # Basic parentheses
+    html_str = re.sub(r'\\left\|(.*?)\\right\|', r'|\1|', html_str)  # Absolute values
     
-    return latex_str
+    return html_str

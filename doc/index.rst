@@ -7,11 +7,11 @@ Package Reference
 =================
 
 .. toctree::
-   :caption: Main Entrypoints
+   :caption: Main GUIs
    :maxdepth: 1
    :glob:
 
-   entrypoints/*
+   main/*
 
 
 .. toctree::
@@ -21,6 +21,11 @@ Package Reference
 
    modules/*
 
+.. toctree::
+   :caption: Bibliography 
+   :maxdepth: 1
+
+   bibliography
 
 Indices and tables
 ==================

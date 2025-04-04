@@ -30,6 +30,7 @@ class ObservablePlotDataItem(pg.PlotDataItem):
 
 
 class DualPlotWidget(pg.LayoutWidget):
+    """ A widget containing and handling two plots stacked vertically. """
     
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -72,19 +73,24 @@ class DualPlotWidget(pg.LayoutWidget):
 
 
 class PlotWidget(StaticPlotWidget):
+    """ A widget containing and handling a single plot. 
+    
+    Adds the look-and-feel for our omc3 guis to the default accwidgets plotwidget. 
+    """
     
     def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())  # requires accwidgets >= 3.0.11
+        super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())  # using viewbox here requires accwidgets >= 3.0.11
         self.setBackground("w")
         self._set_show_grid(GridOrientationOptions.Both)
 
 
 class ZoomingViewBox(ExViewBox):
-    """ ViewBox that imitates the bahavior of the Java-GUI a bit closer. """
+    """ ViewBox that imitates the bahavior of the Java-GUI a bit more closely than the default. """
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.setMouseMode(ZoomingViewBox.RectMode)  # mode that makes zooming rectangles
 
+    # Look and Feel ------------------------------------------------------------
     def suggestPadding(self, axis):
         """ Suggests padding (between the data and the axis) for the autoRange function. 
         For our purposes, we do not want any padding on the x-axis. """
@@ -92,29 +98,7 @@ class ZoomingViewBox(ExViewBox):
             return 0.0  # disable padding for x axis
         return super().suggestPadding(axis)
 
-    def set_y_range_to_n_sigma(self, n_sigma):
-        """ Set the y-range to a number of standard deviations,
-        assuming the data is taken from a normal distribution. """
-        # Get the data from all curves in the viewbox
-        all_data = []
-        for item in self.allChildren():
-            if isinstance(item, pg.PlotDataItem):
-                y_data = item.yData
-                if y_data is not None:
-                    all_data.extend(y_data)
-
-        if not all_data:
-            return
-
-        all_data = np.array(all_data)
-        mean = np.mean(all_data)
-        std_dev = np.std(all_data)
-
-        y_min = mean - n_sigma * std_dev
-        y_max = mean + n_sigma * std_dev
-
-        self.setYRange(y_min, y_max, padding=0)
-
+    # Mouse Events -------------------------------------------------------------
     def mouseClickEvent(self, ev: mouseEvents.MouseClickEvent):
         if ev.button() == Qt.MouseButton.MiddleButton:
             ev.accept()
@@ -140,6 +124,7 @@ class ZoomingViewBox(ExViewBox):
 
         super().mouseDoubleClickEvent(ev)
 
+    # Zoom History -------------------------------------------------------------
     def undo_zoom(self, reset: bool = False):
         """ Go back in zoom history. """
         if self.axHistoryPointer == 0:
@@ -156,11 +141,37 @@ class ZoomingViewBox(ExViewBox):
         # go one step back
         self.scaleHistory(-1)
 
+    def save_view(self):
+        """ Save the current view to the zoom history. """
+        self.axHistoryPointer += 1
+        self.axHistory = self.axHistory[:self.axHistoryPointer] + [self.viewRect()]
+
+    # Auto Zoom ----------------------------------------------------------------
     def auto_zoom(self):
+        """ Zoom to 6, 4 and 2 standard deviations and save the steps. """
         for nsigma in (6, 4, 2):
             self.set_y_range_to_n_sigma(nsigma)
             self.save_view()
 
-    def save_view(self):
-        self.axHistoryPointer += 1
-        self.axHistory = self.axHistory[:self.axHistoryPointer] + [self.viewRect()]
+    def set_y_range_to_n_sigma(self, n_sigma):
+        """ Set the y-range to a number of standard deviations,
+        assuming the data is taken from a normal distribution. """
+        # Get the data from all curves in the viewbox
+        all_data = []
+        for item in self.allChildren():
+            if isinstance(item, pg.PlotDataItem):
+                y_data = item.yData
+                if y_data is not None:
+                    all_data.extend(y_data)
+
+        if not all_data:
+            return
+
+        all_data = np.array(all_data)
+        mean = np.mean(all_data)
+        std_dev = np.std(all_data)
+
+        y_min = mean - n_sigma * std_dev
+        y_max = mean + n_sigma * std_dev
+
+        self.setYRange(y_min, y_max, padding=0)
