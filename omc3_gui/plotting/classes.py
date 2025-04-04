@@ -85,7 +85,7 @@ class PlotWidget(StaticPlotWidget):
 
 
 class ZoomingViewBox(ExViewBox):
-    """ ViewBox that imitates the bahavior of the Java-GUI a bit more closely than the default. """
+    """ ViewBox that imitates the behavior of the Java-GUI a bit more closely than the default. """
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.setMouseMode(ZoomingViewBox.RectMode)  # mode that makes zooming rectangles
