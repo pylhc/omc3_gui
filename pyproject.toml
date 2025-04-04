@@ -45,7 +45,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "omc3[optional]>= 0.24.0",
+    "omc3 >= 0.24.0",
     "qtpy >= 2.3.1",  # runs with either PySide2/6 or PyQt5/6
     "pyqtgraph",
 ]
