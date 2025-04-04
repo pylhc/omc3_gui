@@ -135,9 +135,9 @@ def plot_errorbar(
     errorbarPen = pg.mkPen(color=color, width=linewidth, style=PenStyle.SolidLine)
     
     # convert everything to numpy, as this is what pyqtgraph expects. 
-    # pd.Series seems to also work for now, but will in the future 
-    # need .iloc to work with indices 
-    # (pyqtgraph and create_tooltips accesses items that way, for now at least).
+    # pd.Series seems to also work for now, but raises deprecation warnings, 
+    # as in the future it needs .iloc to work with indices, 
+    # yet pyqtgraph and create_tooltips access items via `[ ]` (for now at least).
     x = safe_convert_to_numpy(x)
     y = safe_convert_to_numpy(y)
     xerr = safe_convert_to_numpy(xerr)
