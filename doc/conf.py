@@ -227,7 +227,7 @@ texinfo_documents = [
 
 # Add here all modules to be mocked up. When the dependencies are not met
 # at building time. Here used to have PyQT mocked.
-autodoc_mock_imports = ["accwidgets", "qtpy", "pyqtgraph"]
+autodoc_mock_imports = ["accwidgets", "qtpy", "pyqtgraph", "PySide2"]
 
 # -- Type Aliases --------------------------------------------------------------
 
