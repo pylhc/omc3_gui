@@ -49,4 +49,3 @@ def plot_element_lines(plot: pg.PlotWidget, data_frame: tfs.TfsDataFrame, ranges
     pen = pg.mkPen(color="grey", width=1, style=Qt.PenStyle.DotLine)
     for element, x in s_elements.items():
         plotItem.addLine(x=x, z=-10, pen=pen, label=element, labelOpts={"angle": 90})
-
