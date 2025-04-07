@@ -11,7 +11,7 @@ import numpy as np
 import pyqtgraph as pg
 from accwidgets.graph import StaticPlotWidget
 from accwidgets.graph.widgets.plotitem import ExViewBox
-from accwidgets.graph.widgets.plotwidget import GridOrientationOptions
+from accwidgets.graph.widgets.plotwidget import ExPlotWidgetProperties
 from qtpy.QtCore import Signal, Qt
 
 if TYPE_CHECKING:
@@ -81,7 +81,7 @@ class PlotWidget(StaticPlotWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs, viewBox=ZoomingViewBox())  # using viewbox here requires accwidgets >= 3.0.11
         self.setBackground("w")
-        self._set_show_grid(GridOrientationOptions.Both)
+        self._set_show_grid(ExPlotWidgetProperties.GridOrientationOptions.BOTH)
 
 
 class ZoomingViewBox(ExViewBox):
