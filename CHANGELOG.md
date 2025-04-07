@@ -1,5 +1,10 @@
 # OMC3-GUI Changelog
 
+#### 2025-04-07 - v1.0.1 
+
+- Fixed:
+  - Import error due to `accwidget 4.0.0` update.
+
 #### 2025-04-04 - v1.0.0 - Segment-by-Segment GUI
 
 - Maintenance:
