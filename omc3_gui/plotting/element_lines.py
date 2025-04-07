@@ -48,5 +48,5 @@ def plot_element_lines(plot: pg.PlotWidget, data_frame: tfs.TfsDataFrame, ranges
     plotItem.disableAutoRange()  # speeds it up a bit
     pen = pg.mkPen(color="grey", width=1, style=Qt.PenStyle.DotLine)
     for element, x in s_elements.items():
-        plotItem.addLine(x=x, z=-10, pen=pen, label=element)
+        plotItem.addLine(x=x, z=-10, pen=pen, label=element, labelOpts={"angle": 90})
 
