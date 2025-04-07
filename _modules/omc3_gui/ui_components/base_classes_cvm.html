@@ -1,0 +1,446 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3_gui.ui_components.base_classes_cvm &mdash; omc3-gui 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main GUIs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../main/sbs_gui.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#main-model">Main Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#measurement-model">Measurement Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#measurement-view">Measurement View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#segment-model">Segment Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#segment-view">Segment View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#defaults">Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#help-dialogs">Help Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#settings">Settings</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#element-line-plotter">Element Line Plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#latex-to-html-converter">Latex to HTML converter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/ui.html">UI-Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui">DataClass UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-controller">DataClass UI: Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-model">DataClass UI: Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-view">DataClass UI: View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-tools">DataClass UI: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-base-classes-for-cvm">UI: Base Classes for CVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-colors">UI: Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-file-dialogs">UI: File Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-item-models">UI: Item Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-message-boxes">UI: Message Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-styles">UI: Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-text-editor-dialog">UI: Text Editor Dialog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-threads">UI: Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-widgets">UI: Widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#counter">Counter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#iterable-classes">Iterable Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging">Logging</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3-gui</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3_gui.ui_components.base_classes_cvm</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3_gui.ui_components.base_classes_cvm</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">UI: Base Classes for CVM</span>
+<span class="sd">------------------------</span>
+
+<span class="sd">This module contains base classes for UI&#39;s</span>
+<span class="sd">that use the Controller-View-Model pattern.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtGui</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">Slot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QAction</span><span class="p">,</span>
+    <span class="n">QApplication</span><span class="p">,</span>
+    <span class="n">QDesktopWidget</span><span class="p">,</span>
+    <span class="n">QDockWidget</span><span class="p">,</span>
+    <span class="n">QMenu</span><span class="p">,</span>
+    <span class="n">QMenuBar</span><span class="p">,</span>
+    <span class="n">QStatusBar</span><span class="p">,</span>
+    <span class="n">QStyle</span><span class="p">,</span>
+    <span class="n">QWidgetAction</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components</span><span class="w"> </span><span class="kn">import</span> <span class="n">colors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.utils.log_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_console_formatter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components.widgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunningSpinner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components.message_boxes</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_error_dialog</span>
+
+<span class="k">try</span><span class="p">:</span>  <span class="c1"># CERN Application Frame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">accwidgets.app_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationFrame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">accwidgets.qt</span><span class="w"> </span><span class="kn">import</span> <span class="n">exec_app_interruptable</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># Standard QT</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QMainWindow</span> <span class="k">as</span> <span class="n">ApplicationFrame</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">exec_app_interruptable</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+<span class="k">try</span><span class="p">:</span>  <span class="c1"># CERN Console</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">accwidgets.app_frame._about_dialog</span><span class="w"> </span><span class="kn">import</span> <span class="n">AboutDialog</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">accwidgets.log_console</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogConsoleFormatter</span> <span class="k">as</span> <span class="n">AccPyLogConsoleFormatter</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># Deactivated</span>
+    <span class="n">AccPyLogConsoleFormatter</span> <span class="o">=</span> <span class="nb">object</span>
+    <span class="n">AboutDialog</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Controller">
+<a class="viewcode-back" href="../../../modules/ui.html#omc3_gui.ui_components.base_classes_cvm.Controller">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Controller</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Base class for the controller of a UI.</span>
+
+<span class="sd">    The controller is the glue between the view and the model</span>
+<span class="sd">    and also the entry-point for the app.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">:</span> <span class="n">ApplicationFrame</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="n">view</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_application</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+        <span class="n">controller</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">controller</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">exec_app_interruptable</span><span class="p">(</span><span class="n">app</span><span class="p">)</span></div>
+
+    
+
+<div class="viewcode-block" id="View">
+<a class="viewcode-back" href="../../../modules/ui.html#omc3_gui.ui_components.base_classes_cvm.View">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">View</span><span class="p">(</span><span class="n">ApplicationFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Base class for the view of a UI.</span>
+
+<span class="sd">    Adds a menu bar and a status bar as well as the log-console (if in CERN mode).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;use_log_console&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_log_console&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># CERN Application Frame</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;use_log_console&quot;</span><span class="p">]</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>   <span class="c1"># QT Main window</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_menu_bar</span><span class="p">:</span> <span class="n">QMenuBar</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_spinner</span><span class="p">:</span> <span class="n">RunningSpinner</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app_version</span> <span class="o">=</span> <span class="n">__version__</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adapt_logger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adapt_to_screensize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_menu_bar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_status_bar</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_menu_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_menu_bar</span> <span class="o">=</span> <span class="n">QMenuBar</span><span class="p">()</span>
+        
+        <span class="c1"># File menu ---</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_menu_bar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;File&quot;</span><span class="p">)</span>
+        <span class="n">quit</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Exit&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
+        <span class="n">quit</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">QApplication</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QStyle</span><span class="o">.</span><span class="n">StandardPixmap</span><span class="o">.</span><span class="n">SP_DialogCloseButton</span><span class="p">))</span>
+        <span class="n">quit</span><span class="o">.</span><span class="n">setMenuRole</span><span class="p">(</span><span class="n">QWidgetAction</span><span class="o">.</span><span class="n">QuitRole</span><span class="p">)</span>
+
+        <span class="c1"># View menu ---</span>
+        <span class="c1"># needs to be called &quot;View&quot; to be found by ApplicationFrame,</span>
+        <span class="c1"># which adds some additional actions if needed.</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_menu_bar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;View&quot;</span><span class="p">)</span> 
+
+        <span class="c1"># Fullscreen -</span>
+        <span class="n">toggle_fullscreen</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Full Screen&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toggleFullScreen</span><span class="p">)</span>
+        <span class="n">toggle_fullscreen</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Log Console -</span>
+        <span class="c1"># Add the log-console checkbox here, so Application Frame doesn&#39;t give it </span>
+        <span class="c1"># the wrong title (&quot;Toggle Log Console&quot;), is horrible for a checkbox (jdilly, 2025)</span>
+        <span class="n">log_console</span><span class="p">:</span> <span class="n">QDockWidget</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;log_console&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log_console</span><span class="p">:</span>
+            <span class="n">log_console_action</span> <span class="o">=</span> <span class="n">log_console</span><span class="o">.</span><span class="n">toggleViewAction</span><span class="p">()</span>
+            <span class="n">log_console_action</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Log Console&quot;</span><span class="p">)</span>
+            <span class="c1"># hide the setText function, as otherwise ApplicationFrame overwrites the title</span>
+            <span class="n">log_console_action</span><span class="o">.</span><span class="n">_setText</span> <span class="o">=</span> <span class="n">log_console_action</span><span class="o">.</span><span class="n">setText</span>
+            <span class="n">log_console_action</span><span class="o">.</span><span class="n">setText</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">text</span><span class="p">:</span> <span class="kc">None</span>  
+            <span class="n">view</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">log_console_action</span><span class="p">)</span> 
+
+        <span class="c1"># Help menu ---</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_menu_bar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;Help&quot;</span><span class="p">)</span>
+
+        <span class="c1"># About -</span>
+        <span class="n">about</span> <span class="o">=</span> <span class="n">help</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;About&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">showAboutDialog</span><span class="p">)</span>
+        <span class="n">about</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowIcon</span><span class="p">())</span>
+        <span class="n">about</span><span class="o">.</span><span class="n">setMenuRole</span><span class="p">(</span><span class="n">QWidgetAction</span><span class="o">.</span><span class="n">AboutRole</span><span class="p">)</span>
+
+        <span class="c1"># Set menu bar ---</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMenuBar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_menu_bar</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="View.get_action_by_title">
+<a class="viewcode-back" href="../../../modules/ui.html#omc3_gui.ui_components.base_classes_cvm.View.get_action_by_title">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_action_by_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">QMenuBar</span> <span class="o">|</span> <span class="n">QMenu</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QAction</span> <span class="o">|</span> <span class="n">QMenu</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Retrieve a menu action by its title. </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            title (str): Action title.</span>
+<span class="sd">            parent (QMenuBar): Parent menu bar to search, if `None` the main menu bar is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parent</span><span class="p">:</span> <span class="n">QMenuBar</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_menu_bar</span>
+
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Menu bar does not seem to have been build yet.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">parent</span><span class="o">.</span><span class="n">actions</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">text</span><span class="p">()</span> <span class="o">==</span> <span class="n">title</span><span class="p">:</span>
+                <span class="n">menu</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">menu</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">menu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># action is a menu (submenu)</span>
+                    <span class="k">return</span> <span class="n">menu</span>
+                <span class="k">return</span> <span class="n">action</span>  <span class="c1"># action is an entry (leaf)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to find action with title: </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">parent</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_status_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">status_bar</span><span class="p">:</span> <span class="n">QStatusBar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span>
+        
+        <span class="c1"># Build thread spinner ---</span>
+        <span class="n">thread_spinner</span> <span class="o">=</span> <span class="n">RunningSpinner</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">status_bar</span><span class="p">,</span> <span class="n">center_on_parent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">status_bar</span><span class="o">.</span><span class="n">addPermanentWidget</span><span class="p">(</span><span class="n">thread_spinner</span><span class="p">)</span>
+        <span class="n">thread_spinner</span><span class="o">.</span><span class="n">mouseDoubleClickEvent</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sig_thread_spinner_double_clicked</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="n">thread_spinner</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_spinner</span> <span class="o">=</span> <span class="n">thread_spinner</span>
+       
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStatusBar</span><span class="p">(</span><span class="n">status_bar</span><span class="p">)</span>
+        <span class="c1"># status_bar.hide()  # looks nice, but moves the window around too much ... </span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">thread_spinner</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunningSpinner</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread_spinner</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_adapt_to_screensize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Sets the window size to 2/3 of the screen size. &quot;&quot;&quot;</span>
+        <span class="n">screen_shape</span> <span class="o">=</span> <span class="n">QDesktopWidget</span><span class="p">()</span><span class="o">.</span><span class="n">screenGeometry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">screen_shape</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">/</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">screen_shape</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_adapt_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Changes the appearance of the log console. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;log_console&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">expanded</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="o">.</span><span class="n">setFeatures</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="o">.</span><span class="n">DockWidgetClosable</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="o">.</span><span class="n">DockWidgetMovable</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">LogConsoleFormatter</span><span class="p">(</span><span class="n">show_date</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># see below</span>
+        <span class="k">for</span> <span class="n">level</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">colors</span><span class="o">.</span><span class="n">LOGGING</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">_set_color_to_scheme</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">buffer_size</span> <span class="o">=</span> <span class="mi">10_000</span>  <span class="c1"># default: 1000</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">visible_levels</span> <span class="o">|=</span>  <span class="p">{</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setWindowTitle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2"> v</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">app_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">toggleFullScreen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isFullScreen</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">showNormal</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">showFullScreen</span><span class="p">()</span>
+
+    <span class="nd">@Slot</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">showAboutDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display an &#39;about&#39; dialog.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">AboutDialog</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowTitle</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">AboutDialog</span><span class="p">(</span>
+            <span class="n">app_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app_version</span><span class="p">,</span>
+            <span class="n">icon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">windowIcon</span><span class="p">(),</span>
+            <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+<div class="viewcode-block" id="View.showErrorDialog">
+<a class="viewcode-back" href="../../../modules/ui.html#omc3_gui.ui_components.base_classes_cvm.View.showErrorDialog">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">showErrorDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Convenience function to displays an error dialog. </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            title (str): Dialog title.</span>
+<span class="sd">            message (str): Dialog message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">show_error_dialog</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LogConsoleFormatter">
+<a class="viewcode-back" href="../../../modules/ui.html#omc3_gui.ui_components.base_classes_cvm.LogConsoleFormatter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogConsoleFormatter</span><span class="p">(</span><span class="n">AccPyLogConsoleFormatter</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_date</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">show_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">show_logger_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reimplementation of the AccPy LogConsoleFormatter, to allow for a different logging format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            show_date: Add date to the log message prefix.</span>
+<span class="sd">            show_time: Add time to the log message prefix.</span>
+<span class="sd">            show_logger_name: Add logger name to the log message prefix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_date</span> <span class="o">=</span> <span class="n">show_date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_time</span> <span class="o">=</span> <span class="n">show_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_logger_name</span> <span class="o">=</span> <span class="n">show_logger_name</span>
+
+        <span class="n">fmt_str</span> <span class="o">=</span> <span class="n">get_console_formatter</span><span class="p">()</span><span class="o">.</span><span class="n">_fmt</span>
+        <span class="n">date_format</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">show_date</span><span class="p">:</span>
+            <span class="n">date_format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_time</span><span class="p">:</span>
+            <span class="n">date_format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_date</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">show_time</span><span class="p">:</span>
+            <span class="n">fmt_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\%\(asctime\)\d+s\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">fmt_str</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_logger_name</span><span class="p">:</span>
+            <span class="n">fmt_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\%\(name\)\d+s\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">fmt_str</span><span class="p">)</span>
+        
+        <span class="n">fmt_str</span> <span class="o">=</span> <span class="n">fmt_str</span><span class="p">[</span><span class="n">fmt_str</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">):]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">fmt_str</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">date_format</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;%&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,563 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3_gui.segment_by_segment.measurement_model &mdash; omc3-gui 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main GUIs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../main/sbs_gui.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#main-model">Main Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#measurement-model">Measurement Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#measurement-view">Measurement View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#segment-model">Segment Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#segment-view">Segment View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#defaults">Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#help-dialogs">Help Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#settings">Settings</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#element-line-plotter">Element Line Plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#latex-to-html-converter">Latex to HTML converter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/ui.html">UI-Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui">DataClass UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-controller">DataClass UI: Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-model">DataClass UI: Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-view">DataClass UI: View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-tools">DataClass UI: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-base-classes-for-cvm">UI: Base Classes for CVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-colors">UI: Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-file-dialogs">UI: File Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-item-models">UI: Item Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-message-boxes">UI: Message Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-styles">UI: Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-text-editor-dialog">UI: Text Editor Dialog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-threads">UI: Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-widgets">UI: Widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#counter">Counter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#iterable-classes">Iterable Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging">Logging</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3-gui</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3_gui.segment_by_segment.measurement_model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3_gui.segment_by_segment.measurement_model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Measurement Model</span>
+<span class="sd">-----------------</span>
+
+<span class="sd">This module contains the model for the Optics Measurement </span>
+<span class="sd">in the Segment-by-Segment application.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">fields</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">TWISS_DAT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BETA_NAME</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">KICK_NAME</span><span class="p">,</span>
+    <span class="n">MODEL_DIRECTORY</span><span class="p">,</span>
+    <span class="n">PHASE_NAME</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">corrections_madx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tfs.reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_headers</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components.dataclass_ui</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirectoryPath</span><span class="p">,</span> <span class="n">FilePath</span><span class="p">,</span> <span class="n">metafield</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components.dataclass_ui</span><span class="w"> </span><span class="kn">import</span> <span class="n">choices_validator</span> <span class="k">as</span> <span class="n">choices</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components.dataclass_ui.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">load_dataclass_from_json</span><span class="p">,</span>
+    <span class="n">save_dataclass_to_json</span><span class="p">,</span>
+    <span class="n">update_dataclass_from_json</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.segment_by_segment.segment_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegmentDataModel</span>
+
+<span class="n">SEQUENCE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SEQUENCE&quot;</span>
+<span class="n">DATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;DATE&quot;</span>
+
+<span class="n">FILES_TO_LOOK_FOR</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">KICK_NAME</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">BETA_NAME</span><span class="p">)</span> <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">))</span>
+<span class="n">TO_BE_DEFINED</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;to_be_defined&quot;</span>
+
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="OpticsMeasurement">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.OpticsMeasurement">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OpticsMeasurement</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Class to load and hold the optics-measurement folder. </span>
+<span class="sd">    This class also stores the meta-data for the loaded measurement, </span>
+<span class="sd">    which can then be passed on to the segment-by-segment.</span>
+<span class="sd">    The :func:`omc3_gui.utils.dataclass_ui.metafield` is used to provide hints about the fields for the GUI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">measurement_dir</span><span class="p">:</span> <span class="n">DirectoryPath</span> <span class="o">=</span> <span class="n">metafield</span><span class="p">(</span><span class="s2">&quot;Optics Measurement&quot;</span><span class="p">,</span> <span class="s2">&quot;Path to the optics-measurement folder&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">TO_BE_DEFINED</span><span class="p">),</span> <span class="n">validate</span><span class="o">=</span><span class="n">exists</span><span class="p">)</span>
+    <span class="n">model_dir</span><span class="p">:</span> <span class="n">DirectoryPath</span> <span class="o">=</span>       <span class="n">metafield</span><span class="p">(</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span>              <span class="s2">&quot;Path to the model folder&quot;</span><span class="p">,</span>        <span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">TO_BE_DEFINED</span><span class="p">),</span> <span class="n">validate</span><span class="o">=</span><span class="n">exists</span><span class="p">)</span>
+    <span class="n">accel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span>                     <span class="n">metafield</span><span class="p">(</span><span class="s2">&quot;Accelerator&quot;</span><span class="p">,</span>        <span class="s2">&quot;Name of the accelerator&quot;</span><span class="p">,</span>         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">DirectoryPath</span> <span class="o">=</span>      <span class="n">metafield</span><span class="p">(</span><span class="s2">&quot;Output&quot;</span><span class="p">,</span>             <span class="s2">&quot;Path to the sbs-output folder&quot;</span><span class="p">,</span>   <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> 
+    <span class="n">corrections</span><span class="p">:</span> <span class="n">FilePath</span> <span class="o">=</span>          <span class="n">metafield</span><span class="p">(</span><span class="s2">&quot;Corrections&quot;</span><span class="p">,</span>        <span class="s2">&quot;Path to the corrections file&quot;</span><span class="p">,</span>    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">year</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span>                      <span class="n">metafield</span><span class="p">(</span><span class="s2">&quot;Year&quot;</span><span class="p">,</span>               <span class="s2">&quot;Year of the measurement (model)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">ring</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span>                      <span class="n">metafield</span><span class="p">(</span><span class="s2">&quot;Ring&quot;</span><span class="p">,</span>               <span class="s2">&quot;Ring of the accelerator&quot;</span><span class="p">,</span>         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">choices</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span>                      <span class="n">metafield</span><span class="p">(</span><span class="s2">&quot;Beam&quot;</span><span class="p">,</span>               <span class="s2">&quot;Beam of the accelerator&quot;</span><span class="p">,</span>         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">choices</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> 
+    <span class="c1"># List of segments. Using a list here, so the name and start/end can be changed</span>
+    <span class="c1"># without having to modify anything here.</span>
+    <span class="n">_segments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SegmentDataModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="n">DEFAULT_OUTPUT_DIR</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sbs&quot;</span>
+    <span class="n">JSON_FILENAME</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sbs_measurement.json&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_OUTPUT_DIR</span>
+
+    <span class="c1"># Visualization ------------------------------------------------------------</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_OUTPUT_DIR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Unique identifier for the measurement, used in the ItemModel. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OpticsMeasurement.get_label">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.OpticsMeasurement.get_label">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_label</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the label for the field named `name`. &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__dataclass_fields__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="OpticsMeasurement.get_comment">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.OpticsMeasurement.get_comment">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_comment</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the comment for the field named `name`. &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__dataclass_fields__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;comment&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="OpticsMeasurement.tooltip">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.OpticsMeasurement.tooltip">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tooltip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns a string with information about the measurement, </span>
+<span class="sd">        as to be used in a tool-tip.  &quot;&quot;&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_label</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:{</span><span class="n">size</span><span class="si">}</span><span class="s2">s</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parts</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Segment Control ----------------------------------------------------------</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">:</span> <span class="n">SegmentDataModel</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Segment with name </span><span class="si">{</span><span class="n">segment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">:</span> <span class="n">SegmentDataModel</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">segment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Segment </span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2"> is already in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A segment with name </span><span class="si">{</span><span class="n">segment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is already in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_add_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">:</span> <span class="n">SegmentDataModel</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">silent</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">try_remove_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">:</span> <span class="n">SegmentDataModel</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">segment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_segment_by_name</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_segment_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentDataModel</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">segment</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No segment with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">segments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SegmentDataModel</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span>
+
+    <span class="c1"># Segment-by-Segment Parameters --------------------------------------------</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sbs_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">measurement_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span><span class="p">,</span>
+            <span class="n">corrections</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corrections</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">accel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="p">,</span>
+            <span class="n">model_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;beam&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ring</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;ring&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ring</span> 
+        <span class="k">return</span> <span class="n">parameters</span>
+
+    <span class="c1"># Builder ------------------------------------------------------------------</span>
+<div class="viewcode-block" id="OpticsMeasurement.copy">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.OpticsMeasurement.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OpticsMeasurement</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Creates a copy of the measurement. &quot;&quot;&quot;</span>
+        <span class="n">new_measurement</span> <span class="o">=</span> <span class="n">OpticsMeasurement</span><span class="p">(</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
+            <span class="n">new_segment</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">new_segment</span><span class="o">.</span><span class="n">measurement</span> <span class="o">=</span> <span class="n">new_measurement</span>
+            <span class="n">new_measurement</span><span class="o">.</span><span class="n">add_segment</span><span class="p">(</span><span class="n">new_segment</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_measurement</span></div>
+
+
+<div class="viewcode-block" id="OpticsMeasurement.from_path">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.OpticsMeasurement.from_path">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OpticsMeasurement</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Creates an OpticsMeasurement from a folder, by trying </span>
+<span class="sd">        to parse information from the data in the folder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (Path): Path to the folder.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OpticsMeasurement: OpticsMeasurement instance. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Try to load from json first ---</span>
+        <span class="n">json_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">default_json_path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">JSON_FILENAME</span>
+        <span class="n">default_output_json_path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_OUTPUT_DIR</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">JSON_FILENAME</span>
+        <span class="n">measurement_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">default_json_path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="n">json_path</span> <span class="o">=</span> <span class="n">default_json_path</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">path</span> <span class="o">/</span> <span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">FILES_TO_LOOK_FOR</span><span class="p">):</span>
+                <span class="n">measurement_path</span> <span class="o">=</span> <span class="n">path</span>  <span class="c1"># otherwise probably an output dir</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">default_output_json_path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="n">json_path</span> <span class="o">=</span> <span class="n">default_output_json_path</span>
+            <span class="n">measurement_path</span> <span class="o">=</span> <span class="n">path</span>
+        
+        <span class="k">if</span> <span class="n">json_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="n">measurement_path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;JSON errror: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="se">\n</span><span class="s2">Trying to load as optics-measurement folder.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Try to load from optics-measurement folder ---</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_dir</span> <span class="o">=</span> <span class="n">_parse_model_dir_from_optics_measurement</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">_parse_info_from_model_dir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
+            <span class="n">info</span><span class="p">[</span><span class="s2">&quot;model_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_dir</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="n">corrections_madx</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="n">info</span><span class="p">[</span><span class="s2">&quot;corrections&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="n">corrections_madx</span>
+        
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">measurement_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">info</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="OpticsMeasurement.from_json">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.OpticsMeasurement.from_json">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">measurement_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OpticsMeasurement</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Creates an OpticsMeasurement from a folder, by trying </span>
+<span class="sd">        to parse information from the data in the folder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (Path): Path to the folder.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OpticsMeasurement: OpticsMeasurement instance. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">measurement_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">meas</span><span class="p">:</span> <span class="n">OpticsMeasurement</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">measurement_dir</span><span class="o">=</span><span class="n">measurement_dir</span><span class="p">)</span>
+            <span class="n">meas</span> <span class="o">=</span> <span class="n">update_dataclass_from_json</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="n">meas</span><span class="o">.</span><span class="n">measurement_dir</span> <span class="o">=</span> <span class="n">measurement_dir</span>  <span class="c1"># in case the folder name/path changed since the json was written</span>
+            <span class="k">return</span> <span class="n">meas</span>
+        <span class="k">return</span> <span class="n">load_dataclass_from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">JSON_FILENAME</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span> <span class="o">==</span> <span class="n">TO_BE_DEFINED</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Measurement dir is still to be defined.&quot;</span><span class="p">)</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">JSON_FILENAME</span>
+        <span class="n">save_dataclass_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="OpticsMeasurement.quick_check">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.OpticsMeasurement.quick_check">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quick_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Tests for completeness of the definition (e.g. after loading). &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span> <span class="o">==</span> <span class="n">TO_BE_DEFINED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Measurement dir is still to be defined.&quot;</span><span class="p">)</span>  <span class="c1"># BAD</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;model_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;accel&quot;</span><span class="p">,</span> <span class="s2">&quot;output_dir&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">==</span> <span class="n">TO_BE_DEFINED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current definition of &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span><span class="si">!s}</span><span class="s2">&#39; is incomplete. Adjust manually!!&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span> <span class="o">==</span> <span class="s1">&#39;lhc&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current definition of &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span><span class="si">!s}</span><span class="s2">&#39; for LHC is incomplete. Adjust manually!!&quot;</span><span class="p">)</span>        
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span> <span class="o">==</span> <span class="s1">&#39;psb&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ring</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current definition of &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_dir</span><span class="si">!s}</span><span class="s2">&#39; for PSB is incomplete. Adjust manually!!&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_model_dir_from_optics_measurement</span><span class="p">(</span><span class="n">measurement_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tries to find the model directory in the headers of one of the optics measurement files.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        measurement_path (Path): Path to the folder. </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Path: Path to the (associated) model directory. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Searching for model dir in </span><span class="si">{</span><span class="n">measurement_path</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">FILES_TO_LOOK_FOR</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checking </span><span class="si">{</span><span class="n">file_name</span><span class="si">!s}</span><span class="s2"> for model dir.&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">read_headers</span><span class="p">((</span><span class="n">measurement_path</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">EXT</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">!s}</span><span class="s2"> not found in </span><span class="si">{</span><span class="n">measurement_path</span><span class="si">!s}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">MODEL_DIRECTORY</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MODEL_DIRECTORY</span><span class="si">!s}</span><span class="s2"> found in </span><span class="si">{</span><span class="n">file_name</span><span class="si">!s}</span><span class="s2">: </span><span class="si">{</span><span class="n">headers</span><span class="p">[</span><span class="n">MODEL_DIRECTORY</span><span class="p">]</span><span class="si">!s}</span><span class="s2">!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">headers</span><span class="p">[</span><span class="n">MODEL_DIRECTORY</span><span class="p">])</span>
+
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MODEL_DIRECTORY</span><span class="si">!s}</span><span class="s2"> not found in </span><span class="si">{</span><span class="n">file_name</span><span class="si">!s}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find &#39;</span><span class="si">{</span><span class="n">MODEL_DIRECTORY</span><span class="si">}</span><span class="s2">&#39; in any of </span><span class="si">{</span><span class="n">FILES_TO_LOOK_FOR</span><span class="si">!r}</span><span class="s2"> in </span><span class="si">{</span><span class="n">measurement_path</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_info_from_model_dir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Checking twiss.dat for more info about the accelerator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model_dir (Path): Path to the model-directory. </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict[str, Any]: Containing the additional info found (accel, beam, year, ring). </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">read_headers</span><span class="p">(</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="n">sequence</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SEQUENCE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sequence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;lhc&quot;</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;accel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;beam&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">map_lhc_year</span><span class="p">(</span><span class="n">_get_year_from_header</span><span class="p">(</span><span class="n">headers</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="s2">&quot;psb&quot;</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;accel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;psb&quot;</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;ring&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;accel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sequence</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Associated info found in model dir &#39;</span><span class="si">{</span><span class="n">model_dir</span><span class="si">!s}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">result</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_year_from_header</span><span class="p">(</span><span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parses the year from the date in the twiss.dat file.</span>
+<span class="sd">    </span>
+<span class="sd">    TODO: Will not work for hl-lhc models. These should return the hl-version.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">DATE</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">year</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;20</span><span class="si">{</span><span class="n">date</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Assuming model year </span><span class="si">{</span><span class="n">year</span><span class="si">!s}</span><span class="s2"> from &#39;</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">&#39;!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">year</span>
+
+
+<div class="viewcode-block" id="map_lhc_year">
+<a class="viewcode-back" href="../../../main/sbs_gui.html#omc3_gui.segment_by_segment.measurement_model.map_lhc_year">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_lhc_year</span><span class="p">(</span><span class="n">year</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Maps the input year to the corresponding available model year. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">year</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">int_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">year</span>
+    
+    <span class="c1"># no new models (see omc/model/accelerators/lhc)</span>
+    <span class="k">if</span> <span class="mi">2012</span> <span class="o">&lt;</span> <span class="n">int_year</span> <span class="o">&lt;</span> <span class="mi">2015</span><span class="p">:</span>  
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mapping year </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2"> to LHC model 2012!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;2012&quot;</span>
+    
+    <span class="c1"># no new models (there was a 2021 in acc-models, but we were not using it then)</span>
+    <span class="k">if</span> <span class="mi">2018</span> <span class="o">&lt;</span> <span class="n">int_year</span> <span class="o">&lt;</span> <span class="mi">2022</span><span class="p">:</span>  
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mapping year </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2"> to LHC model 2018!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;2018&quot;</span>
+    
+    <span class="k">return</span> <span class="n">year</span></div>
+
+    
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

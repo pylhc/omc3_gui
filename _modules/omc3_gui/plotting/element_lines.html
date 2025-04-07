@@ -1,0 +1,207 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3_gui.plotting.element_lines &mdash; omc3-gui 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main GUIs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../main/sbs_gui.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#main-model">Main Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#measurement-model">Measurement Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#measurement-view">Measurement View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#segment-model">Segment Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#segment-view">Segment View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#defaults">Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#help-dialogs">Help Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#settings">Settings</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#element-line-plotter">Element Line Plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#latex-to-html-converter">Latex to HTML converter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/ui.html">UI-Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui">DataClass UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-controller">DataClass UI: Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-model">DataClass UI: Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-view">DataClass UI: View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-tools">DataClass UI: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-base-classes-for-cvm">UI: Base Classes for CVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-colors">UI: Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-file-dialogs">UI: File Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-item-models">UI: Item Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-message-boxes">UI: Message Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-styles">UI: Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-text-editor-dialog">UI: Text Editor Dialog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-threads">UI: Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-widgets">UI: Widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#counter">Counter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#iterable-classes">Iterable Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging">Logging</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3-gui</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3_gui.plotting.element_lines</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3_gui.plotting.element_lines</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Element Line Plotter</span>
+<span class="sd">--------------------</span>
+
+<span class="sd">This module contains functions to plot element lines with pyqtgraph.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyqtgraph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">S</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">LENGTH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;LENGTH&quot;</span>
+
+<div class="viewcode-block" id="plot_element_lines">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.element_lines.plot_element_lines">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_element_lines</span><span class="p">(</span><span class="n">plot</span><span class="p">:</span> <span class="n">pg</span><span class="o">.</span><span class="n">PlotWidget</span><span class="p">,</span> <span class="n">data_frame</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">ranges</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">start_zero</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Plot vertical lines on the plot for elements in the data_frame in the given ranges.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        plot (pg.PlotWidget): The plot to plot the lines into.</span>
+<span class="sd">        data_frame (tfs.TfsDataFrame): The data_frame to plot the lines from.</span>
+<span class="sd">        ranges (list[tuple[str, str]]): A list of tuples of the form (start_element, end_element).</span>
+<span class="sd">        start_zero (bool): Whether to start the plot from zero or not.  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">start_zero</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Not all ranges start at the same element. Using only the first!&quot;</span><span class="p">)</span>
+        <span class="n">ranges</span> <span class="o">=</span> <span class="p">[</span><span class="n">ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+    <span class="n">plotItem</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">plotItem</span>
+
+    <span class="c1"># Find start and end elements</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">S</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Select element range and do some wrapping gymnastics if needed</span>
+    <span class="k">if</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">,</span> <span class="n">S</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">end</span><span class="p">,</span> <span class="n">S</span><span class="p">]:</span>
+        <span class="n">s_elements</span> <span class="o">=</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="n">S</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s_elements</span> <span class="o">=</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">:,</span> <span class="n">S</span><span class="p">]</span> <span class="o">+</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:</span><span class="n">end</span><span class="p">,</span> <span class="n">S</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">start_zero</span><span class="p">:</span>
+        <span class="n">s_elements</span> <span class="o">=</span> <span class="n">s_elements</span> <span class="o">-</span> <span class="n">s_elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
+        <span class="n">s_elements</span> <span class="o">=</span> <span class="n">s_elements</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s_elements</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">LENGTH</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Plot the lines - this takes a while, not sure how to improve</span>
+    <span class="n">plotItem</span><span class="o">.</span><span class="n">disableAutoRange</span><span class="p">()</span>  <span class="c1"># speeds it up a bit</span>
+    <span class="n">pen</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">PenStyle</span><span class="o">.</span><span class="n">DotLine</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">element</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">s_elements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">plotItem</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">pen</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">labelOpts</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;angle&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">})</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

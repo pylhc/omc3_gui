@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plotting &mdash; omc3-gui 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="UI-Components" href="ui.html" />
+    <link rel="prev" title="Segment-by-Segment" href="../main/sbs_gui.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main GUIs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../main/sbs_gui.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../main/sbs_gui.html#main-model">Main Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../main/sbs_gui.html#measurement-model">Measurement Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../main/sbs_gui.html#measurement-view">Measurement View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../main/sbs_gui.html#segment-model">Segment Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../main/sbs_gui.html#segment-view">Segment View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../main/sbs_gui.html#defaults">Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../main/sbs_gui.html#help-dialogs">Help Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../main/sbs_gui.html#settings">Settings</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#element-line-plotter">Element Line Plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#latex-to-html-converter">Latex to HTML converter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI-Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#dataclass-ui">DataClass UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#dataclass-ui-controller">DataClass UI: Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#dataclass-ui-model">DataClass UI: Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#dataclass-ui-view">DataClass UI: View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#dataclass-ui-tools">DataClass UI: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-base-classes-for-cvm">UI: Base Classes for CVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-colors">UI: Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-file-dialogs">UI: File Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-item-models">UI: Item Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-message-boxes">UI: Message Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-styles">UI: Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-text-editor-dialog">UI: Text Editor Dialog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-threads">UI: Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-widgets">UI: Widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#counter">Counter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#iterable-classes">Iterable Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#logging">Logging</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">omc3-gui</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Plotting</li>
+      <li class="wy-breadcrumbs-aside">
+              <!-- User defined GitHub URL -->
+              <a href="https://github.com/pylhc/omc3_gui" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <nav id="local-table-of-contents" role="navigation" aria-labelledby="local-table-of-contents-title">
+    <h4 id="local-table-of-contents-title">On This Page</h4>
+    <ul>
+<li><a class="reference internal" href="#">Plotting</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#element-line-plotter">Element Line Plotter</a></li>
+<li><a class="reference internal" href="#latex-to-html-converter">Latex to HTML converter</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav>
+  
+  
+           <div itemprop="articleBody">
+             
+  <section id="plotting">
+<h1>Plotting<a class="headerlink" href="#plotting" title="Link to this heading"></a></h1>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<p>Containers for figures, plots, etc.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3_gui.plotting.classes.</span></span><span class="sig-name descname"><span class="pre">DualPlotWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#DualPlotWidget"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A widget containing and handling two plots stacked vertically.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3_gui.plotting.classes.</span></span><span class="sig-name descname"><span class="pre">ObservablePlotDataItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#ObservablePlotDataItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A PlotDataItem that emits a signal when visibility changes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">visibilityChanged</span></span></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3_gui.plotting.classes.</span></span><span class="sig-name descname"><span class="pre">PlotWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#PlotWidget"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A widget containing and handling a single plot.</p>
+<p>Adds the look-and-feel for our omc3 guis to the default accwidgets plotwidget.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3_gui.plotting.classes.</span></span><span class="sig-name descname"><span class="pre">ZoomingViewBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#ZoomingViewBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>ViewBox that imitates the behavior of the Java-GUI a bit more closely than the default.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">auto_zoom</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#ZoomingViewBox.auto_zoom"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Zoom to 6, 4 and 2 standard deviations and save the steps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">save_view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#ZoomingViewBox.save_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Save the current view to the zoom history.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">set_y_range_to_n_sigma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#ZoomingViewBox.set_y_range_to_n_sigma"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Set the y-range to a number of standard deviations,
+assuming the data is taken from a normal distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">suggestPadding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#ZoomingViewBox.suggestPadding"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Suggests padding (between the data and the axis) for the autoRange function.
+For our purposes, we do not want any padding on the x-axis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">undo_zoom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/classes.html#ZoomingViewBox.undo_zoom"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Go back in zoom history.</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="element-line-plotter">
+<h2>Element Line Plotter<a class="headerlink" href="#element-line-plotter" title="Link to this heading"></a></h2>
+<p>This module contains functions to plot element lines with pyqtgraph.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3_gui.plotting.element_lines.</span></span><span class="sig-name descname"><span class="pre">plot_element_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyqtgraph.PlotWidget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_zero</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3_gui/plotting/element_lines.html#plot_element_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Plot vertical lines on the plot for elements in the data_frame in the given ranges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot</strong> (<em>pg.PlotWidget</em>) -- The plot to plot the lines into.</p></li>
+<li><p><strong>data_frame</strong> (<em>tfs.TfsDataFrame</em>) -- The data_frame to plot the lines from.</p></li>
+<li><p><strong>ranges</strong> (<em>list</em><em>[</em><em>tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) -- A list of tuples of the form (start_element, end_element).</p></li>
+<li><p><strong>start_zero</strong> (<em>bool</em>) -- Whether to start the plot from zero or not.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="latex-to-html-converter">
+<h2>Latex to HTML converter<a class="headerlink" href="#latex-to-html-converter" title="Link to this heading"></a></h2>
+<p>Converts LaTeX commands for Greek letters and other symbols to HTML.
+Needed to be able to re-use matplotlib-labels - which understand Latex -
+in pyqtgraph, which does not understand Latex.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3_gui.plotting.latex_to_html.</span></span><span class="sig-name descname"><span class="pre">latex_to_html_converter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latex_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3_gui/plotting/latex_to_html.html#latex_to_html_converter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Converts LaTeX commands for Greek letters and other symbols to HTML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>latex_str</strong> (<em>str</em>) -- LaTeX string to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../main/sbs_gui.html" class="btn btn-neutral float-left" title="Segment-by-Segment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ui.html" class="btn btn-neutral float-right" title="UI-Components" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

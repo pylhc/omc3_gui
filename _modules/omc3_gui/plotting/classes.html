@@ -1,0 +1,356 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3_gui.plotting.classes &mdash; omc3-gui 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main GUIs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../main/sbs_gui.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#main-model">Main Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#measurement-model">Measurement Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#measurement-view">Measurement View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#segment-model">Segment Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#segment-view">Segment View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#defaults">Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#help-dialogs">Help Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../main/sbs_gui.html#settings">Settings</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#element-line-plotter">Element Line Plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#latex-to-html-converter">Latex to HTML converter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/ui.html">UI-Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui">DataClass UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-controller">DataClass UI: Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-model">DataClass UI: Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-view">DataClass UI: View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#dataclass-ui-tools">DataClass UI: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-base-classes-for-cvm">UI: Base Classes for CVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-colors">UI: Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-file-dialogs">UI: File Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-item-models">UI: Item Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-message-boxes">UI: Message Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-styles">UI: Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-text-editor-dialog">UI: Text Editor Dialog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-threads">UI: Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/ui.html#ui-widgets">UI: Widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#counter">Counter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#iterable-classes">Iterable Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging">Logging</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3-gui</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3_gui.plotting.classes</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3_gui.plotting.classes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">Containers for figures, plots, etc.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyqtgraph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">accwidgets.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">StaticPlotWidget</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">accwidgets.graph.widgets.plotitem</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExViewBox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">accwidgets.graph.widgets.plotwidget</span><span class="w"> </span><span class="kn">import</span> <span class="n">GridOrientationOptions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Qt</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyqtgraph.GraphicsScene</span><span class="w"> </span><span class="kn">import</span> <span class="n">mouseEvents</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QGraphicsSceneMouseEvent</span>
+
+<span class="n">YAXES_WIDTH</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span>
+
+<div class="viewcode-block" id="ObservablePlotDataItem">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.ObservablePlotDataItem">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObservablePlotDataItem</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A PlotDataItem that emits a signal when visibility changes.&quot;&quot;&quot;</span>
+    <span class="n">visibilityChanged</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setVisible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visibilityChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="DualPlotWidget">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.DualPlotWidget">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DualPlotWidget</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">LayoutWidget</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A widget containing and handling two plots stacked vertically. &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">pg</span><span class="o">.</span><span class="n">setConfigOptions</span><span class="p">(</span><span class="n">antialias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># not sure if best place here</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="n">PlotWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span> <span class="o">=</span> <span class="n">PlotWidget</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># set margins, so the axes line up</span>
+        <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">):</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">plotItem</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setWidth</span><span class="p">(</span><span class="n">YAXES_WIDTH</span><span class="p">)</span>  <span class="c1"># keep constant</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plots</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotWidget</span><span class="p">,</span> <span class="n">pg</span><span class="o">.</span><span class="n">PlotWidget</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>    
+        <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">:</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">enableAutoRange</span><span class="p">()</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_connect_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connect</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">connect</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">setXLink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">setXLink</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="o">.</span><span class="n">setXLink</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_connect_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connect</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">connect</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">setYLink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">setYLink</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="o">.</span><span class="n">setYLink</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="PlotWidget">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.PlotWidget">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PlotWidget</span><span class="p">(</span><span class="n">StaticPlotWidget</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A widget containing and handling a single plot. </span>
+<span class="sd">    </span>
+<span class="sd">    Adds the look-and-feel for our omc3 guis to the default accwidgets plotwidget. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">viewBox</span><span class="o">=</span><span class="n">ZoomingViewBox</span><span class="p">())</span>  <span class="c1"># using viewbox here requires accwidgets &gt;= 3.0.11</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setBackground</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_show_grid</span><span class="p">(</span><span class="n">GridOrientationOptions</span><span class="o">.</span><span class="n">Both</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ZoomingViewBox">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.ZoomingViewBox">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ZoomingViewBox</span><span class="p">(</span><span class="n">ExViewBox</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; ViewBox that imitates the behavior of the Java-GUI a bit more closely than the default. &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMouseMode</span><span class="p">(</span><span class="n">ZoomingViewBox</span><span class="o">.</span><span class="n">RectMode</span><span class="p">)</span>  <span class="c1"># mode that makes zooming rectangles</span>
+
+    <span class="c1"># Look and Feel ------------------------------------------------------------</span>
+<div class="viewcode-block" id="ZoomingViewBox.suggestPadding">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.ZoomingViewBox.suggestPadding">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">suggestPadding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Suggests padding (between the data and the axis) for the autoRange function. </span>
+<span class="sd">        For our purposes, we do not want any padding on the x-axis. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>  <span class="c1"># disable padding for x axis</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">suggestPadding</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Mouse Events -------------------------------------------------------------</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mouseClickEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev</span><span class="p">:</span> <span class="n">mouseEvents</span><span class="o">.</span><span class="n">MouseClickEvent</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">MouseButton</span><span class="o">.</span><span class="n">MiddleButton</span><span class="p">:</span>
+            <span class="n">ev</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auto_zoom</span><span class="p">()</span>
+            <span class="k">return</span> 
+
+        <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">MouseButton</span><span class="o">.</span><span class="n">RightButton</span><span class="p">:</span>
+            <span class="n">ev</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">KeyboardModifier</span><span class="o">.</span><span class="n">AltModifier</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">raiseContextMenu</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">undo_zoom</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="n">ev</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">KeyboardModifier</span><span class="o">.</span><span class="n">ShiftModifier</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseClickEvent</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
+        
+    <span class="k">def</span><span class="w"> </span><span class="nf">mouseDoubleClickEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev</span><span class="p">:</span> <span class="n">QGraphicsSceneMouseEvent</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">MouseButton</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">:</span>
+            <span class="n">ev</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undo_zoom</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="n">ev</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">KeyboardModifier</span><span class="o">.</span><span class="n">ShiftModifier</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseDoubleClickEvent</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
+
+    <span class="c1"># Zoom History -------------------------------------------------------------</span>
+<div class="viewcode-block" id="ZoomingViewBox.undo_zoom">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.ZoomingViewBox.undo_zoom">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">undo_zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Go back in zoom history. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axHistoryPointer</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enableAutoRange</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axHistoryPointer</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_view</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="c1"># Go back to the first zoom</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scaleHistory</span><span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axHistory</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="c1"># go one step back</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaleHistory</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ZoomingViewBox.save_view">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.ZoomingViewBox.save_view">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Save the current view to the zoom history. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axHistoryPointer</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axHistory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axHistory</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">axHistoryPointer</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">viewRect</span><span class="p">()]</span></div>
+
+
+    <span class="c1"># Auto Zoom ----------------------------------------------------------------</span>
+<div class="viewcode-block" id="ZoomingViewBox.auto_zoom">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.ZoomingViewBox.auto_zoom">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">auto_zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Zoom to 6, 4 and 2 standard deviations and save the steps. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">nsigma</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_y_range_to_n_sigma</span><span class="p">(</span><span class="n">nsigma</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_view</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ZoomingViewBox.set_y_range_to_n_sigma">
+<a class="viewcode-back" href="../../../modules/plotting.html#omc3_gui.plotting.classes.ZoomingViewBox.set_y_range_to_n_sigma">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_y_range_to_n_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_sigma</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Set the y-range to a number of standard deviations,</span>
+<span class="sd">        assuming the data is taken from a normal distribution. &quot;&quot;&quot;</span>
+        <span class="c1"># Get the data from all curves in the viewbox</span>
+        <span class="n">all_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allChildren</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
+                <span class="n">y_data</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">yData</span>
+                <span class="k">if</span> <span class="n">y_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">all_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">y_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">all_data</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">all_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_data</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">all_data</span><span class="p">)</span>
+        <span class="n">std_dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">all_data</span><span class="p">)</span>
+
+        <span class="n">y_min</span> <span class="o">=</span> <span class="n">mean</span> <span class="o">-</span> <span class="n">n_sigma</span> <span class="o">*</span> <span class="n">std_dev</span>
+        <span class="n">y_max</span> <span class="o">=</span> <span class="n">mean</span> <span class="o">+</span> <span class="n">n_sigma</span> <span class="o">*</span> <span class="n">std_dev</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setYRange</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

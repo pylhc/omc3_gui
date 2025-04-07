@@ -1,0 +1,636 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3_gui.ui_components.dataclass_ui.controller &mdash; omc3-gui 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main GUIs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../main/sbs_gui.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../main/sbs_gui.html#main-model">Main Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../main/sbs_gui.html#measurement-model">Measurement Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../main/sbs_gui.html#measurement-view">Measurement View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../main/sbs_gui.html#segment-model">Segment Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../main/sbs_gui.html#segment-view">Segment View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../main/sbs_gui.html#defaults">Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../main/sbs_gui.html#help-dialogs">Help Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../main/sbs_gui.html#settings">Settings</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#element-line-plotter">Element Line Plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#latex-to-html-converter">Latex to HTML converter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/ui.html">UI-Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#dataclass-ui">DataClass UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#dataclass-ui-controller">DataClass UI: Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#dataclass-ui-model">DataClass UI: Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#dataclass-ui-view">DataClass UI: View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#dataclass-ui-tools">DataClass UI: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-base-classes-for-cvm">UI: Base Classes for CVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-colors">UI: Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-file-dialogs">UI: File Dialogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-item-models">UI: Item Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-message-boxes">UI: Message Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-styles">UI: Styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-text-editor-dialog">UI: Text Editor Dialog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-threads">UI: Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/ui.html#ui-widgets">UI: Widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#counter">Counter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#iterable-classes">Iterable Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#logging">Logging</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">omc3-gui</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3_gui.ui_components.dataclass_ui.controller</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3_gui.ui_components.dataclass_ui.controller</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">DataClass UI: Controller</span>
+<span class="sd">------------------------</span>
+
+<span class="sd">This module provides classes to generate simple UI&#39;s for dataclasses,</span>
+<span class="sd">which allow to edit the values of dataclasses in an easy way.</span>
+
+<span class="sd">Use these controllers to create and steer the UI&#39;s.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">fields</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtWidgets</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components</span><span class="w"> </span><span class="kn">import</span> <span class="n">colors</span><span class="p">,</span> <span class="n">file_dialogs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components.dataclass_ui</span><span class="w"> </span><span class="kn">import</span> <span class="n">view</span><span class="p">,</span> <span class="n">model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components.dataclass_ui.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldUIDef</span><span class="p">,</span> <span class="n">FilePath</span><span class="p">,</span> <span class="n">DirectoryPath</span>  <span class="c1"># noqa: F401 paths need to be known by `get_dataclass_types`  </span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3_gui.ui_components.widgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">HorizontalSeparator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_type_hints</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FieldUI">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.FieldUI">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FieldUI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Controller for a single field in a dataclass, connecting it to a widget.</span>
+<span class="sd">    </span>
+<span class="sd">    This class is not meant to be used directly, but is rather automatically</span>
+<span class="sd">    generated by and attached to :class:`omc3_gui.utils.dataclass_ui.controller.DataClassUI`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span>  <span class="c1"># edit-widget to edit field value</span>
+    <span class="n">label</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span>    <span class="c1"># label-widget of the field</span>
+    <span class="n">get_value</span><span class="p">:</span> <span class="n">Callable</span>        <span class="c1"># getter for the widget value, returns the value as appropriate type for the dataclass</span>
+    <span class="n">set_value</span><span class="p">:</span> <span class="n">Callable</span>        <span class="c1"># setter for the widget value</span>
+    <span class="n">text_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">TEXT_DARK</span>  <span class="c1"># default text-color for both widget and label</span>
+    <span class="n">modified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>     <span class="c1"># flag indicating if the widget-content has been modified by the user</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Connects the widget to the label and sets the text-color. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">main_attribute</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">main_attribute</span><span class="si">}</span><span class="s2">Changed&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">signal</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_changed</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;color: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;QLabel </span><span class="se">{{</span><span class="s2">color: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span><span class="p">)</span> 
+
+<div class="viewcode-block" id="FieldUI.has_changed">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.FieldUI.has_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Triggered when the widget has been modified.</span>
+<span class="sd">        Sets then the modified flag and changes label font.</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">font</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setItalic</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="FieldUI.reset">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.FieldUI.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Reset the label font to normal and clear the modified flag. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">font</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setItalic</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DataClassUI">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.DataClassUI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataClassUI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Controller for the UI representation of a dataclass. </span>
+<span class="sd">    It contains a grid-layout that can be added to any QWidget/QLayout.   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                <span class="n">field_definitions</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">FieldUIDef</span><span class="p">],</span> 
+                <span class="n">dclass</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="nb">object</span><span class="p">,</span> 
+                <span class="n">layout</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLayout</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Builds a DataClassUI from a list of field definitions.</span>
+
+<span class="sd">        NOTE: `dclass` is not automatically attached to the resulting class, unless it is an already an instance.</span>
+<span class="sd">        This function works with classes and instances, but the attached object needs to be the instance.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            field_def (Sequence[FieldUIDef | str]): list of field definitions</span>
+<span class="sd">            dclass (type | object): DataClass type or instance.</span>
+<span class="sd">            layout (QtWidgets.QLayout | None): Layout to add the UI to. If None, a new grid-layout is created.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataClassUI: An instances with a grid-layout containing edit-widgets and labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dclass</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">else</span> <span class="n">dclass</span>  <span class="c1"># dataclass instance </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span> <span class="o">=</span> <span class="n">layout</span>  <span class="c1"># final layout of the UI for dataclass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldUI</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># stored field UI-elements</span>
+
+        <span class="n">field_instances</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">field</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="n">dclass</span><span class="p">)}</span>
+        <span class="n">field_types</span> <span class="o">=</span> <span class="n">get_dataclass_types</span><span class="p">(</span>
+            <span class="n">dclass</span><span class="p">,</span> 
+            <span class="p">[</span>
+                <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">field_definitions</span> 
+                <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">field_instances</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+             <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="c1"># </span>
+        
+        <span class="k">for</span> <span class="n">idx_row</span><span class="p">,</span> <span class="n">field_def</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">field_definitions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">field_def</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Separator ---</span>
+                <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">HorizontalSeparator</span><span class="p">(),</span> <span class="n">idx_row</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field_def</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Label only ---</span>
+                <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="n">field_def</span><span class="p">),</span> <span class="n">idx_row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">continue</span>
+            
+            <span class="k">if</span> <span class="n">field_def</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field_instances</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field_def</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found in dataclass </span><span class="si">{</span><span class="n">dclass</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">field_inst</span> <span class="o">=</span> <span class="n">field_instances</span><span class="p">[</span><span class="n">field_def</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            
+            <span class="c1"># Label ---</span>
+            <span class="n">qlabel</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="n">field_def</span><span class="o">.</span><span class="n">label</span> <span class="ow">or</span> <span class="n">field_inst</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">field_def</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">qlabel</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">field_def</span><span class="o">.</span><span class="n">comment</span> <span class="ow">or</span> <span class="n">field_inst</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;comment&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">qlabel</span><span class="p">,</span> <span class="n">idx_row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            
+            <span class="c1"># User input ---</span>
+            <span class="c1"># If field_def.type is not given, use evaluate from dataclass. </span>
+            <span class="c1"># Check __args__ in case of Union/Optional and use first one.</span>
+            <span class="c1"># The type needs to be instanciable!</span>
+            <span class="n">eval_type</span> <span class="o">=</span> <span class="n">field_types</span><span class="p">[</span><span class="n">field_def</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>  <span class="c1"># evaluated type, might be Optional/Union etc with __args__</span>
+            <span class="n">field_type</span> <span class="o">=</span> <span class="n">field_def</span><span class="o">.</span><span class="n">pytype</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">eval_type</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">eval_type</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>  
+
+            <span class="n">widget</span> <span class="o">=</span> <span class="n">TYPE_TO_WIDGET_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">)()</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="ow">not</span> <span class="n">field_def</span><span class="o">.</span><span class="n">editable</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">field_def</span><span class="o">.</span><span class="n">editable</span><span class="p">)</span>
+
+            <span class="n">get_value</span><span class="p">,</span> <span class="n">set_value</span> <span class="o">=</span> <span class="n">build_getter_setter</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">field_type</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">field_def</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">FieldUI</span><span class="p">(</span>
+                <span class="n">widget</span><span class="o">=</span><span class="n">widget</span><span class="p">,</span> 
+                <span class="n">label</span><span class="o">=</span><span class="n">qlabel</span><span class="p">,</span>
+                <span class="n">set_value</span><span class="o">=</span><span class="n">set_value</span><span class="p">,</span>
+                <span class="n">get_value</span><span class="o">=</span><span class="n">get_value</span><span class="p">,</span>
+                <span class="n">text_color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">TEXT_DARK</span> <span class="k">if</span> <span class="n">field_def</span><span class="o">.</span><span class="n">editable</span> <span class="k">else</span> <span class="n">colors</span><span class="o">.</span><span class="n">GREYED_OUT_TEXT_DARK</span>
+            <span class="p">)</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">Path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">field_def</span><span class="o">.</span><span class="n">editable</span><span class="p">:</span>
+                <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">idx_row</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">idx_row</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># Add Path selection button ---</span>
+                <span class="n">button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">field_type</span> <span class="ow">is</span> <span class="n">model</span><span class="o">.</span><span class="n">FilePath</span><span class="p">:</span>
+                    <span class="n">dialog</span> <span class="o">=</span> <span class="n">file_dialogs</span><span class="o">.</span><span class="n">OpenFileDialog</span>
+                <span class="k">elif</span> <span class="n">field_type</span> <span class="ow">is</span> <span class="n">model</span><span class="o">.</span><span class="n">DirectoryPath</span><span class="p">:</span>
+                    <span class="n">dialog</span> <span class="o">=</span> <span class="n">file_dialogs</span><span class="o">.</span><span class="n">OpenDirectoryDialog</span> 
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dialog</span> <span class="o">=</span> <span class="n">file_dialogs</span><span class="o">.</span><span class="n">OpenAnySingleDialog</span>
+
+                <span class="n">button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span>
+                    <span class="n">run_dialog</span><span class="p">,</span> 
+                    <span class="n">dialog</span><span class="o">=</span><span class="n">dialog</span><span class="p">,</span>
+                    <span class="n">get_value</span><span class="o">=</span><span class="n">get_value</span><span class="p">,</span>
+                    <span class="n">set_value</span><span class="o">=</span><span class="n">set_value</span><span class="p">))</span>
+                <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">button</span><span class="p">,</span> <span class="n">idx_row</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_ui</span><span class="p">()</span>  <span class="c1"># fill with values from the instance</span>
+
+<div class="viewcode-block" id="DataClassUI.reset_labels">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.DataClassUI.reset_labels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Resets all labels to indicate that the field shows the currently set value in the dataclass.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="DataClassUI.update_widget_from_model">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.DataClassUI.update_widget_from_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_widget_from_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Updates the edit-widget of the given field from the dataclass values. </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of the field in the dataclass</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No dataclass instance attached to the UI.&quot;</span><span class="p">)</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="DataClassUI.update_model_from_widget">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.DataClassUI.update_model_from_widget">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_model_from_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Updates the dataclass value of the given field from the edit-widget. </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of the field in the dataclass</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No dataclass instance attached to the UI.&quot;</span><span class="p">)</span>
+
+        <span class="n">field</span><span class="p">:</span> <span class="n">FieldUI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">modified</span><span class="p">:</span>  <span class="c1"># avoid replacing &#39;None&#39; with widget defaults</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> was not modified.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> 
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataClassUI.update_ui">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.DataClassUI.update_ui">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Updates all edit-widgets from the dataclass values. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_widget_from_model</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataClassUI.update_model">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.DataClassUI.update_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Updates all dataclass fields from the current edit-widget values. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_model_from_widget</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataClassUI.validate">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.DataClassUI.validate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">only_modified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Checks all edit-widgets for valid choices. </span>
+<span class="sd">        </span>
+<span class="sd">        The validation function NEED to return a truthy value, if </span>
+<span class="sd">        the choice is valid. If it is invalid, they can either return a falsy</span>
+<span class="sd">        value or raise an exception. In the latter case, this exception will be</span>
+<span class="sd">        printed instead of the default message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No dataclass instance attached to the UI.&quot;</span><span class="p">)</span>
+
+        <span class="n">invalid_fields_str</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__dataclass_fields__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">field_ui</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">only_modified</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">field_ui</span><span class="o">.</span><span class="n">modified</span><span class="p">:</span>
+                <span class="k">continue</span>
+            
+            <span class="n">validate_function</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;validate&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">validate_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+
+                <span class="n">validation_result</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">try</span><span class="p">:</span> 
+                    <span class="n">validation_result</span> <span class="o">=</span> <span class="n">validate_function</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">invalid_fields_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field_ui</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span> 
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">validation_result</span><span class="p">:</span>
+                        <span class="n">invalid_fields_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field_ui</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid choice.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">invalid_fields_str</span><span class="p">:</span>
+            <span class="n">full_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">invalid_fields_str</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The following fields contain wrong values:</span><span class="se">\n</span><span class="si">{</span><span class="n">full_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DataClassTabbedUI">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.DataClassTabbedUI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataClassTabbedUI</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Controller for the UI representation of a dataclass, containing other dataclasses as fields. </span>
+<span class="sd">    It contains a tabbed layout that can be added to any QWidget.   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                <span class="n">dclass</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="nb">type</span><span class="p">,</span> 
+                <span class="n">layout</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLayout</span>  <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                <span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QTabWidget</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Builds a DataClassTabbedUI from a dataclass, using DataClassUIs as widgets in the tabs.</span>
+<span class="sd">        NOTE: As with the DataClassUI, the dataclass (`dclass`) is not automatically</span>
+<span class="sd">              attached to the resulting class, </span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            dclass (object | type): dataclass instance or class. </span>
+<span class="sd">                                    Needs to contain dataclasses as fields, which will converted to tabs.</span>
+<span class="sd">            layout (QtWidgets.QLayout | None): Layout to add the UI widget to. </span>
+<span class="sd">                                               If None, a new QVBoxLayout is created.</span>
+<span class="sd">            widget (QtWidgets.QTabWidget | None): TabWidget to add the UI tabs to.</span>
+<span class="sd">                                                  If None, a new QTabWidget is created.</span>
+<span class="sd">                                                  The widget is always added to the layout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLayout</span> <span class="o">=</span> <span class="n">layout</span> <span class="ow">or</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QTabWidget</span> <span class="o">=</span> <span class="n">widget</span> <span class="ow">or</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QTabWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dataclass_uis</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataClassUI</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">dc</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">dclass</span><span class="p">)</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;_&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">sub_dclass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dclass</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)</span>
+            <span class="n">dataclass_ui</span> <span class="o">=</span> <span class="n">DataClassUI</span><span class="p">(</span>
+                <span class="n">field_definitions</span><span class="o">=</span><span class="p">[</span><span class="n">FieldUIDef</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">dc</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">sub_dclass</span><span class="p">)</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;_&quot;</span><span class="p">],</span>
+                <span class="n">dclass</span><span class="o">=</span><span class="n">sub_dclass</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ui_widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
+            <span class="n">ui_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">dataclass_ui</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">ui_widget</span><span class="p">,</span> <span class="n">field_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dataclass_uis</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclass_ui</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dclass</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">dclass</span>  <span class="c1"># also updates ui with values</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+    
+    <span class="nd">@model</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Sets the model and updates the dataclass_uis. </span>
+<span class="sd">        This does not add new dataclass_uis to the layout and throws errors </span>
+<span class="sd">        if fields in the model are missing. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dataclass_ui</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataclass_uis</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dataclass_ui</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">dataclass_ui</span><span class="o">.</span><span class="n">update_ui</span><span class="p">()</span>
+
+    <span class="c1"># Function to pass on to dataclass_uis ---</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">dataclass_ui</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataclass_uis</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">dataclass_ui</span><span class="o">.</span><span class="n">update_ui</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">dataclass_ui</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataclass_uis</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">dataclass_ui</span><span class="o">.</span><span class="n">update_model</span><span class="p">()</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">only_modified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">dataclass_ui</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataclass_uis</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">dataclass_ui</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">only_modified</span><span class="o">=</span><span class="n">only_modified</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">dataclass_ui</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataclass_uis</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">dataclass_ui</span><span class="o">.</span><span class="n">reset_labels</span><span class="p">()</span></div>
+
+
+
+<span class="c1"># Helpers for getter/setter and widget type ------------------------------------</span>
+
+<span class="n">TYPE_TO_WIDGET_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nb">int</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">QFullIntSpinBox</span><span class="p">,</span>  <span class="c1"># Maybe just use QLineEdit as well?</span>
+    <span class="nb">float</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">,</span>
+    <span class="nb">str</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">,</span>
+    <span class="n">Path</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">,</span>
+    <span class="nb">bool</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QCheckBox</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="build_getter_setter">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.build_getter_setter">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_getter_setter</span><span class="p">(</span><span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">field_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Getter/Setter Factory for widgets. </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        widget (QtWidgets.QWidget): The widget to get/set the value of.</span>
+<span class="sd">        field_type (type): The type of the dataclass field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QCheckBox</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">widget</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">set_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSpinBox</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">field_type</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">set_value</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        
+    <span class="k">else</span><span class="p">:</span>   <span class="c1"># Any kind of widget should be able to handle strings.      </span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">widget</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">field_type</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">set_value</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">get_value</span><span class="p">,</span> <span class="n">set_value</span>        </div>
+
+
+
+<div class="viewcode-block" id="run_dialog">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.run_dialog">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_dialog</span><span class="p">(</span><span class="n">dialog</span><span class="p">:</span> <span class="n">file_dialogs</span><span class="o">.</span><span class="n">OpenFilesDialog</span><span class="p">,</span> <span class="n">get_value</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">set_value</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Asks the user to select a directory/file, using the `get_value` function </span>
+<span class="sd">    o determine the default directory and passing the result to `set_value` if not `None`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dialog (file_dialogs.OpenFilesDialog): The dialog to run.</span>
+<span class="sd">        get_value (Callable): The function to get the last value, e.g. from a widget.</span>
+<span class="sd">        set_value (Callable): The function to set the value returned from the dialog.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">old_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">old_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">old_path</span><span class="o">.</span><span class="n">parent</span> 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">old_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span> 
+    <span class="n">path</span> <span class="o">=</span> <span class="n">dialog</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">old_path</span><span class="p">)</span><span class="o">.</span><span class="n">run_selection_dialog</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">set_value</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_dataclass_types">
+<a class="viewcode-back" href="../../../../modules/ui.html#omc3_gui.ui_components.dataclass_ui.controller.get_dataclass_types">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_dataclass_types</span><span class="p">(</span><span class="n">dclass</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="nb">object</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Returns a dictionary mapping field names to their associated types.</span>
+
+<span class="sd">    Why this weird way?</span>
+<span class="sd">    First of all, we avoided the cyclic imports of type-hints by using </span>
+<span class="sd">    the `from __future__ import annotations`, but whith </span>
+<span class="sd">    this, all type-hints on the dataclasses become `ForwardReferences`, </span>
+<span class="sd">    i.e. strings. So if we get them from the dataclass-fields</span>
+<span class="sd">    via `field.pytype` or `field.pytype.__args__`, we cannot instanciate them later on.</span>
+
+<span class="sd">    `get_type_hints()` from `typing` solves this problem, but it </span>
+<span class="sd">    evaluates the type-hints of all fields in the dataclass. </span>
+<span class="sd">    But this can cause again import errors, because the classes were not actually imported</span>
+<span class="sd">    (this is why there are no cyclic imports)!</span>
+
+<span class="sd">    So this function allows using `get_type_hints()` on the dataclass </span>
+<span class="sd">    itself, but only gets the types of the fields that we need, in the hopes </span>
+<span class="sd">    that there is no import problem with those.</span>
+<span class="sd">    </span>
+<span class="sd">    In the use-case of the DataClass UI here, we should only have very basic </span>
+<span class="sd">    types for the fields, so this should be fine.</span>
+<span class="sd">    </span>
+<span class="sd">    If you are here because there is, you need to redesign your dataclass/imports.</span>
+<span class="sd">    Sorry.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dclass (type): The data class to extract field types from.</span>
+<span class="sd">        names (Sequence[str]): The names of the fields to extract types from.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict[str, type]: A dictionary mapping field names to their associated types. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">required_annotations</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">dclass</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span>
+    <span class="p">}</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">SafeMock</span><span class="p">:</span>
+        <span class="vm">__annotations__</span> <span class="o">=</span> <span class="n">required_annotations</span>
+    <span class="k">return</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">SafeMock</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
