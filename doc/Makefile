@@ -47,11 +47,6 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-josch:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) ~/Software/Documentation/omc3_gui-doc
-	@echo
-	@echo "Build finished. The HTML pages are in ~/Software/Documentation/omc3_gui-doc."
-
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo
