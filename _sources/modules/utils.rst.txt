@@ -3,12 +3,12 @@ Utilities
 
 .. automodule:: omc3_gui.utils.counter
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.utils.iteration_classes
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.utils.log_handler
     :members:
-    :noindex:
+    :no-index-entry:

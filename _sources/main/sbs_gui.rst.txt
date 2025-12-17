@@ -3,48 +3,48 @@ Segment-by-Segment
 
 .. automodule:: omc3_gui.sbs_gui
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.main_controller
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.main_model
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.main_view
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.measurement_model
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.measurement_view
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.segment_model
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.segment_view
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.defaults
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.help_view
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.plotting
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.segment_by_segment.settings
     :members:
-    :noindex:
+    :no-index-entry:

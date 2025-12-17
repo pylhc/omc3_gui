@@ -3,16 +3,16 @@ Plotting
 
 .. automodule:: omc3_gui.plotting.classes
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.plotting.element_lines
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.plotting.latex_to_html
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.plotting.tfs_plotter
     :members:
-    :noindex:
+    :no-index-entry:
