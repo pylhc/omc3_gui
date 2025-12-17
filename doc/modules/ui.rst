@@ -3,58 +3,58 @@ UI-Components
 
 .. automodule:: omc3_gui.ui_components.dataclass_ui
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.dataclass_ui.controller
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.dataclass_ui.model
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.dataclass_ui.view
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.dataclass_ui.tools
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.base_classes_cvm
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.colors
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.file_dialogs
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.item_models
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3_gui.ui_components.message_boxes
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.styles
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.text_editor
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.threads
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3_gui.ui_components.widgets
     :members:
-    :noindex:
+    :no-index-entry:
 
