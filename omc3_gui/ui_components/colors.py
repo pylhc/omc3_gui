@@ -1,10 +1,10 @@
-""" 
+"""
 UI: Colors
 ----------
 
 This module contains the color definitions for the application.
 All colors should be defined here for consistency and the elements
-will then refer to the main color-constants, e.g. `colors.TEXT_DARK` 
+will then refer to the main color-constants, e.g. `colors.TEXT_DARK`
 (not to the colors themselves).
 This allows for a unified look and feel.
 """
@@ -72,9 +72,20 @@ TOOLTIP_BORDER: str = BLACK_38
 
 # Logging ---
 LOGGING: dict[int, str] = {
-    logging.DEBUG: BLACK_26,        # default: black 
-    logging.INFO: BLACK_87,         # default: green
+    logging.DEBUG: BLACK_26,  # default: black
+    logging.INFO: BLACK_87,  # default: green
     # logging.WARNING: ORANGE_LIGHT,  # default: orange
     # logging.ERROR: RED_DARK,        # default: red
-    # logging.CRITICAL: CORAL,   
+    # logging.CRITICAL: CORAL,
 }
+
+# Plotting ---
+PLOT_SERIES_COLORS: tuple[str, ...] = (
+    "#1f77b4",
+    "#d62728",
+    "#2ca02c",
+    "#9467bd",
+    "#ff7f0e",
+    "#17becf",
+    "#8c564b",
+)

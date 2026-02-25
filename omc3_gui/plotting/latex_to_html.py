@@ -85,6 +85,8 @@ def latex_to_html_converter(latex_str: str) -> str:
         html_str = html_str.replace(latex, html)
     
     # Other HTML formatting like superscript/subscript, fractions, etc.
+    html_str = re.sub(r'\^{([^}]*)}', r'<sup>\1</sup>', html_str)
+    html_str = re.sub(r'\^(.)', r'<sup>\1</sup>', html_str)
     html_str = re.sub(r'_{([^}]*)}', r'<sub>\1</sub>', html_str)
     html_str = re.sub(r'_(.)', r'<sub>\1</sub>', html_str)
     html_str = re.sub(r'\\frac{([^}]*)}{([^}]*)}', r'<sup>\1</sup>/<sub>\2</sub>', html_str)
