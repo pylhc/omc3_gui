@@ -213,7 +213,7 @@ def run_optimisation_job(payload: dict[str, object]) -> dict[str, object]:
         )
     )
 
-    results, uncertainties, fitted_deltaps = optimise_ranges(
+    results, uncertainties, fitted_deltaps, e_ref = optimise_ranges(
         range_config=range_config,
         range_type="arc",
         beam=beam,
