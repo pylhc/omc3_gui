@@ -234,4 +234,5 @@ def run_optimisation_job(payload: dict[str, object]) -> dict[str, object]:
         "deltap": [float(v) for v in results],
         "uncertainties": [float(v) for v in uncertainties],
         "fitted_deltaps": [float(v) for v in fitted_deltaps],
+        "e_ref": e_ref,
     }

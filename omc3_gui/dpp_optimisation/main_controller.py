@@ -116,9 +116,10 @@ class OptimisationTabContext:
     remote_corrector_knobs_file: str | None = None
     remote_measurement_datafile: str | None = None
     optimisation_results_file: Path | None = None
-    latest_deltap_wrt_6800_results: list[float] = dataclasses.field(default_factory=list)
+    latest_deltap_wrt_ref_results: list[float] = dataclasses.field(default_factory=list)
     latest_fitted_deltap_wrt_model_energy: list[float] = dataclasses.field(default_factory=list)
     latest_model_energy_gev: float | None = None
+    latest_ref_energy: float | None = None
     prepare_inputs_running: bool = False
     fixed_bpm_enabled: bool = False
     temp_work_dir: tempfile.TemporaryDirectory | None = None
@@ -166,6 +167,7 @@ class DppOptimisationController(BaseController):
         ("_remote_measurement_datafile", "remote_measurement_datafile"),
         ("_optimisation_results_file", "optimisation_results_file"),
         ("_latest_model_energy_gev", "latest_model_energy_gev"),
+        ("_latest_ref_energy", "latest_ref_energy"),
         ("_prepare_inputs_running", "prepare_inputs_running"),
         ("_temp_work_dir", "temp_work_dir"),
     )
@@ -176,7 +178,7 @@ class DppOptimisationController(BaseController):
     )
     _TAB_STATE_LIST_FIELDS = (
         ("_bad_bpms", "bad_bpms"),
-        ("_latest_deltap_wrt_6800_results", "latest_deltap_wrt_6800_results"),
+        ("_latest_deltap_wrt_ref_results", "latest_deltap_wrt_ref_results"),
         (
             "_latest_fitted_deltap_wrt_model_energy",
             "latest_fitted_deltap_wrt_model_energy",
@@ -218,9 +220,10 @@ class DppOptimisationController(BaseController):
         self._remote_measurement_datafile: str | None = None
         self._temp_work_dir: tempfile.TemporaryDirectory | None = None
         self._optimisation_results_file: Path | None = None
-        self._latest_deltap_wrt_6800_results: list[float] = []
+        self._latest_deltap_wrt_ref_results: list[float] = []
         self._latest_fitted_deltap_wrt_model_energy: list[float] = []
         self._latest_model_energy_gev: float | None = None
+        self._latest_ref_energy: float | None = None
         self._prepare_inputs_running = False
         self._optimisation_running = False
         self._results_plot_dialog: QtWidgets.QDialog | None = None
@@ -451,9 +454,10 @@ class DppOptimisationController(BaseController):
     def _reset_optimisation_results_state(self):
         """Reset stored optimisation results and metadata."""
         self._optimisation_results_file = None
-        self._latest_deltap_wrt_6800_results = []
+        self._latest_deltap_wrt_ref_results = []
         self._latest_fitted_deltap_wrt_model_energy = []
         self._latest_model_energy_gev = None
+        self._latest_ref_energy = None
 
     def _reset_run_artifacts(self):
         """Reset generated artefacts that depend on current inputs/context."""
@@ -495,7 +499,7 @@ class DppOptimisationController(BaseController):
         ctx.measurement_datafile = None
         cls._clear_tab_remote_artifacts(ctx)
         ctx.optimisation_results_file = None
-        ctx.latest_deltap_wrt_6800_results = []
+        ctx.latest_deltap_wrt_ref_results = []
         ctx.latest_fitted_deltap_wrt_model_energy = []
         ctx.latest_model_energy_gev = None
         cls._reset_tab_action_info(ctx)
@@ -527,7 +531,7 @@ class DppOptimisationController(BaseController):
         plot.setLabel("bottom", "Arc", color=colors.TEXT_DARK)
         plot.setLabel(
             "left",
-            latex_to_html_converter(r"$\Delta p$ (w.r.t. 6800 GeV)"),
+            latex_to_html_converter(r"$\Delta p$ (w.r.t. " + str(int(ref_energy)) + " GeV)"),
             color=colors.TEXT_DARK,
         )
         plot.getAxis("left").setPen(pg.mkPen(colors.TEXT_DARK))
@@ -2414,7 +2418,7 @@ class DppOptimisationController(BaseController):
             for idx, ctx in enumerate(self._optimisation_tabs)
             if (
                 (ctx.optimisation_results_file is not None and ctx.optimisation_results_file.exists())
-                or ctx.latest_deltap_wrt_6800_results
+                or ctx.latest_deltap_wrt_ref_results
             )
         ]
         if not available_tabs:
@@ -2430,7 +2434,7 @@ class DppOptimisationController(BaseController):
                 return [DppOptimisationController._format_deltap_value(value) for value in values]
 
         dialog = QtWidgets.QDialog(self._view)
-        dialog.setWindowTitle("Delta-p (w.r.t. 6800 GeV) vs Arc")
+        dialog.setWindowTitle(f"Delta-p (w.r.t. {int(ref_energy)} GeV) vs Arc")
         dialog.resize(1100, 620)
         layout = QtWidgets.QHBoxLayout(dialog)
 
@@ -2478,7 +2482,7 @@ class DppOptimisationController(BaseController):
             for i, tab_index in enumerate(selected_indices):
                 tab_ctx = self._optimisation_tabs[tab_index]
                 parsed = self._read_deltap_results_for_context(tab_ctx)
-                y_values = parsed["deltap_wrt_6800_values"]
+                y_values = parsed["deltap_wrt_ref_values"]
                 if not y_values:
                     continue
                 x_values = list(range(1, len(y_values) + 1))
@@ -2497,12 +2501,12 @@ class DppOptimisationController(BaseController):
                 table_rows.append(
                     (
                         label,
-                        self._format_deltap_value(float(parsed["mean_wrt_6800"])),
-                        self._format_deltap_value(float(parsed["stderr_wrt_6800"])),
+                        self._format_deltap_value(float(parsed["mean_wrt_ref"])),
+                        self._format_deltap_value(float(parsed["stderr_wrt_ref"])),
                         results_path,
                     )
                 )
-            title_latex = r"Measured $\Delta p$ w.r.t. 6800 GeV vs Arc"
+            title_latex = f"Measured $\\Delta p$ w.r.t. {int(ref_energy)} GeV vs Arc"
             plot.setTitle(latex_to_html_converter(title_latex), color=colors.BLACK)
 
             info_table.setRowCount(len(table_rows))
@@ -2543,8 +2547,10 @@ class DppOptimisationController(BaseController):
             OptimisationTabContext(
                 name="current",
                 optimisation_results_file=self._optimisation_results_file,
-                latest_deltap_wrt_6800_results=self._latest_deltap_wrt_6800_results,
+                latest_deltap_wrt_ref_results=self._latest_deltap_wrt_ref_results,
+                latest_fitted_deltap_wrt_model_energy=self._latest_fitted_deltap_wrt_model_energy,
                 latest_model_energy_gev=self._latest_model_energy_gev,
+                latest_ref_energy=self._latest_ref_energy,
             )
         )
 
@@ -2554,9 +2560,10 @@ class DppOptimisationController(BaseController):
     ) -> dict[str, float | list[float]]:
         """Read plotting values from one tab context."""
         values: list[float] = []
-        mean_wrt_6800: float | None = None
-        stderr_wrt_6800: float | None = None
+        mean_wrt_ref: float | None = None
+        stderr_wrt_ref: float | None = None
         model_energy_gev: float | None = None
+        ref_energy: float | None = None
         deltap_col_idx: int | None = None
 
         results_file = context.optimisation_results_file
@@ -2572,6 +2579,11 @@ class DppOptimisationController(BaseController):
                             model_energy_gev = float(parts[1].strip())
                         except ValueError:
                             pass
+                    if len(parts) >= 2 and parts[0].strip() == "output_energy_reference_GeV":
+                        try:
+                            ref_energy = float(parts[1].strip())
+                        except ValueError:
+                            pass
                     continue
 
                 fields = line.split("\t")
@@ -2580,8 +2592,9 @@ class DppOptimisationController(BaseController):
                 lower_fields = [field.strip().lower() for field in fields]
 
                 if key.lower() == "range":
-                    if "deltap_wrt_6800gev" in lower_fields:
-                        deltap_col_idx = lower_fields.index("deltap_wrt_6800gev")
+                    deltap_col_name = f"deltap_wrt_{int(ref_energy)}gev" if ref_energy is not None else "deltap_wrt_6800gev"
+                    if deltap_col_name in lower_fields:
+                        deltap_col_idx = lower_fields.index(deltap_col_name)
                     elif "deltap" in lower_fields:
                         deltap_col_idx = lower_fields.index("deltap")
                     else:
@@ -2599,40 +2612,45 @@ class DppOptimisationController(BaseController):
                         continue
                     continue
 
-                if key in ("MeanDeltaP_wrt_6800GeV", "MeanArcs") and value:
+                mean_key = f"MeanDeltaP_wrt_{int(ref_energy)}GeV" if ref_energy is not None else "MeanDeltaP_wrt_6800GeV"
+                if key in (mean_key, "MeanArcs") and value:
                     try:
-                        mean_wrt_6800 = float(value)
+                        mean_wrt_ref = float(value)
                     except ValueError:
                         pass
                     continue
 
-                if key in ("StdErrDeltaP_wrt_6800GeV", "StdErrArcs") and value:
+                stderr_key = f"StdErrDeltaP_wrt_{int(ref_energy)}GeV" if ref_energy is not None else "StdErrDeltaP_wrt_6800GeV"
+                if key in (stderr_key, "StdErrArcs") and value:
                     try:
-                        stderr_wrt_6800 = float(value)
+                        stderr_wrt_ref = float(value)
                     except ValueError:
                         pass
                     continue
 
         # Fallbacks only for missing values not available in the file.
         if not values:
-            values = list(context.latest_deltap_wrt_6800_results)
-        if mean_wrt_6800 is None and values:
-            mean_wrt_6800 = float(pd.Series(values).mean())
-        if stderr_wrt_6800 is None and values:
+            values = list(context.latest_deltap_wrt_ref_results)
+        if mean_wrt_ref is None and values:
+            mean_wrt_ref = float(pd.Series(values).mean())
+        if stderr_wrt_ref is None and values:
             std = float(pd.Series(values).std(ddof=0))
-            stderr_wrt_6800 = std / (len(values) ** 0.5)
+            stderr_wrt_ref = std / (len(values) ** 0.5)
         if model_energy_gev is None:
             model_energy_gev = (
                 context.latest_model_energy_gev
                 if context.latest_model_energy_gev is not None
                 else float("nan")
             )
+        if ref_energy is None:
+            ref_energy = 6800.0  # default
 
         return {
-            "deltap_wrt_6800_values": values,
-            "mean_wrt_6800": mean_wrt_6800 if mean_wrt_6800 is not None else float("nan"),
-            "stderr_wrt_6800": stderr_wrt_6800 if stderr_wrt_6800 is not None else float("nan"),
+            "deltap_wrt_ref_values": values,
+            "mean_wrt_ref": mean_wrt_ref if mean_wrt_ref is not None else float("nan"),
+            "stderr_wrt_ref": stderr_wrt_ref if stderr_wrt_ref is not None else float("nan"),
             "model_energy_gev": model_energy_gev,
+            "ref_energy": ref_energy,
         }
 
     @Slot(int)
@@ -2712,7 +2730,7 @@ class DppOptimisationController(BaseController):
             has_model and has_analysis and has_measurements and self._datafile_created and not is_busy
         )
         self._view.enable_save_results(has_results)
-        self._view.enable_view_results(bool(self._latest_deltap_wrt_6800_results))
+        self._view.enable_view_results(bool(self._latest_deltap_wrt_ref_results))
         has_model_source_tab = any(
             idx != self._active_tab_index and ctx.model_info is not None
             for idx, ctx in enumerate(self._optimisation_tabs)

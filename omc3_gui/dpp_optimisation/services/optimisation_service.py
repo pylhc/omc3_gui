@@ -168,25 +168,26 @@ def _write_deltap_results_content(
     path: Path,
     *,
     beam_energy: float,
-    deltap_wrt_6800: list[float],
+    deltap_wrt_ref: list[float],
     uncertainties: list[float],
     fitted_deltap_wrt_model_energy: list[float],
-    mean_wrt_6800: float | None,
+    mean_wrt_ref: float | None,
     mean_fitted_wrt_model_energy: float | None,
-    std_dev_wrt_6800: float,
-    stderr_wrt_6800: float,
+    std_dev_wrt_ref: float,
+    stderr_wrt_ref: float,
+    e_ref: float,
 ):
     """Write one complete delta-p result file."""
     with path.open("w") as file:
         file.write(f"# model_energy_reference_GeV\t{beam_energy}\n")
-        file.write("# output_energy_reference_GeV\t6800.0\n")
+        file.write(f"# output_energy_reference_GeV\t{e_ref}\n")
         file.write(
             "range\t"
-            "deltap_wrt_6800GeV\t"
+            f"deltap_wrt_{int(e_ref)}GeV\t"
             "uncertainty_of_fitted_deltap\t"
             f"fitted_deltap_wrt_model_energy_{beam_energy:.1f}GeV\n"
         )
-        for idx, deltap in enumerate(deltap_wrt_6800, start=1):
+        for idx, deltap in enumerate(deltap_wrt_ref, start=1):
             unc = uncertainties[idx - 1] if idx - 1 < len(uncertainties) else float("nan")
             fitted = (
                 fitted_deltap_wrt_model_energy[idx - 1]
@@ -194,27 +195,28 @@ def _write_deltap_results_content(
                 else float("nan")
             )
             file.write(f"arc{idx}\t{deltap}\t{unc}\t{fitted}\n")
-        file.write(f"MeanDeltaP_wrt_6800GeV\t{mean_wrt_6800 if mean_wrt_6800 is not None else 'nan'}\t\t\n")
+        file.write(f"MeanDeltaP_wrt_{int(e_ref)}GeV\t{mean_wrt_ref if mean_wrt_ref is not None else 'nan'}\t\t\n")
         file.write(
             "MeanFittedDeltaP_wrt_model_energy_"
             f"{beam_energy:.1f}GeV\t"
             f"{mean_fitted_wrt_model_energy if mean_fitted_wrt_model_energy is not None else 'nan'}\t\t\n"
         )
-        file.write(f"StdDevDeltaP_wrt_6800GeV\t{std_dev_wrt_6800}\t\t\n")
-        file.write(f"StdErrDeltaP_wrt_6800GeV\t{stderr_wrt_6800}\t\t\n")
+        file.write(f"StdDevDeltaP_wrt_{int(e_ref)}GeV\t{std_dev_wrt_ref}\t\t\n")
+        file.write(f"StdErrDeltaP_wrt_{int(e_ref)}GeV\t{stderr_wrt_ref}\t\t\n")
 
 
 def _write_results_file_with_fallback(
     ctrl: DppOptimisationController,
     *,
     beam_energy: float,
-    deltap_wrt_6800: list[float],
+    deltap_wrt_ref: list[float],
     uncertainties: list[float],
     fitted_deltap_wrt_model_energy: list[float],
-    mean_wrt_6800: float | None,
+    mean_wrt_ref: float | None,
     mean_fitted_wrt_model_energy: float | None,
-    std_dev_wrt_6800: float,
-    stderr_wrt_6800: float,
+    std_dev_wrt_ref: float,
+    stderr_wrt_ref: float,
+    e_ref: float,
 ) -> tuple[Path, str]:
     """Write results to analysis dir, then fallback to temp dir if needed."""
     preferred_results_file, candidate_paths = _results_file_candidates(
@@ -230,13 +232,14 @@ def _write_results_file_with_fallback(
             _write_deltap_results_content(
                 candidate,
                 beam_energy=beam_energy,
-                deltap_wrt_6800=deltap_wrt_6800,
+                deltap_wrt_ref=deltap_wrt_ref,
                 uncertainties=uncertainties,
                 fitted_deltap_wrt_model_energy=fitted_deltap_wrt_model_energy,
-                mean_wrt_6800=mean_wrt_6800,
+                mean_wrt_ref=mean_wrt_ref,
                 mean_fitted_wrt_model_energy=mean_fitted_wrt_model_energy,
-                std_dev_wrt_6800=std_dev_wrt_6800,
-                stderr_wrt_6800=stderr_wrt_6800,
+                std_dev_wrt_ref=std_dev_wrt_ref,
+                stderr_wrt_ref=stderr_wrt_ref,
+                e_ref=e_ref,
             )
             results_file = candidate
             break
@@ -688,44 +691,46 @@ def on_run_optimisation(ctrl: DppOptimisationController):
             ctrl._raise_if_interrupted()
 
             result_payload = _payload_mapping(result_payload)
-            deltap_wrt_6800 = _payload_list_of_floats(
+            e_ref = float(result_payload["e_ref"])
+            deltap_wrt_ref = _payload_list_of_floats(
                 result_payload,
                 keys=("deltap", "deltap_wrt_6800", "delta_p"),
             )
             uncertainties = _payload_list_of_floats(
                 result_payload,
                 keys=("uncertainties", "sigma", "errors"),
-                default=[1.0] * len(deltap_wrt_6800),
+                default=[1.0] * len(deltap_wrt_ref),
             )
             fitted_deltap_wrt_model_energy = _payload_list_of_floats(
                 result_payload,
                 keys=("fitted_deltaps", "fitted_deltap_wrt_model_energy", "fitted_deltap"),
             )
-            if not deltap_wrt_6800:
+            if not deltap_wrt_ref:
                 raise RuntimeError("Optimisation completed but returned no results.")
 
-            mean = weighted_mean(deltap_wrt_6800, uncertainties)
+            mean = weighted_mean(deltap_wrt_ref, uncertainties)
             mean_fitted = weighted_mean(fitted_deltap_wrt_model_energy, uncertainties)
-            std_dev = float(pd.Series(deltap_wrt_6800).std(ddof=0))
-            stderr = std_dev / (len(deltap_wrt_6800) ** 0.5) if deltap_wrt_6800 else 0.0
+            std_dev = float(pd.Series(deltap_wrt_ref).std(ddof=0))
+            stderr = std_dev / (len(deltap_wrt_ref) ** 0.5) if deltap_wrt_ref else 0.0
 
             results_file, fallback_warning = _write_results_file_with_fallback(
                 ctrl,
                 beam_energy=beam_energy,
-                deltap_wrt_6800=deltap_wrt_6800,
+                deltap_wrt_ref=deltap_wrt_ref,
                 uncertainties=uncertainties,
                 fitted_deltap_wrt_model_energy=fitted_deltap_wrt_model_energy,
-                mean_wrt_6800=mean,
+                mean_wrt_ref=mean,
                 mean_fitted_wrt_model_energy=mean_fitted,
-                std_dev_wrt_6800=std_dev,
-                stderr_wrt_6800=stderr,
+                std_dev_wrt_ref=std_dev,
+                stderr_wrt_ref=stderr,
+                e_ref=e_ref,
             )
 
             worker_result.update(
                 {
                     "result_payload": result_payload,
                     "beam_energy": beam_energy,
-                    "deltap_wrt_6800": deltap_wrt_6800,
+                    "deltap_wrt_ref": deltap_wrt_ref,
                     "fitted_deltap_wrt_model_energy": fitted_deltap_wrt_model_energy,
                     "mean": mean,
                     "mean_fitted": mean_fitted,
@@ -734,6 +739,7 @@ def on_run_optimisation(ctrl: DppOptimisationController):
                     "magnet_knobs_path_for_info": magnet_knobs_path_for_info,
                     "corrector_knobs_path_for_info": corrector_knobs_path_for_info,
                     "fallback_warning": fallback_warning,
+                    "e_ref": e_ref,
                 }
             )
         except (SystemExit, KeyboardInterrupt):
@@ -800,14 +806,14 @@ def on_run_optimisation(ctrl: DppOptimisationController):
         info_lines = [
             "Last run: SUCCESS",
             f"Execution: {result_payload.get('source', 'unknown')}",
-            f"Arcs: {len(deltap_wrt_6800)}",
-            f"Weighted mean delta-p (w.r.t. 6800 GeV): {_format_standard_number(mean)}",
+            f"Arcs: {len(deltap_wrt_ref)}",
+            f"Weighted mean delta-p (w.r.t. {int(e_ref)} GeV): {_format_standard_number(mean)}",
             (
                 "Weighted mean fitted delta-p "
                 f"(w.r.t. model energy {beam_energy:.1f} GeV): "
                 f"{_format_standard_number(mean_fitted)}"
             ),
-            f"Std dev delta-p (w.r.t. 6800 GeV): {_format_standard_number(std_dev)}",
+            f"Std dev delta-p (w.r.t. {int(e_ref)} GeV): {_format_standard_number(std_dev)}",
             f"Magnet knobs file: {magnet_knobs_path_for_info}",
             f"Corrector knobs file: {corrector_knobs_path_for_info}",
             f"Results file: {tab_results_file}",
@@ -819,17 +825,19 @@ def on_run_optimisation(ctrl: DppOptimisationController):
         if origin_ctx_exists():
             if is_origin_tab_active():
                 ctrl._optimisation_results_file = tab_results_file
-                ctrl._latest_deltap_wrt_6800_results = deltap_wrt_6800
+                ctrl._latest_deltap_wrt_ref_results = deltap_wrt_ref
                 ctrl._latest_fitted_deltap_wrt_model_energy = fitted_deltap_wrt_model_energy
                 ctrl._latest_model_energy_gev = beam_energy
+                ctrl._latest_ref_energy = e_ref
                 ctrl._view.update_optimisation_info(info_text)
             else:
                 origin_ctx.optimisation_results_file = tab_results_file
-                origin_ctx.latest_deltap_wrt_6800_results = list(deltap_wrt_6800)
+                origin_ctx.latest_deltap_wrt_ref_results = list(deltap_wrt_ref)
                 origin_ctx.latest_fitted_deltap_wrt_model_energy = list(
                     fitted_deltap_wrt_model_energy
                 )
                 origin_ctx.latest_model_energy_gev = beam_energy
+                origin_ctx.latest_ref_energy = e_ref
                 origin_ctx.optimisation_info_text = info_text
     except InterruptedError:
         LOGGER.warning("Optimisation interrupted by user.")
