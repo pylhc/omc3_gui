@@ -523,7 +523,7 @@ class DppOptimisationController(BaseController):
         info_table.setStyleSheet(styles.readonly_table_style())
 
     @staticmethod
-    def _configure_results_plot(plot: pg.PlotWidget):
+    def _configure_results_plot(plot: pg.PlotWidget, ref_energy: float):
         """Apply common visual configuration for results plot widget."""
         plot.setBackground(colors.WHITE)
         plot.showGrid(x=True, y=True, alpha=0.25)
@@ -2429,6 +2429,16 @@ class DppOptimisationController(BaseController):
             )
             return
 
+        initial_tab_index = (
+            self._active_tab_index
+            if self._active_tab_index in available_tabs
+            else available_tabs[0]
+        )
+        initial_parsed = self._read_deltap_results_for_context(
+            self._optimisation_tabs[initial_tab_index]
+        )
+        ref_energy = float(initial_parsed["ref_energy"])
+
         class _DeltaPAxisItem(pg.AxisItem):
             def tickStrings(self, values, scale, spacing):
                 return [DppOptimisationController._format_deltap_value(value) for value in values]
@@ -2459,7 +2469,7 @@ class DppOptimisationController(BaseController):
         layout.addLayout(sidebar_layout, 0)
 
         plot = pg.PlotWidget(axisItems={"left": _DeltaPAxisItem(orientation="left")})
-        self._configure_results_plot(plot)
+        self._configure_results_plot(plot, ref_energy)
         layout.addWidget(plot, 1)
 
         color_cycle = colors.PLOT_SERIES_COLORS
@@ -2478,10 +2488,12 @@ class DppOptimisationController(BaseController):
                 info_table.setRowCount(0)
                 return
 
+            title_ref_energy = ref_energy
             table_rows: list[tuple[str, str, str, str]] = []
             for i, tab_index in enumerate(selected_indices):
                 tab_ctx = self._optimisation_tabs[tab_index]
                 parsed = self._read_deltap_results_for_context(tab_ctx)
+                title_ref_energy = float(parsed["ref_energy"])
                 y_values = parsed["deltap_wrt_ref_values"]
                 if not y_values:
                     continue
@@ -2506,7 +2518,7 @@ class DppOptimisationController(BaseController):
                         results_path,
                     )
                 )
-            title_latex = f"Measured $\\Delta p$ w.r.t. {int(ref_energy)} GeV vs Arc"
+            title_latex = f"Measured $\\Delta p$ w.r.t. {int(title_ref_energy)} GeV vs Arc"
             plot.setTitle(latex_to_html_converter(title_latex), color=colors.BLACK)
 
             info_table.setRowCount(len(table_rows))
