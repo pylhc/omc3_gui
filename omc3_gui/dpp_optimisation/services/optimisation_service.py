@@ -691,7 +691,7 @@ def on_run_optimisation(ctrl: DppOptimisationController):
             ctrl._raise_if_interrupted()
 
             result_payload = _payload_mapping(result_payload)
-            e_ref = float(result_payload["e_ref"])
+            e_ref = _require_float(result_payload, "e_ref")
             deltap_wrt_ref = _payload_list_of_floats(
                 result_payload,
                 keys=("deltap", "deltap_wrt_6800", "delta_p"),
@@ -771,9 +771,9 @@ def on_run_optimisation(ctrl: DppOptimisationController):
         typed_worker_result = _payload_mapping(worker_result)
         result_payload = dict(_payload_mapping(typed_worker_result["result_payload"]))
         beam_energy = _require_float(typed_worker_result, "beam_energy")
-        deltap_wrt_6800 = _payload_list_of_floats(
+        deltap_wrt_ref = _payload_list_of_floats(
             typed_worker_result,
-            keys=("deltap_wrt_6800",),
+            keys=("deltap_wrt_ref",),
         )
         fitted_deltap_wrt_model_energy = _payload_list_of_floats(
             typed_worker_result,
@@ -782,6 +782,7 @@ def on_run_optimisation(ctrl: DppOptimisationController):
         mean = _optional_float(typed_worker_result, "mean")
         mean_fitted = _optional_float(typed_worker_result, "mean_fitted")
         std_dev = _require_float(typed_worker_result, "std_dev")
+        e_ref = _require_float(typed_worker_result, "e_ref")
         results_file = _require_path(typed_worker_result, "results_file")
         magnet_knobs_path_for_info = _require_str(typed_worker_result, "magnet_knobs_path_for_info")
         corrector_knobs_path_for_info = _require_str(
