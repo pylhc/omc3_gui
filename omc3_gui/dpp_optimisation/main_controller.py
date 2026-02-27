@@ -1251,7 +1251,9 @@ class DppOptimisationController(BaseController):
             model_info.sequence_file = model_dir / sequence_files[0]
         else:
             LOGGER.info("No sequence file found, generating from MAD-X job file")
-            make_madx_sequence(model_info.beam, model_dir, seq_outdir=temp_work_dir, beam4=True)
+            make_madx_sequence(
+                model_info.beam, model_dir, seq_outdir=temp_work_dir, beam4=beam == 2
+            )
             model_info.sequence_file = temp_work_dir / f"lhcb{model_info.beam}_saved.seq"
 
         job_files = list(model_dir.glob("*.madx"))
